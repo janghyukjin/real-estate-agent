@@ -120,14 +120,23 @@ with tab1:
     st.caption(f"예산 범위: {result.final_max_price/10000:.1f}억 이하 / 25~34평 / 300세대+")
 
     # 캐시된 분석 결과 로드
-    analysis_path = os.path.join(os.path.dirname(__file__), "data", "analysis.json")
-    cache_path = os.path.join(os.path.dirname(__file__), "data", "apt_cache.json")
+    data_dir = os.path.join(os.path.dirname(__file__), "data")
+    analysis_path = os.path.join(data_dir, "analysis.json")
+    cache_path = os.path.join(data_dir, "apt_cache.json")
+    history_path = os.path.join(data_dir, "price_history.json")
 
     if os.path.exists(analysis_path) and os.path.exists(cache_path):
         with open(analysis_path) as f:
             all_results = json.load(f)
         with open(cache_path) as f:
             apt_cache = json.load(f)
+
+        # 전고점 데이터 로드
+        peak_data = {}
+        if os.path.exists(history_path):
+            with open(history_path) as f:
+                for item in json.load(f):
+                    peak_data[item['apt']] = item
 
         def get_hhld(name):
             if name in apt_cache:
@@ -178,7 +187,7 @@ with tab1:
         if top10:
             for i, r in enumerate(top10, 1):
                 with st.container():
-                    c1, c2, c3 = st.columns([3, 2, 2])
+                    c1, c2, c3, c4 = st.columns([3, 2, 2, 2])
                     with c1:
                         tier_emoji = {"상급지": "👑", "중상급지": "🏙️", "중하급지": "🏘️", "하급지": "🏠"}.get(r['tier'], "")
                         st.markdown(f"### {i}. {r['apt']}")
@@ -189,6 +198,26 @@ with tab1:
                     with c3:
                         st.metric("갭", f"{r['gap']/10000:.1f}억")
                         st.metric("월 상환", f"{r['monthly_pay']:,}만원")
+                    with c4:
+                        # 전고점 대비 표시
+                        peak_info = peak_data.get(r['apt'])
+                        if peak_info:
+                            diff = peak_info['diff_peak']
+                            st.metric(
+                                "전고점 대비",
+                                f"{diff:+.1f}%",
+                                delta=f"{peak_info['peak']/10000:.1f}억 ({peak_info['peak_ym']})",
+                                delta_color="inverse",
+                            )
+                            diff_t = peak_info['diff_trough']
+                            st.metric(
+                                "전저점 대비",
+                                f"{diff_t:+.1f}%",
+                                delta=f"{peak_info['trough']/10000:.1f}억 ({peak_info['trough_ym']})",
+                                delta_color="normal",
+                            )
+                        else:
+                            st.caption("전고점 데이터 없음")
 
                     # 매수 근거
                     reasons = []
@@ -204,6 +233,12 @@ with tab1:
                         reasons.append(f"📊 거래 활발 ({r['count']}건)")
                     if r['monthly_pay'] < 200:
                         reasons.append(f"🏦 월 상환 {r['monthly_pay']:,}만 부담 적음")
+                    # 전고점 대비 매수 근거
+                    peak_info = peak_data.get(r['apt'])
+                    if peak_info and peak_info['diff_peak'] <= -20:
+                        reasons.append(f"📉 전고점 대비 {peak_info['diff_peak']:.0f}% 저평가")
+                    elif peak_info and peak_info['diff_peak'] <= -10:
+                        reasons.append(f"📉 전고점 대비 {peak_info['diff_peak']:.0f}% 할인")
 
                     st.markdown(" · ".join(reasons))
                     st.divider()
