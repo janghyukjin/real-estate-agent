@@ -1,2 +1,3 @@
 streamlit>=1.30
 httpx>=0.27
+plotly>=5.0

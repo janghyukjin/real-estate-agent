@@ -1,0 +1,12 @@
+{
+  "mcpServers": {
+    "real-estate": {
+      "command": "python3",
+      "args": ["mcp_server.py"],
+      "cwd": "/Users/user/real-estate-agent",
+      "env": {
+        "DATA_GO_KR_API_KEY": "${DATA_GO_KR_API_KEY}"
+      }
+    }
+  }
+}

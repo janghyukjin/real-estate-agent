@@ -147,11 +147,10 @@ async def fetch_apt_trades(
         "numOfRows": "9999",
     }
 
-    async with httpx.AsyncClient(timeout=30) as client:
+    async with httpx.AsyncClient(timeout=30, http2=False) as client:
         resp = await client.get(APT_TRADE_URL, params=params)
         resp.raise_for_status()
 
-    # XML 파싱 (간단한 방식)
     return _parse_trade_xml(resp.text, region_code)
 
 
