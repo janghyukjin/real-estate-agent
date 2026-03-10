@@ -57,10 +57,13 @@
             margin: 0 auto 32px;
         }
         .hero-stats {
-            display: flex;
-            justify-content: center;
-            gap: 40px;
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 16px 40px;
             margin-top: 32px;
+            max-width: 480px;
+            margin-left: auto;
+            margin-right: auto;
         }
         .hero-stat {
             text-align: center;
@@ -304,7 +307,7 @@
             .hero { padding: 48px 0 40px; }
             .hero h1 { font-size: 32px; }
             .hero p { font-size: 16px; max-width: 100%; padding: 0 8px; word-break: keep-all; }
-            .hero-stats { flex-direction: column; gap: 16px; }
+            .hero-stats { gap: 12px 24px; max-width: 100%; }
             .hero-stat .num { font-size: 24px; }
             .compare-grid { grid-template-columns: 1fr; }
             .data-grid { grid-template-columns: 1fr; }
