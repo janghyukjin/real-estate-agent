@@ -164,6 +164,7 @@ def _normalize(name: str) -> str:
 # 정규화된 캐시 + dong별 인덱스 (초기화 시 1회 생성)
 _NORMALIZED_CACHE: dict[str, int] | None = None
 _DONG_INDEX: dict[str, list[tuple[str, str, int]]] | None = None  # dong -> [(key, norm_apt_part, count)]
+_APT_ONLY_CACHE: dict[str, int] | None = None  # dong접두사 제거한 아파트명 캐시
 
 
 def _get_normalized_cache() -> dict[str, int]:
@@ -175,6 +176,28 @@ def _get_normalized_cache() -> dict[str, int]:
             if nk not in _NORMALIZED_CACHE:
                 _NORMALIZED_CACHE[nk] = val
     return _NORMALIZED_CACHE
+
+
+def _get_apt_only_cache() -> dict[str, int]:
+    """캐시 키에서 동명 접두사를 제거한 인덱스 생성
+
+    예: "가락동헬리오시티" → "헬리오시티" (정규화)로 매칭 가능
+    """
+    import re as _re
+    global _APT_ONLY_CACHE
+    if _APT_ONLY_CACHE is None:
+        _APT_ONLY_CACHE = {}
+        for key, val in APT_HOUSEHOLD_CACHE.items():
+            # 동명 접두사 제거 (예: "가락동", "신갈동", "봉담읍" 등)
+            m = _re.match(r'^(.+?(?:동\d*[가]?|읍|면|리))\s*(.+)$', key)
+            if m:
+                apt_part = m.group(2).strip()
+                if apt_part:
+                    napt = _normalize(apt_part)
+                    # 더 큰 세대수를 우선 (동명이인 시 대단지가 주로 검색 대상)
+                    if napt not in _APT_ONLY_CACHE or val > _APT_ONLY_CACHE[napt]:
+                        _APT_ONLY_CACHE[napt] = val
+    return _APT_ONLY_CACHE
 
 
 def _get_dong_index() -> dict[str, list[tuple[str, int]]]:
@@ -200,9 +223,12 @@ def get_household_count(apt_name: str, dong: str = "") -> int | None:
     매칭 우선순위:
     1. dong+apt 정확 매칭 ("역삼동경남아너스빌")
     2. dong+apt 정규화 매칭 (공백·특수문자 제거 후 비교)
-    3. apt 정확 매칭
-    4. apt 정규화 매칭
-    5. 매칭 실패 → None
+    3. dong 범위 내 부분매칭 (dong별 인덱스)
+    4. apt 정확 매칭
+    5. apt 정규화 매칭
+    6. 동명 접두사 제거 후 매칭 ("가락동헬리오시티" → "헬리오시티")
+    7. apt-only 캐시 부분매칭
+    8. 매칭 실패 → None
     """
     norm_cache = _get_normalized_cache()
 
@@ -240,6 +266,26 @@ def get_household_count(apt_name: str, dong: str = "") -> int | None:
     norm_apt = _normalize(apt_name)
     if norm_apt in norm_cache:
         return norm_cache[norm_apt]
+
+    # 6) 캐시의 동명 접두사 제거 후 매칭 (예: "가락동헬리오시티" → "헬리오시티")
+    apt_only = _get_apt_only_cache()
+    if norm_apt in apt_only:
+        return apt_only[norm_apt]
+
+    # 7) 부분매칭: 정규화된 apt_name이 캐시의 apt-only 키에 포함되거나 반대
+    if len(norm_apt) >= 4:  # 너무 짧은 이름은 오매칭 방지
+        best_match = None
+        best_len = 0
+        for cached_napt, val in apt_only.items():
+            if not cached_napt:
+                continue
+            if norm_apt in cached_napt or cached_napt in norm_apt:
+                match_len = min(len(norm_apt), len(cached_napt))
+                if match_len > best_len and match_len >= 4:
+                    best_match = val
+                    best_len = match_len
+        if best_match is not None:
+            return best_match
 
     return None
 

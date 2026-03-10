@@ -284,8 +284,11 @@ sys_result = calculate_affordability(user, policy)
 max_loan = int(sys_result.final_max_loan)
 
 # 희망 대출 적용 (0이면 대출 없음)
+loan_over_limit = False
 if desired_loan_억 > 0:
     desired_loan = int(desired_loan_억 * 10000)
+    if desired_loan > max_loan:
+        loan_over_limit = True
     loan_amount = min(desired_loan, max_loan)
 else:
     loan_amount = 0
@@ -310,6 +313,8 @@ if seed_money > 0 or annual_income > 0:
         render_summary_card(budget_label, budget_display, seed_money_억, loan_amount, monthly_pay, pay_ratio, max_loan=max_loan),
         unsafe_allow_html=True,
     )
+    if loan_over_limit:
+        st.warning(f"희망 대출 {desired_loan_억:.1f}억이 한도({max_loan/10000:.1f}억)를 초과하여 {max_loan/10000:.1f}억으로 적용됩니다.", icon=None)
     if sys_result.warnings:
         with st.expander(f"참고사항 ({len(sys_result.warnings)}건)", expanded=False):
             for w in sys_result.warnings:
