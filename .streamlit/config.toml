@@ -1,6 +1,7 @@
 [theme]
-base = "light"
+base = "dark"
 primaryColor = "#FF6B6B"
 
 [server]
 headless = true
+fileWatcherType = "none"
