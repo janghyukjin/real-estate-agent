@@ -86,52 +86,8 @@ seed_money = int(seed_money_억 * 10000)
 
 region_choice = st.radio("📍 어디에서 찾을까요?", ["전체", "서울", "경기"], horizontal=True)
 
-# ─────────────────────────────────────
-# 전략 선택 (프리셋 스킬)
-# ─────────────────────────────────────
-st.markdown('<div class="divider"></div>', unsafe_allow_html=True)
-st.markdown("### 🎯 전략 선택")
-st.caption("원클릭으로 필터가 자동 설정돼요")
-
 if "selected_preset" not in st.session_state:
     st.session_state.selected_preset = None
-
-preset_keys = list(PRESETS.keys())
-row1 = preset_keys[:3]
-p_cols = st.columns(3)
-for idx, key in enumerate(row1):
-    with p_cols[idx]:
-        if st.button(key, key=f"preset_{idx}", use_container_width=True):
-            if st.session_state.selected_preset == key:
-                st.session_state.selected_preset = None
-            else:
-                st.session_state.selected_preset = key
-
-row2 = preset_keys[3:]
-if row2:
-    p_cols2 = st.columns(3)
-    for idx, key in enumerate(row2):
-        with p_cols2[idx]:
-            if st.button(key, key=f"preset_{idx+3}", use_container_width=True):
-                if st.session_state.selected_preset == key:
-                    st.session_state.selected_preset = None
-                else:
-                    st.session_state.selected_preset = key
-
-active_preset = st.session_state.get("selected_preset")
-if active_preset and active_preset in PRESETS:
-    p_info = PRESETS[active_preset]
-    st.success(f"🎯 **{active_preset}** — {p_info['desc']}")
-elif st.session_state.get("active_community_skill"):
-    # 커뮤니티/커스텀 스킬 적용 중 표시
-    cs_desc = st.session_state.active_community_skill.get("desc", "커뮤니티 스킬")
-    col_cs1, col_cs2 = st.columns([5, 1])
-    with col_cs1:
-        st.info(f"🎯 커스텀 스킬 적용 중 — {cs_desc}")
-    with col_cs2:
-        if st.button("해제", key="clear_community_skill"):
-            st.session_state.active_community_skill = None
-            st.rerun()
 
 # ─────────────────────────────────────
 # 상세 설정 (접기)
@@ -208,6 +164,41 @@ with st.expander("⚙️ 상세 설정", expanded=False):
         min_hhld = st.number_input("최소 세대수", min_value=300, max_value=5000, value=300, step=100)
 
     top_n = st.number_input("상위 표시 개수", min_value=5, max_value=50, value=10, step=5)
+
+    # 전략 프리셋 (상세 설정 하단)
+    st.markdown("---")
+    st.markdown("**🎯 전략 프리셋** (원클릭 필터)")
+    preset_keys = list(PRESETS.keys())
+    row1 = preset_keys[:3]
+    p_cols = st.columns(3)
+    for idx, key in enumerate(row1):
+        with p_cols[idx]:
+            if st.button(key, key=f"preset_{idx}", use_container_width=True):
+                if st.session_state.selected_preset == key:
+                    st.session_state.selected_preset = None
+                else:
+                    st.session_state.selected_preset = key
+    row2 = preset_keys[3:]
+    if row2:
+        p_cols2 = st.columns(3)
+        for idx, key in enumerate(row2):
+            with p_cols2[idx]:
+                if st.button(key, key=f"preset_{idx+3}", use_container_width=True):
+                    if st.session_state.selected_preset == key:
+                        st.session_state.selected_preset = None
+                    else:
+                        st.session_state.selected_preset = key
+
+    active_preset = st.session_state.get("selected_preset")
+    if active_preset and active_preset in PRESETS:
+        p_info = PRESETS[active_preset]
+        st.success(f"🎯 **{active_preset}** — {p_info['desc']}")
+    elif st.session_state.get("active_community_skill"):
+        cs_desc = st.session_state.active_community_skill.get("desc", "커뮤니티 스킬")
+        st.info(f"🎯 커스텀 스킬 적용 중 — {cs_desc}")
+        if st.button("해제", key="clear_community_skill"):
+            st.session_state.active_community_skill = None
+            st.rerun()
 
 # 상세 설정 밖 기본값 — expander가 접혀있으면 변수가 정의되지 않으므로 기본값 적용
 _defaults = ADVANCED_DEFAULTS

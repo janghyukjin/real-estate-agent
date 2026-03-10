@@ -63,8 +63,5 @@ h3 { font-size: 1.1rem !important; font-weight: 700 !important; margin-bottom: 0
 /* 상세 설정 */
 .stExpander { border: 1px solid #2d3039 !important; border-radius: 12px !important; }
 
-/* 스킬 탭 라디오 */
-.stRadio > div > label > div:first-child { display: none; }
-
 /* word-break */
 * { word-break: keep-all; }
