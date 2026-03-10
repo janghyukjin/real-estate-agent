@@ -58,10 +58,10 @@
         }
         .hero-stats {
             display: grid;
-            grid-template-columns: repeat(2, 1fr);
+            grid-template-columns: repeat(4, 1fr);
             gap: 16px 40px;
             margin-top: 32px;
-            max-width: 480px;
+            max-width: 720px;
             margin-left: auto;
             margin-right: auto;
         }
@@ -307,7 +307,7 @@
             .hero { padding: 48px 0 40px; }
             .hero h1 { font-size: 32px; }
             .hero p { font-size: 16px; max-width: 100%; padding: 0 8px; word-break: keep-all; }
-            .hero-stats { gap: 12px 24px; max-width: 100%; }
+            .hero-stats { grid-template-columns: repeat(2, 1fr); gap: 12px 24px; max-width: 100%; }
             .hero-stat .num { font-size: 24px; }
             .compare-grid { grid-template-columns: 1fr; }
             .data-grid { grid-template-columns: 1fr; }
@@ -337,24 +337,24 @@
     <div class="container">
         <div class="hero-badge">100% 공공 데이터 기반</div>
         <h1><span>집피티</span></h1>
-        <p>내 월급, 내 종잣돈으로 서울 어디에 살 수 있을까?<br>
-        1,371개 아파트를 분석해서 딱 맞는 곳을 추천해드립니다.</p>
+        <p>내 월급, 내 종잣돈으로 서울·수도권 어디에 살 수 있을까?<br>
+        3,302개 아파트를 분석해서 딱 맞는 곳을 추천해드립니다.</p>
         <a href="https://my-zpt.streamlit.app" class="cta-btn">앱 시작하기</a>
         <div class="hero-stats">
             <div class="hero-stat">
-                <div class="num">1,371</div>
+                <div class="num">3,302</div>
                 <div class="label">분석 아파트</div>
             </div>
             <div class="hero-stat">
-                <div class="num">35만+</div>
+                <div class="num">103만+</div>
                 <div class="label">매매 거래 데이터</div>
             </div>
             <div class="hero-stat">
-                <div class="num">98만+</div>
+                <div class="num">204만+</div>
                 <div class="label">전월세 거래 데이터</div>
             </div>
             <div class="hero-stat">
-                <div class="num">7,330</div>
+                <div class="num">13,578</div>
                 <div class="label">세대수 캐시</div>
             </div>
         </div>
@@ -562,7 +562,7 @@
 <footer>
     <div class="container">
         <p>집피티 — 국토교통부 실거래가 API + 건축물대장 API 기반</p>
-        <p style="margin-top: 8px;">데이터: 2020년~2026년 3월 | 서울 + 과천/분당 | 1,371개 아파트 분석</p>
+        <p style="margin-top: 8px;">데이터: 2020년~2026년 3월 | 서울 + 경기 30개 시군구 | 3,302개 아파트 분석</p>
     </div>
 </footer>
 
