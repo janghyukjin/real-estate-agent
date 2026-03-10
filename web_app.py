@@ -114,8 +114,8 @@ with st.expander("⚙️ 상세 설정", expanded=False):
         )
     desired_loan_억 = st.number_input(
         "💰 희망 대출 (억원)",
-        min_value=0.0, max_value=20.0, value=0.0, step=0.5,
-        help="0이면 대출 없이 종잣돈으로만 매수. DSR/LTV 한도 초과분은 자동 차감됩니다.",
+        min_value=0.0, max_value=10.0, value=0.0, step=0.5,
+        help="0이면 대출 없이 종잣돈으로만 매수. 한도 초과 시 자동으로 줄어듭니다.",
     )
 
     will_reside = st.checkbox("실거주 예정", value=True)
@@ -376,7 +376,7 @@ with tab1:
                                 {"시기": "하락 폭", "가격": f"-{crash_drop/10000:.1f}억", "시점": "", "현재 대비": f"고점 대비 {crash_drop/pcp*100:.0f}%↓"},
                                 {"시기": "현재", "가격": f"{r['avg_price']/10000:.1f}억", "시점": "최근 3개월", "현재 대비": f"회복률 {rr:.0f}%"},
                             ]
-                            st.dataframe(pd.DataFrame(table_data), hide_index=True, use_container_width=True)
+                            st.dataframe(pd.DataFrame(table_data), hide_index=True, width="stretch")
 
                         if history and len(history) >= 2:
                             import pandas as pd
@@ -408,7 +408,7 @@ with tab1:
                             fig.update_layout(height=280, margin=dict(l=0, r=0, t=20, b=0),
                                               xaxis_title="", yaxis_title="억원",
                                               hovermode="x unified", showlegend=False)
-                            st.plotly_chart(fig, use_container_width=True)
+                            st.plotly_chart(fig, width="stretch")
 
                         # 실거래 내역
                         trade_index = load_trade_index()
@@ -429,7 +429,7 @@ with tab1:
                                     "층": floor_str,
                                     "비고": "직거래" if deal_type == "직거래" else "",
                                 })
-                            st.dataframe(pd.DataFrame(rows), hide_index=True, use_container_width=True)
+                            st.dataframe(pd.DataFrame(rows), hide_index=True, width="stretch")
         else:
             if gap_invest_mode:
                 st.info("갭 범위에 맞는 아파트가 없어요. 상세 설정에서 조건을 조정해보세요.")
