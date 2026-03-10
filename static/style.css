@@ -1,0 +1,70 @@
+/* 집피티 — 토스 스타일 CSS */
+
+/* 전체 */
+.block-container { max-width: 640px !important; padding: 1rem 1rem 4rem !important; }
+.block-container { padding-top: 1.5rem !important; }
+[data-testid="stSidebar"] { display: none; }
+[data-testid="stHeader"] { display: none; }
+[data-testid="stDecoration"] { display: none; }
+h1 { font-size: 1.8rem !important; font-weight: 800 !important; letter-spacing: -1px; user-select: none; -webkit-user-select: none; }
+h3 { font-size: 1.1rem !important; font-weight: 700 !important; margin-bottom: 0 !important; }
+
+/* 입력 필드 */
+.stNumberInput > div > div > input { font-size: 1.2rem !important; font-weight: 700 !important; }
+.stRadio > div { gap: 0.5rem; }
+.stRadio label { font-weight: 600 !important; }
+
+/* 프리셋 버튼 */
+.stButton > button {
+    border-radius: 12px !important; font-weight: 600 !important;
+    padding: 8px 12px !important; font-size: 0.85rem !important;
+}
+
+/* 카드 */
+.summary-card {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 16px; padding: 24px; margin: 16px 0; color: white;
+}
+.summary-card .big { font-size: 2rem; font-weight: 800; }
+.summary-card .sub { font-size: 0.9rem; opacity: 0.85; margin-top: 4px; }
+.apt-card {
+    background: #1a1d26; border: 1px solid #2d3039; border-radius: 16px;
+    padding: 20px; margin: 12px 0; transition: border-color 0.2s;
+}
+.apt-card:hover { border-color: #FF6B6B; }
+.apt-rank {
+    display: inline-block; background: #FF6B6B; color: white;
+    width: 28px; height: 28px; border-radius: 50%; text-align: center;
+    line-height: 28px; font-weight: 800; font-size: 0.85rem; margin-right: 8px;
+}
+.apt-name { font-size: 1.1rem; font-weight: 700; }
+.apt-meta { font-size: 0.8rem; color: #9CA3AF; margin-top: 2px; }
+.metric-grid {
+    display: grid; grid-template-columns: repeat(2, 1fr);
+    gap: 4px 12px; margin: 12px 0 8px;
+}
+.metric-item {
+    padding: 8px 0; border-bottom: 1px solid rgba(128,128,128,0.12);
+}
+.metric-label { font-size: 0.72rem; color: #888; display: block; }
+.metric-value { font-size: 0.95rem; font-weight: 600; }
+.tag {
+    display: inline-block; padding: 2px 8px; border-radius: 4px;
+    font-size: 0.7rem; font-weight: 600; margin-right: 4px;
+}
+.tag-green { background: rgba(81,207,102,0.15); color: #51CF66; }
+.tag-red { background: rgba(255,107,107,0.15); color: #FF6B6B; }
+.tag-blue { background: rgba(77,171,247,0.15); color: #4DABF7; }
+.tag-gray { background: rgba(156,163,175,0.1); color: #9CA3AF; }
+
+/* 구분선 */
+.divider { border-top: 1px solid #2d3039; margin: 20px 0; }
+
+/* 상세 설정 */
+.stExpander { border: 1px solid #2d3039 !important; border-radius: 12px !important; }
+
+/* 스킬 탭 라디오 */
+.stRadio > div > label > div:first-child { display: none; }
+
+/* word-break */
+* { word-break: keep-all; }
