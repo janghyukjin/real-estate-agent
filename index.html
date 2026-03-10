@@ -261,9 +261,18 @@
         }
 
         @media (max-width: 768px) {
-            .hero h1 { font-size: 28px; }
+            .container { padding: 0 16px; }
+            .hero { padding: 48px 0 40px; }
+            .hero h1 { font-size: 32px; }
+            .hero p { font-size: 16px; max-width: 100%; padding: 0 8px; word-break: keep-all; }
             .hero-stats { flex-direction: column; gap: 16px; }
+            .hero-stat .num { font-size: 24px; }
             .compare-grid { grid-template-columns: 1fr; }
+            .data-grid { grid-template-columns: 1fr; }
+            .features { grid-template-columns: 1fr; }
+            section h2 { font-size: 22px; }
+            .score-table th, .score-table td { padding: 8px 10px; font-size: 13px; }
+            .cta-btn { padding: 12px 28px; font-size: 15px; }
         }
     </style>
 </head>
