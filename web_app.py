@@ -497,7 +497,7 @@ with tab1:
                             },
                         ]
                         with st.expander("📋 시기별 가격 비교"):
-                            st.dataframe(pd.DataFrame(table_data), use_container_width=True, hide_index=True)
+                            st.dataframe(pd.DataFrame(table_data), width="stretch", hide_index=True)
 
                     # 매매가 추이 그래프 + 실거래가 테이블
                     history = r.get("price_history", {})
@@ -562,7 +562,7 @@ with tab1:
                                 hovermode="x unified",
                                 showlegend=False,
                             )
-                            st.plotly_chart(fig, use_container_width=True)
+                            st.plotly_chart(fig, width="stretch")
 
                             # --- 실거래가 테이블 (같은 평형만) ---
                             apt_trades_filtered = trade_index.get((r["gu"], r["apt"], r.get("dong", ""), r.get("area_type", "")), [])
@@ -587,7 +587,7 @@ with tab1:
                                     })
                                 st.dataframe(
                                     pd.DataFrame(rows),
-                                    use_container_width=True,
+                                    width="stretch",
                                     hide_index=True,
                                 )
                             st.caption(f"2020~현재 총 {r.get('count_total', 0)}건 거래")
@@ -741,7 +741,7 @@ with tab4:
         {"항목": "🏛️ 토허제 변동", "기준": "10.15 토허제 전(24.7~9월) 대비. 덜 오를수록 가점", "배점": "±15점"},
     ]
     import pandas as pd
-    st.dataframe(pd.DataFrame(score_data), use_container_width=True, hide_index=True)
+    st.dataframe(pd.DataFrame(score_data), width="stretch", hide_index=True)
 
     st.markdown("""
 > **설계 철학**: "싸고 저평가된 곳"에 높은 점수를 줍니다.
