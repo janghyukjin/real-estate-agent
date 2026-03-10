@@ -19,7 +19,7 @@ from src.calculator import (
 st.set_page_config(page_title="집피티 — 내집마련 AI 비서", page_icon="🏠", layout="wide", initial_sidebar_state="expanded")
 
 st.title("🏠 집피티")
-st.caption("내 월급으로 서울 어디 살 수 있을까?")
+st.caption("내 월급으로 서울·수도권 어디 살 수 있을까?")
 st.info("👈 **왼쪽 사이드바**에서 종잣돈·연봉을 입력하면 맞춤 추천이 시작됩니다! (모바일: 좌측 상단 **>** 버튼)")
 
 # ─────────────────────────────────────
@@ -44,6 +44,9 @@ def load_data():
 
 all_data, meta = load_data()
 
+# 구 목록 미리 계산 (rerun마다 반복 방지)
+_seoul_gus = sorted(set(r["gu"] for r in all_data if "경기" not in r.get("tier", "")))
+_gyeonggi_gus = sorted(set(r["gu"] for r in all_data if "경기" in r.get("tier", "")))
 
 # 실거래 인덱스: 필요할 때 1회만 로드 (메모리 절약)
 @st.cache_data
@@ -155,9 +158,9 @@ with st.sidebar:
         help="상급지: 강남/서초/송파/용산 | 상급지(경기): 과천/분당/영통/수지 | 중상급지: 마포/성동/광진/동작/강동/영등포/양천 | 중상급지(경기): 일산동/광명/하남/안양동안/기흥/구리 | 중하급지: 노원/도봉/강북/성북/중랑/동대문/서대문/은평 | 중하급지(경기): 고양/수원/성남/부천/군포/의왕/남양주/의정부/평택 | 하급지: 강서/구로/금천/관악/종로/중구 | 하급지(경기): 오산/광주/처인/시흥/김포/화성"
     )
 
-    # 지역/구/동 필터
-    seoul_gus = sorted(set(r["gu"] for r in all_data if "경기" not in r.get("tier", "")))
-    gyeonggi_gus = sorted(set(r["gu"] for r in all_data if "경기" in r.get("tier", "")))
+    # 지역/구/동 필터 (캐시된 목록 사용)
+    seoul_gus = _seoul_gus
+    gyeonggi_gus = _gyeonggi_gus
     region_choice = st.radio("지역", ["전체", "서울", "경기"], horizontal=True)
     if region_choice == "서울":
         available_gus = seoul_gus
