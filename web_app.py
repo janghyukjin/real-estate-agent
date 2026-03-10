@@ -22,18 +22,23 @@ st.set_page_config(page_title="집피티 — 내집마련 AI 비서", page_icon=
 # 다크/라이트 테마 토글 (CSS 주입)
 # ─────────────────────────────────────
 if "dark_mode" not in st.session_state:
-    st.session_state.dark_mode = True
+    st.session_state.dark_mode = False
 
 def _inject_theme():
     if st.session_state.dark_mode:
         css = """
         <style>
-        [data-testid="stAppViewContainer"], [data-testid="stHeader"], [data-testid="stSidebar"] {
+        [data-testid="stAppViewContainer"], [data-testid="stHeader"] {
             background-color: #0F1117; color: #FAFAFA;
         }
         [data-testid="stSidebar"] { background-color: #1A1D26; }
         .stMarkdown, .stCaption, p, span, label, h1, h2, h3, h4 { color: #FAFAFA !important; }
         [data-testid="stMetricValue"], [data-testid="stMetricLabel"] { color: #FAFAFA !important; }
+        [data-testid="stSidebar"] button[kind="secondary"] {
+            background-color: #2D3039 !important;
+            color: #FAFAFA !important;
+            border: 1px solid #555 !important;
+        }
         </style>"""
     else:
         css = """
