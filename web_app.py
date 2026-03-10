@@ -311,9 +311,9 @@ if seed_money > 0 or annual_income > 0:
         unsafe_allow_html=True,
     )
     if sys_result.warnings:
-        with st.expander(f"ℹ️ 참고사항 ({len(sys_result.warnings)}건)", expanded=False):
+        with st.expander(f"참고사항 ({len(sys_result.warnings)}건)", expanded=False):
             for w in sys_result.warnings:
-                st.caption(f"• {w}")
+                st.warning(w, icon=None)
 else:
     st.markdown(render_empty_summary_card(), unsafe_allow_html=True)
 
