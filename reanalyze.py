@@ -12,6 +12,11 @@ from src.kb_client import calculate_jeonse_ratio
 DATA_DIR = os.path.join(os.path.dirname(__file__), "data")
 
 
+def get_area_type(area: float) -> str:
+    """전용면적 → 그룹 키 (소수점 버림, 예: 84㎡)"""
+    return f"{int(area)}㎡"
+
+
 def reanalyze():
     now = datetime.now()
 
@@ -23,17 +28,33 @@ def reanalyze():
 
     print(f"로드: 매매 {len(all_trades):,}건 / 전세 {len(all_rents):,}건")
 
-    # 25~34평 필터
+    # 직거래 제외 (deal_type 필드가 있는 경우만)
+    has_deal_type = any("deal_type" in t for t in all_trades[:100])
+    if has_deal_type:
+        before = len(all_trades)
+        all_trades = [t for t in all_trades if t.get("deal_type", "") != "직거래"]
+        print(f"직거래 제외: {before:,} → {len(all_trades):,}건 ({before - len(all_trades):,}건 제외)")
+
+    # 1층 제외 (층 데이터 있는 경우, 평균가 왜곡 방지)
+    has_floor = any("floor" in t for t in all_trades[:100])
+    if has_floor:
+        before = len(all_trades)
+        all_trades = [t for t in all_trades if t.get("floor", 0) != 1]
+        print(f"1층 제외: {before:,} → {len(all_trades):,}건 ({before - len(all_trades):,}건 제외)")
+
+    # 25~34평 필터 (평형별 분리)
     apt_trades = {}
     for t in all_trades:
         if 59 <= t["area"] <= 112:
-            key = (t["gu"], t["apt"])
+            area_type = get_area_type(t["area"])
+            key = (t["gu"], t["apt"], t.get("dong", ""), area_type)
             apt_trades.setdefault(key, []).append(t)
 
     apt_rents = {}
     for r in all_rents:
         if 59 <= r["area"] <= 112:
-            key = (r["gu"], r["apt"])
+            area_type = get_area_type(r["area"])
+            key = (r["gu"], r["apt"], area_type)
             apt_rents.setdefault(key, []).append(r["deposit"])
 
     # 최근 3개월 (현재가 계산용)
@@ -43,24 +64,34 @@ def reanalyze():
         recent_ymds.add((dt.year, dt.month))
 
     analysis = []
-    for (gu, apt), trades in apt_trades.items():
+    for (gu, apt, dong, area_type), trades in apt_trades.items():
         all_prices = [t["price"] for t in trades]
         if len(all_prices) < 2:
             continue
 
-        # 현재가 = 최근 3개월
-        recent_prices = [t["price"] for t in trades if (t["year"], t["month"]) in recent_ymds]
-        if not recent_prices:
+        # 최근 3개월 거래
+        recent_trades = [t for t in trades if (t["year"], t["month"]) in recent_ymds]
+        if not recent_trades:
             continue
+        recent_prices = [t["price"] for t in recent_trades]
         avg_price = int(sum(recent_prices) / len(recent_prices))
-        recent_high = max(recent_prices)  # 최근 3개월 최고가
+        recent_high = max(recent_prices)
 
-        hhld = get_household_count(apt)
+        # 가장 최근 거래가 (날짜순 정렬)
+        recent_trades_sorted = sorted(
+            recent_trades,
+            key=lambda t: (t["year"], t["month"], t.get("day", 0)),
+            reverse=True,
+        )
+        latest_price = recent_trades_sorted[0]["price"]
+        latest_ym = f"{recent_trades_sorted[0]['year']}-{recent_trades_sorted[0]['month']:02d}"
+
+        hhld = get_household_count(apt, dong)
         if not hhld or hhld < 300:
             continue
 
         # 전세가율
-        rent_prices = apt_rents.get((gu, apt), [])
+        rent_prices = apt_rents.get((gu, apt, area_type), [])
         if not rent_prices:
             continue
         avg_rent = int(sum(rent_prices) / len(rent_prices))
@@ -77,19 +108,15 @@ def reanalyze():
         peak_ym = f"{peak_trades[0]['year']}-{peak_trades[0]['month']:02d}"
         trough_ym = f"{trough_trades[0]['year']}-{trough_trades[0]['month']:02d}"
 
-        # 현재 최고점 판단: 최근 최고가 >= 전고점이면 "현재 최고점"
-        is_at_peak = recent_high >= peak
+        # 현재 최고점 판단: 최근 거래가 >= 전고점이면 "현재 최고점"
+        is_at_peak = latest_price >= peak
 
-        if is_at_peak:
-            diff_peak = round((recent_high - peak) / peak * 100, 1) if peak > 0 else 0
-        else:
-            diff_peak = round((avg_price - peak) / peak * 100, 1) if peak > 0 else 0
-        diff_trough = round((avg_price - trough) / trough * 100, 1) if trough > 0 else 0
+        diff_peak = round((latest_price - peak) / peak * 100, 1) if peak > 0 else 0
+        diff_trough = round((latest_price - trough) / trough * 100, 1) if trough > 0 else 0
 
         # 시기별 분석: 상승기(2020~2022) 고점 vs 하락기(2023~2024) 저점
         pre_crash = [t for t in trades if t["year"] <= 2022]
         crash_period = [t for t in trades if 2023 <= t["year"] <= 2024]
-        recovery = [t for t in trades if t["year"] >= 2025]
 
         pre_crash_peak = max([t["price"] for t in pre_crash]) if pre_crash else 0
         pre_crash_ym = ""
@@ -103,11 +130,25 @@ def reanalyze():
             tt = [t for t in crash_period if t["price"] == crash_trough][0]
             crash_trough_ym = f"{tt['year']}-{tt['month']:02d}"
 
-        # 회복률: (현재 - 하락기저점) / (상승기고점 - 하락기저점)
-        if pre_crash_peak > 0 and crash_trough > 0 and pre_crash_peak > crash_trough:
-            recovery_rate = round((avg_price - crash_trough) / (pre_crash_peak - crash_trough) * 100, 1)
+        # 회복률: 최근 거래가 / 상승기고점(~2022) × 100%
+        # 2021~2022년 거래가 없으면 고점이 의미없음 (데이터 희소) → 0 처리
+        has_peak_era = any(2021 <= t["year"] <= 2022 for t in trades)
+        if pre_crash_peak > 0 and has_peak_era:
+            recovery_rate = round(latest_price / pre_crash_peak * 100, 1)
         else:
             recovery_rate = 0
+
+        # 10.15 토허제 직전 가격 (2024년 7~9월 우선 → 4~9월 → 토허제 전 마지막 거래)
+        pre_policy = [t for t in trades if t["year"] == 2024 and 7 <= t["month"] <= 9]
+        if not pre_policy:
+            pre_policy = [t for t in trades if t["year"] == 2024 and 4 <= t["month"] <= 9]
+        if not pre_policy:
+            # 토허제(2024.10.15) 이전 마지막 거래
+            before_policy = [t for t in trades if (t["year"], t["month"]) < (2024, 10)]
+            if before_policy:
+                before_policy.sort(key=lambda t: (t["year"], t["month"], t.get("day", 0)), reverse=True)
+                pre_policy = [before_policy[0]]
+        policy_avg = int(sum(t["price"] for t in pre_policy) / len(pre_policy)) if pre_policy else 0
 
         # 월별 가격 추이 (그래프용)
         monthly_prices = {}
@@ -119,12 +160,14 @@ def reanalyze():
         tier = SEOUL_TIERS.get(gu, "")
 
         analysis.append({
-            "apt": apt, "gu": gu, "tier": tier, "hhld": hhld,
+            "apt": apt, "gu": gu, "dong": trades[0].get("dong", ""), "tier": tier, "hhld": hhld, "area_type": area_type,
             "avg_price": avg_price, "recent_high": recent_high,
+            "latest_price": latest_price, "latest_ym": latest_ym,
             "is_at_peak": is_at_peak,
             "count": len(recent_prices),
             "count_total": len(all_prices),
             "avg_rent": avg_rent, "ratio": ratio, "gap": gap,
+            "policy_avg": policy_avg,
             "peak": peak, "peak_ym": peak_ym,
             "pre_crash_peak": pre_crash_peak, "pre_crash_ym": pre_crash_ym,
             "crash_trough": crash_trough, "crash_trough_ym": crash_trough_ym,
@@ -140,9 +183,11 @@ def reanalyze():
     print(f"분석 완료: {len(analysis)}개 아파트")
 
     # 검증
-    test = [a for a in analysis if "태영" in a["apt"]]
+    test = [a for a in analysis if "신동아" in a["apt"] and "송파" in a["gu"]]
+    if not test:
+        test = [a for a in analysis if "태영" in a["apt"]]
     for t in test:
-        print(f"  {t['apt']} ({t['gu']}): 현재가 {t['avg_price']/10000:.1f}억 (최근{t['count']}건) / 고점 {t['peak']/10000:.1f}억 ({t['peak_ym']}) / 저점 {t['trough']/10000:.1f}억 ({t['trough_ym']})")
+        print(f"  {t['apt']} ({t['gu']}): 최근거래가 {t['latest_price']/10000:.1f}억 / 평균 {t['avg_price']/10000:.1f}억 / 최고 {t['recent_high']/10000:.1f}억 / 22년고점 {t['pre_crash_peak']/10000:.1f}억 / 회복률 {t['recovery_rate']}%")
 
     meta = {
         "collected_at": now.strftime("%Y-%m-%d %H:%M"),

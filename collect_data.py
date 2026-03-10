@@ -39,8 +39,9 @@ async def collect_all(months: int = 3):
                 for t in trades:
                     t_list.append({
                         "apt": t.apt_name, "price": t.deal_amount,
-                        "area": t.area, "gu": gu_name,
-                        "year": t.year, "month": t.month,
+                        "area": t.area, "gu": gu_name, "dong": t.dong,
+                        "year": t.year, "month": t.month, "day": t.day,
+                        "floor": t.floor, "deal_type": t.deal_type,
                     })
             except Exception as e:
                 print(f"  매매 실패: {gu_name} {ymd} - {e}")

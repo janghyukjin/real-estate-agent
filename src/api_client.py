@@ -80,21 +80,23 @@ REGION_CODES: dict[str, str] = {
     "평택시": "41220",
 }
 
-# 서울 지역 등급 분류
+# 지역 등급 분류
 SEOUL_TIERS: dict[str, str] = {
-    # 상급지
+    # 서울 상급지
     "강남구": "상급지", "서초구": "상급지", "송파구": "상급지", "용산구": "상급지",
-    # 중상급지
+    # 서울 중상급지
     "마포구": "중상급지", "성동구": "중상급지", "광진구": "중상급지",
     "동작구": "중상급지", "강동구": "중상급지", "영등포구": "중상급지",
     "양천구": "중상급지",
-    # 중하급지
+    # 서울 중하급지
     "노원구": "중하급지", "도봉구": "중하급지", "강북구": "중하급지",
     "성북구": "중하급지", "중랑구": "중하급지", "동대문구": "중하급지",
     "서대문구": "중하급지", "은평구": "중하급지",
-    # 하급지
+    # 서울 하급지
     "강서구": "하급지", "구로구": "하급지", "금천구": "하급지",
     "관악구": "하급지", "종로구": "하급지", "중구": "하급지",
+    # 경기 상급지
+    "과천시": "상급지(경기·과천)", "성남시분당구": "상급지(경기)",
 }
 
 
@@ -112,6 +114,7 @@ class AptTrade:
     build_year: int       # 건축년도
     gu: str               # 시군구
     jibun: str = ""       # 지번
+    deal_type: str = ""   # 거래유형 (중개거래/직거래)
 
 
 def get_api_key() -> str:
@@ -184,6 +187,7 @@ def _parse_trade_xml(xml_text: str, gu_code: str) -> list[AptTrade]:
                 build_year=int(item.findtext("buildYear") or item.findtext("건축년도") or "0"),
                 gu=gu_name,
                 jibun=(item.findtext("jibun") or item.findtext("지번") or "").strip(),
+                deal_type=(item.findtext("dealingGbn") or item.findtext("거래유형") or "").strip(),
             ))
         except (ValueError, TypeError):
             continue

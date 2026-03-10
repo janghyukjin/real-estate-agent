@@ -151,15 +151,96 @@ def _load_cache() -> dict[str, int]:
 APT_HOUSEHOLD_CACHE: dict[str, int] = _load_cache()
 
 
-def get_household_count(apt_name: str) -> int | None:
-    """아파트명으로 세대수 조회 (캐시 우선)"""
-    # 정확한 이름 매칭
+def _normalize(name: str) -> str:
+    """아파트명 정규화: 공백·특수문자·접미사 제거, 소문자"""
+    import re
+    s = re.sub(r'[\s\-·,.()（）/]', '', name).lower()
+    # 접미사 제거: "아파트", "단지" 등 (정규화 매칭 정확도 향상)
+    s = re.sub(r'아파트$', '', s)
+    s = re.sub(r'단지$', '', s)
+    return s
+
+
+# 정규화된 캐시 + dong별 인덱스 (초기화 시 1회 생성)
+_NORMALIZED_CACHE: dict[str, int] | None = None
+_DONG_INDEX: dict[str, list[tuple[str, str, int]]] | None = None  # dong -> [(key, norm_apt_part, count)]
+
+
+def _get_normalized_cache() -> dict[str, int]:
+    global _NORMALIZED_CACHE
+    if _NORMALIZED_CACHE is None:
+        _NORMALIZED_CACHE = {}
+        for key, val in APT_HOUSEHOLD_CACHE.items():
+            nk = _normalize(key)
+            if nk not in _NORMALIZED_CACHE:
+                _NORMALIZED_CACHE[nk] = val
+    return _NORMALIZED_CACHE
+
+
+def _get_dong_index() -> dict[str, list[tuple[str, int]]]:
+    """dong별로 캐시를 사전 인덱싱"""
+    global _DONG_INDEX
+    if _DONG_INDEX is None:
+        _DONG_INDEX = {}
+        for key, val in APT_HOUSEHOLD_CACHE.items():
+            # 키에서 동 이름 추출 (동으로 끝나는 부분)
+            import re
+            dong_match = re.match(r'^(.+?동\d*[가]?)\s*', key)
+            if dong_match:
+                dong = dong_match.group(1)
+                apt_part = key[len(dong):].strip()
+                norm_apt = _normalize(apt_part) if apt_part else _normalize(key)
+                _DONG_INDEX.setdefault(dong, []).append((norm_apt, val))
+    return _DONG_INDEX
+
+
+def get_household_count(apt_name: str, dong: str = "") -> int | None:
+    """아파트명으로 세대수 조회 (정규화 매칭)
+
+    매칭 우선순위:
+    1. dong+apt 정확 매칭 ("역삼동경남아너스빌")
+    2. dong+apt 정규화 매칭 (공백·특수문자 제거 후 비교)
+    3. apt 정확 매칭
+    4. apt 정규화 매칭
+    5. 매칭 실패 → None
+    """
+    norm_cache = _get_normalized_cache()
+
+    # 1) dong+apt 정확 매칭
+    if dong:
+        dong_apt = dong + apt_name
+        if dong_apt in APT_HOUSEHOLD_CACHE:
+            return APT_HOUSEHOLD_CACHE[dong_apt]
+        # 2) dong+apt 정규화 매칭
+        norm_dong_apt = _normalize(dong_apt)
+        if norm_dong_apt in norm_cache:
+            return norm_cache[norm_dong_apt]
+        # 3) dong 범위 내 부분매칭 (dong별 인덱스 사용, 빠름)
+        norm_apt = _normalize(apt_name)
+        dong_idx = _get_dong_index()
+        dong_entries = dong_idx.get(dong, [])
+        best_match = None
+        best_len = 0
+        for cached_norm_apt, val in dong_entries:
+            if not cached_norm_apt or not norm_apt:
+                continue
+            if norm_apt in cached_norm_apt or cached_norm_apt in norm_apt:
+                match_len = min(len(norm_apt), len(cached_norm_apt))
+                if match_len > best_len:
+                    best_match = val
+                    best_len = match_len
+        if best_match is not None:
+            return best_match
+
+    # 4) apt 정확 매칭
     if apt_name in APT_HOUSEHOLD_CACHE:
         return APT_HOUSEHOLD_CACHE[apt_name]
-    # 부분 매칭 (실거래 데이터 아파트명이 약간 다를 수 있음)
-    for cached_name, count in APT_HOUSEHOLD_CACHE.items():
-        if cached_name in apt_name or apt_name in cached_name:
-            return count
+
+    # 5) apt 정규화 매칭
+    norm_apt = _normalize(apt_name)
+    if norm_apt in norm_cache:
+        return norm_cache[norm_apt]
+
     return None
 
 
