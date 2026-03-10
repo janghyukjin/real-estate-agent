@@ -18,33 +18,6 @@ from src.calculator import (
 # ─────────────────────────────────────
 st.set_page_config(page_title="집피티 — 내집마련 AI 비서", page_icon="🏠", layout="wide", initial_sidebar_state="expanded")
 
-st.markdown("""
-<style>
-/* 모바일: 메트릭 카드 컴팩트화 */
-@media (max-width: 768px) {
-    /* 추천 카드 4컬럼 → 2x2 그리드 */
-    [data-testid="stHorizontalBlock"] {
-        flex-wrap: wrap !important;
-    }
-    [data-testid="stHorizontalBlock"] > [data-testid="stColumn"] {
-        flex: 0 0 48% !important;
-        min-width: 48% !important;
-        margin-bottom: 0.3rem;
-    }
-    /* 메트릭 카드 패딩 축소 */
-    [data-testid="stMetric"] {
-        padding: 0.3rem 0 !important;
-    }
-    [data-testid="stMetric"] label {
-        font-size: 0.75rem !important;
-    }
-    [data-testid="stMetric"] [data-testid="stMetricValue"] {
-        font-size: 1.1rem !important;
-    }
-}
-</style>
-""", unsafe_allow_html=True)
-
 st.title("🏠 집피티")
 st.caption("내 월급으로 서울 어디 살 수 있을까?")
 st.info("👈 **왼쪽 사이드바**에서 종잣돈·연봉을 입력하면 맞춤 추천이 시작됩니다! (모바일: 좌측 상단 **>** 버튼)")
@@ -382,54 +355,58 @@ with tab1:
                     loc = f"{r['gu']} {dong}" if dong else r['gu']
                     st.caption(f"{tier_emoji} {loc} {r['tier']} · **전용 {area_type} ({pyeong}평)** · {r.get('hhld', 0):,}세대 · 거래 {r['count']}건")
 
-                    # 메트릭 3컬럼 (모바일에서 CSS로 2x2 wrap)
-                    c2, c3, c4 = st.columns(3)
-                    with c2:
-                        latest = r.get("latest_price", r["avg_price"])
-                        latest_ym = r.get("latest_ym", "")
-                        st.metric("최근 거래가", f"{latest/10000:.1f}억")
-                        if latest_ym:
-                            st.caption(f"({latest_ym})")
-                        st.metric("최근 평균가", f"{r['avg_price']/10000:.1f}억")
-                        st.metric("전세가율", f"{r['ratio']}%")
-                    with c3:
-                        gap = r["gap"]
-                        st.metric("갭 (매매-전세)", f"{gap/10000:.1f}억")
-                        if gap_invest_mode:
-                            remain = gap_budget - gap
-                            st.caption(f"전세 {r['avg_rent']/10000:.1f}억 + 내돈 {gap/10000:.1f}억")
-                            if remain >= 0:
-                                st.caption(f"✅ 잔여 {remain/10000:.1f}억")
-                        else:
-                            if seed_money > 0 and gap <= seed_money:
-                                st.caption("✅ 종잣돈으로 갭투자 가능")
-                            elif seed_money > 0:
-                                st.caption(f"갭투자 시 {(gap - seed_money)/10000:.1f}억 부족")
-                            st.metric("월 상환", f"{r['monthly_pay']:,}만원")
-                        # 10.15 토허제 전후 비교
-                        pa = r.get("policy_avg", 0)
-                        if pa > 0:
-                            latest = r.get("latest_price", r["avg_price"])
-                            diff_policy = latest - pa
-                            pct = round(diff_policy / pa * 100, 1)
-                            st.metric("10.15 변동", f"{pct:+.1f}%")
-                            st.caption(f"토허제 전 {pa/10000:.1f}→현재 {latest/10000:.1f}억")
-                    with c4:
-                        if r.get("is_at_peak"):
-                            st.metric("📈 최고점!", f"{r.get('recent_high', r['avg_price'])/10000:.1f}억")
-                            st.caption(f"이전 고점 {r['peak']/10000:.1f}억 ({r['peak_ym']}) 돌파")
-                        else:
-                            peak_gap = r["avg_price"] - r["peak"]
-                            st.metric("전고점 대비", f"{r['diff_peak']:+.1f}%")
-                            st.caption(f"고점 {r['peak']/10000:.1f}억 ({r['peak_ym']})\n\n**{abs(peak_gap)/10000:.1f}억 하락**")
+                    # 핵심 지표 — HTML 그리드 (모바일 반응형)
+                    latest = r.get("latest_price", r["avg_price"])
+                    latest_ym = r.get("latest_ym", "")
+                    gap = r["gap"]
 
-                        # 회복률 (22년 고점 대비)
-                        rr = r.get("recovery_rate", 0)
-                        if rr > 0:
-                            if rr >= 100:
-                                st.metric("22년 고점 대비", f"{rr:.0f}%", delta="고점 돌파")
-                            else:
-                                st.metric("22년 고점 대비", f"{rr:.0f}%", delta=f"{100-rr:.0f}% 미회복", delta_color="inverse")
+                    # 행1: 가격 정보
+                    cells = []
+                    ym_sub = f'<span style="font-size:0.7rem;color:#888">({latest_ym})</span>' if latest_ym else ""
+                    cells.append(("최근 거래가", f"{latest/10000:.1f}억 {ym_sub}"))
+                    cells.append(("평균 매매가", f"{r['avg_price']/10000:.1f}억"))
+                    cells.append(("전세가율", f"{r['ratio']}%"))
+                    cells.append(("갭(매매-전세)", f"{gap/10000:.1f}억"))
+
+                    # 월 상환 / 갭투자
+                    if gap_invest_mode:
+                        remain = gap_budget - gap
+                        extra = f"✅ 잔여 {remain/10000:.1f}억" if remain >= 0 else ""
+                        cells.append(("갭투자", f"내돈 {gap/10000:.1f}억 {extra}"))
+                    else:
+                        if r['monthly_pay'] > 0:
+                            cells.append(("월 상환", f"{r['monthly_pay']:,}만원"))
+                        if seed_money > 0 and gap <= seed_money:
+                            cells.append(("갭투자", "✅ 종잣돈으로 가능"))
+
+                    # 10.15 토허제
+                    pa = r.get("policy_avg", 0)
+                    if pa > 0:
+                        diff_policy = latest - pa
+                        pct = round(diff_policy / pa * 100, 1)
+                        cells.append(("10.15 변동", f"{pct:+.1f}% <span style='font-size:0.7rem;color:#888'>{pa/10000:.1f}→{latest/10000:.1f}억</span>"))
+
+                    # 고점 대비
+                    if r.get("is_at_peak"):
+                        cells.append(("📈 최고점!", f"{r.get('recent_high', r['avg_price'])/10000:.1f}억"))
+                    else:
+                        peak_gap = r["avg_price"] - r["peak"]
+                        cells.append(("전고점 대비", f"{r['diff_peak']:+.1f}% <span style='font-size:0.7rem;color:#888'>({r['peak']/10000:.1f}억 {r['peak_ym']})</span>"))
+
+                    # 회복률
+                    rr = r.get("recovery_rate", 0)
+                    if rr > 0:
+                        if rr >= 100:
+                            cells.append(("22년 고점", f"<span style='color:#2ecc71'>{rr:.0f}% 돌파</span>"))
+                        else:
+                            cells.append(("22년 고점", f"<span style='color:#e74c3c'>{rr:.0f}% ({100-rr:.0f}% 미회복)</span>"))
+
+                    # HTML 그리드 렌더링
+                    grid_html = '<div style="display:grid;grid-template-columns:repeat(2,1fr);gap:4px 12px;margin:0.5rem 0 1rem;">'
+                    for label, val in cells:
+                        grid_html += f'<div style="padding:6px 0;border-bottom:1px solid rgba(128,128,128,0.15)"><span style="font-size:0.75rem;color:#888;display:block">{label}</span><span style="font-size:1rem;font-weight:600">{val}</span></div>'
+                    grid_html += '</div>'
+                    st.markdown(grid_html, unsafe_allow_html=True)
 
                     # 매수 근거
                     reasons = []
