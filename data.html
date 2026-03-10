@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>집피티 — 사용 데이터 & 전처리</title>
+    <style>
+        :root {
+            --primary: #FF6B6B;
+            --primary-dark: #E85555;
+            --bg: #0F1117;
+            --bg-card: #1A1D26;
+            --text: #FAFAFA;
+            --text-muted: #9CA3AF;
+            --accent-green: #51CF66;
+            --accent-yellow: #FFD43B;
+            --border: #2D3039;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, 'Pretendard', 'Noto Sans KR', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.7;
+        }
+        .container { max-width: 960px; margin: 0 auto; padding: 0 24px; }
+
+        /* Nav */
+        nav {
+            background: var(--bg-card);
+            border-bottom: 1px solid var(--border);
+            padding: 14px 0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        nav .container {
+            display: flex;
+            align-items: center;
+            gap: 24px;
+        }
+        nav .logo {
+            font-size: 18px;
+            font-weight: 800;
+            color: var(--primary);
+            text-decoration: none;
+        }
+        nav a {
+            color: var(--text-muted);
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 500;
+            transition: color 0.2s;
+        }
+        nav a:hover, nav a.active { color: var(--text); }
+        nav .spacer { flex: 1; }
+        nav .cta-sm {
+            background: var(--primary);
+            color: #fff;
+            padding: 6px 16px;
+            border-radius: 6px;
+            font-weight: 600;
+            font-size: 13px;
+        }
+        nav .cta-sm:hover { background: var(--primary-dark); color: #fff; }
+
+        /* Section */
+        section { padding: 64px 0; }
+        section h2 {
+            font-size: 28px;
+            font-weight: 800;
+            margin-bottom: 12px;
+            letter-spacing: -0.5px;
+        }
+        section .subtitle {
+            color: var(--text-muted);
+            font-size: 16px;
+            margin-bottom: 40px;
+        }
+
+        /* Page header */
+        .page-header {
+            padding: 48px 0 32px;
+            border-bottom: 1px solid var(--border);
+        }
+        .page-header h1 {
+            font-size: 36px;
+            font-weight: 800;
+            letter-spacing: -1px;
+        }
+        .page-header p {
+            color: var(--text-muted);
+            font-size: 16px;
+            margin-top: 8px;
+        }
+
+        /* Data cards */
+        .data-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 16px;
+        }
+        .data-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 24px;
+            transition: border-color 0.2s;
+        }
+        .data-card:hover { border-color: var(--primary); }
+        .data-card .icon { font-size: 28px; margin-bottom: 12px; }
+        .data-card h3 { font-size: 17px; font-weight: 700; margin-bottom: 8px; }
+        .data-card p { font-size: 14px; color: var(--text-muted); line-height: 1.6; }
+        .data-card .tag {
+            display: inline-block;
+            background: rgba(255, 107, 107, 0.1);
+            color: var(--primary);
+            padding: 2px 10px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 600;
+            margin-top: 10px;
+        }
+
+        /* Features */
+        .features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 24px;
+        }
+        .feature {
+            display: flex;
+            gap: 16px;
+            align-items: flex-start;
+        }
+        .feature .icon-circle {
+            width: 44px;
+            height: 44px;
+            min-width: 44px;
+            background: var(--bg-card);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+        }
+        .feature h3 { font-size: 15px; font-weight: 700; margin-bottom: 4px; }
+        .feature p { font-size: 13px; color: var(--text-muted); }
+
+        /* Pipeline */
+        .pipeline {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin: 32px 0;
+            padding: 24px;
+            background: var(--bg-card);
+            border-radius: 12px;
+            border: 1px solid var(--border);
+        }
+        .pipeline-step {
+            background: rgba(255, 107, 107, 0.1);
+            color: var(--primary);
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+        .pipeline-arrow { color: var(--text-muted); font-size: 18px; }
+
+        /* Footer */
+        footer {
+            text-align: center;
+            padding: 40px 0;
+            border-top: 1px solid var(--border);
+            color: var(--text-muted);
+            font-size: 13px;
+        }
+
+        @media (max-width: 768px) {
+            .container { padding: 0 16px; }
+            .page-header { padding: 32px 0 24px; }
+            .page-header h1 { font-size: 28px; }
+            section h2 { font-size: 22px; }
+            .data-grid { grid-template-columns: 1fr; }
+            .features { grid-template-columns: 1fr; }
+            nav .container { gap: 16px; flex-wrap: wrap; }
+            .pipeline { flex-direction: column; align-items: flex-start; }
+            .pipeline-arrow { transform: rotate(90deg); }
+            * { word-break: keep-all; }
+        }
+    </style>
+</head>
+<body>
+
+<nav>
+    <div class="container">
+        <a href="index.html" class="logo">집피티</a>
+        <a href="data.html" class="active">데이터</a>
+        <a href="loan.html">대출계산</a>
+        <span class="spacer"></span>
+        <a href="https://my-zpt.streamlit.app" class="cta-sm">앱 시작하기</a>
+    </div>
+</nav>
+
+<div class="container">
+    <div class="page-header">
+        <h1>사용 데이터 & 전처리</h1>
+        <p>크롤링 제로. 모든 데이터는 정부 공공 API에서 합법적으로 수집합니다.</p>
+    </div>
+</div>
+
+<!-- 데이터 파이프라인 -->
+<section>
+    <div class="container">
+        <h2>데이터 파이프라인</h2>
+        <div class="pipeline">
+            <div class="pipeline-step">공공 API 수집</div>
+            <span class="pipeline-arrow">→</span>
+            <div class="pipeline-step">노이즈 제거</div>
+            <span class="pipeline-arrow">→</span>
+            <div class="pipeline-step">세대수 매칭</div>
+            <span class="pipeline-arrow">→</span>
+            <div class="pipeline-step">스코어링</div>
+            <span class="pipeline-arrow">→</span>
+            <div class="pipeline-step">맞춤 추천</div>
+        </div>
+    </div>
+</section>
+
+<!-- 데이터 소스 -->
+<section style="background: var(--bg-card);">
+    <div class="container">
+        <h2>데이터 소스</h2>
+        <p class="subtitle">6종의 데이터를 조합하여 신뢰성 높은 분석 결과를 만듭니다.</p>
+        <div class="data-grid">
+            <div class="data-card" style="background: var(--bg);">
+                <div class="icon">🏢</div>
+                <h3>국토교통부 실거래가 API</h3>
+                <p>아파트 매매 실거래가 데이터. 2020년~현재까지 서울 + 경기(과천/분당) 전 지역. 거래일, 가격, 면적, 층, 직거래 여부 포함.</p>
+                <span class="tag">data.go.kr</span>
+            </div>
+            <div class="data-card" style="background: var(--bg);">
+                <div class="icon">🏠</div>
+                <h3>국토교통부 전월세 실거래 API</h3>
+                <p>아파트 전월세 실거래 데이터. 전세가율 계산의 핵심. 보증금, 월세, 면적 등 포함.</p>
+                <span class="tag">data.go.kr</span>
+            </div>
+            <div class="data-card" style="background: var(--bg);">
+                <div class="icon">📋</div>
+                <h3>건축물대장 총괄표제부 API</h3>
+                <p>아파트 세대수, 동수, 사용승인일 등 건물 기본 정보. 대단지(300세대+) 필터링에 사용.</p>
+                <span class="tag">data.go.kr</span>
+            </div>
+            <div class="data-card" style="background: var(--bg);">
+                <div class="icon">🗺️</div>
+                <h3>행정표준코드관리시스템</h3>
+                <p>법정동코드 매핑 (871개 동). 시군구코드 + 법정동코드 조합으로 건축물대장 API 조회에 사용.</p>
+                <span class="tag">code.go.kr</span>
+            </div>
+            <div class="data-card" style="background: var(--bg);">
+                <div class="icon">🔍</div>
+                <h3>세대수 교차검증</h3>
+                <p>건축물대장 API 미매칭 아파트 80여개는 호갱노노/KB부동산/나무위키로 수동 검증 후 캐시에 반영.</p>
+                <span class="tag">수동 검증</span>
+            </div>
+            <div class="data-card" style="background: var(--bg);">
+                <div class="icon">⚖️</div>
+                <h3>10.15 부동산 대책</h3>
+                <p>2024년 10월 15일 시행된 토지거래허가제(서울 전역) + 스트레스 DSR 3단계 반영. 토허제 전후 가격 비교 제공.</p>
+                <span class="tag">정책 반영</span>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- 전처리 -->
+<section>
+    <div class="container">
+        <h2>데이터 전처리</h2>
+        <p class="subtitle">노이즈를 제거하고 신뢰할 수 있는 데이터만 분석합니다.</p>
+        <div class="features">
+            <div class="feature">
+                <div class="icon-circle">🚫</div>
+                <div>
+                    <h3>직거래 제외</h3>
+                    <p>가족 간 거래, 법인 거래 등 시세를 왜곡하는 직거래 12,156건 제외</p>
+                </div>
+            </div>
+            <div class="feature">
+                <div class="icon-circle">1️⃣</div>
+                <div>
+                    <h3>1층 제외</h3>
+                    <p>평균가를 끌어내리는 1층 거래 17,323건 제외. 로열층 기준 시세 산출</p>
+                </div>
+            </div>
+            <div class="feature">
+                <div class="icon-circle">📐</div>
+                <div>
+                    <h3>25~34평 (59~112㎡)</h3>
+                    <p>실거주 수요가 가장 높은 국민평형대만 필터. 평형별 분리 분석 (예: 84㎡ / 59㎡)</p>
+                </div>
+            </div>
+            <div class="feature">
+                <div class="icon-circle">🏘️</div>
+                <div>
+                    <h3>300세대 이상</h3>
+                    <p>소규모 단지 제외. 관리비, 인프라, 유동성이 확보된 대단지만 분석 대상</p>
+                </div>
+            </div>
+            <div class="feature">
+                <div class="icon-circle">🔗</div>
+                <div>
+                    <h3>동(洞) 단위 분리</h3>
+                    <p>같은 이름의 아파트도 동이 다르면 별도 분석. 코오롱 당산동 ≠ 코오롱 대림동</p>
+                </div>
+            </div>
+            <div class="feature">
+                <div class="icon-circle">📊</div>
+                <div>
+                    <h3>최근 3개월 기준</h3>
+                    <p>현재 시세는 최근 3개월 거래 기준. 거래가 없는 아파트는 자동 제외</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- 수치 요약 -->
+<section style="background: var(--bg-card);">
+    <div class="container">
+        <h2>처리 결과 요약</h2>
+        <div class="data-grid" style="grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));">
+            <div class="data-card" style="background: var(--bg); text-align: center;">
+                <div style="font-size: 32px; font-weight: 800; color: var(--primary);">35만+</div>
+                <p>매매 거래 수집</p>
+            </div>
+            <div class="data-card" style="background: var(--bg); text-align: center;">
+                <div style="font-size: 32px; font-weight: 800; color: var(--primary);">98만+</div>
+                <p>전월세 거래 수집</p>
+            </div>
+            <div class="data-card" style="background: var(--bg); text-align: center;">
+                <div style="font-size: 32px; font-weight: 800; color: var(--primary);">7,330</div>
+                <p>세대수 캐시</p>
+            </div>
+            <div class="data-card" style="background: var(--bg); text-align: center;">
+                <div style="font-size: 32px; font-weight: 800; color: var(--primary);">1,371</div>
+                <p>최종 분석 아파트</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<footer>
+    <div class="container">
+        <p>집피티 — 국토교통부 실거래가 API + 건축물대장 API 기반</p>
+        <p style="margin-top: 8px;"><a href="index.html" style="color: var(--primary); text-decoration: none;">← 메인으로 돌아가기</a></p>
+    </div>
+</footer>
+
+</body>
+</html>
