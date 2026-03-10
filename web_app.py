@@ -1,5 +1,5 @@
 """
-🏠 집피티 ZipTI — 내집마련 AI 비서 — 웹앱
+🏠 집피티 — 내집마련 AI 비서 — 웹앱
 저장된 분석 데이터 기반 조회 (collect_data.py로 하루 1회 수집)
 """
 import streamlit as st
@@ -16,8 +16,8 @@ from src.calculator import (
 # ─────────────────────────────────────
 # 페이지 설정
 # ─────────────────────────────────────
-st.set_page_config(page_title="집피티 ZipTI — 내집마련 AI 비서", page_icon="🏠", layout="wide")
-st.title("🏠 집피티 ZipTI")
+st.set_page_config(page_title="집피티 — 내집마련 AI 비서", page_icon="🏠", layout="wide")
+st.title("🏠 집피티")
 st.caption("내 월급으로 서울 어디 살 수 있을까?")
 
 # ─────────────────────────────────────
@@ -741,7 +741,7 @@ with tab4:
 
 ### 기존 플랫폼과의 차이
 
-| | 집피티 ZipTI | 기존 부동산 플랫폼 |
+| | 집피티 | 기존 부동산 플랫폼 |
 |---|---|---|
 | 접근 방식 | 내 조건 → 맞춤 추천 | 검색 → 매물 목록 → 직접 비교 |
 | 대출 한도 | DSR+LTV+스트레스금리 자동 계산 | 별도 계산기 필요 |
@@ -780,5 +780,5 @@ with tab4:
 # 푸터
 # ─────────────────────────────────────
 st.divider()
-st.caption("🏠 집피티 ZipTI | 국토교통부 실거래가 API + 건축물대장 API 기반")
+st.caption("🏠 집피티 | 국토교통부 실거래가 API + 건축물대장 API 기반")
 st.caption("※ 투자 판단은 본인 책임입니다. 참고용으로만 활용하세요.")
