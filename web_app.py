@@ -13,6 +13,48 @@ from src.calculator import (
 )
 
 # ─────────────────────────────────────
+# 데이터 로드 (CSS보다 먼저 — Python 3.14 tokenizer 호환)
+# ─────────────────────────────────────
+DATA_DIR = os.path.join(os.path.dirname(__file__), "data")
+
+
+@st.cache_data
+def load_data():
+    analysis, meta = [], {}
+    path = os.path.join(DATA_DIR, "analysis.json")
+    if os.path.exists(path):
+        with open(path) as f:
+            analysis = json.load(f)
+    meta_path = os.path.join(DATA_DIR, "meta.json")
+    if os.path.exists(meta_path):
+        with open(meta_path) as f:
+            meta = json.load(f)
+    return analysis, meta
+
+
+@st.cache_data
+def load_trade_index():
+    raw_path = os.path.join(DATA_DIR, "raw_trades.json")
+    if not os.path.exists(raw_path):
+        return {}
+    idx = {}
+    with open(raw_path) as f:
+        raw_trades = json.load(f)
+    for t in raw_trades:
+        area_type = f"{int(t['area'])}㎡"
+        key = (t["gu"], t["apt"], t.get("dong", ""), area_type)
+        idx.setdefault(key, []).append(t)
+    del raw_trades
+    for key in idx:
+        idx[key].sort(key=lambda x: (x["year"], x["month"]), reverse=True)
+    return idx
+
+
+all_data, meta = load_data()
+_seoul_gus = sorted(set(r["gu"] for r in all_data if "경기" not in r.get("tier", "")))
+_gyeonggi_gus = sorted(set(r["gu"] for r in all_data if "경기" in r.get("tier", "")))
+
+# ─────────────────────────────────────
 # 티어 표시명 매핑 (내부→UI)
 # ─────────────────────────────────────
 TIER_DISPLAY = {
@@ -127,49 +169,6 @@ st.markdown("""<style>
     /* word-break */
     * { word-break: keep-all; }
 </style>""", unsafe_allow_html=True)
-
-# ─────────────────────────────────────
-# 데이터 로드
-# ─────────────────────────────────────
-DATA_DIR = os.path.join(os.path.dirname(__file__), "data")
-
-
-@st.cache_data
-def load_data():
-    analysis, meta = [], {}
-    path = os.path.join(DATA_DIR, "analysis.json")
-    if os.path.exists(path):
-        with open(path) as f:
-            analysis = json.load(f)
-    meta_path = os.path.join(DATA_DIR, "meta.json")
-    if os.path.exists(meta_path):
-        with open(meta_path) as f:
-            meta = json.load(f)
-    return analysis, meta
-
-
-all_data, meta = load_data()
-_seoul_gus = sorted(set(r["gu"] for r in all_data if "경기" not in r.get("tier", "")))
-_gyeonggi_gus = sorted(set(r["gu"] for r in all_data if "경기" in r.get("tier", "")))
-
-
-@st.cache_data
-def load_trade_index():
-    raw_path = os.path.join(DATA_DIR, "raw_trades.json")
-    if not os.path.exists(raw_path):
-        return {}
-    idx = {}
-    with open(raw_path) as f:
-        raw_trades = json.load(f)
-    for t in raw_trades:
-        area_type = f"{int(t['area'])}㎡"
-        key = (t["gu"], t["apt"], t.get("dong", ""), area_type)
-        idx.setdefault(key, []).append(t)
-    del raw_trades
-    for key in idx:
-        idx[key].sort(key=lambda x: (x["year"], x["month"]), reverse=True)
-    return idx
-
 
 # ─────────────────────────────────────
 # 히어로
