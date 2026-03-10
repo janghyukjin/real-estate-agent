@@ -11,10 +11,20 @@ from src.api_client import REGION_CODES, SEOUL_TIERS, fetch_apt_trades, fetch_ap
 DATA_DIR = os.path.join(os.path.dirname(__file__), "data")
 
 # 추가할 지역 (SEOUL_TIERS에 등록된 경기 지역)
-EXTRA_CODES = {
-    "과천시": REGION_CODES["과천시"],
-    "성남시분당구": REGION_CODES["성남시분당구"],
-}
+GYEONGGI_NAMES = [
+    "과천시", "성남시분당구", "수원시영통구", "용인시수지구",         # 상급지
+    "고양시일산동구", "광명시", "하남시", "안양시동안구",             # 중상급지
+    "용인시기흥구", "구리시",
+    "고양시일산서구", "고양시덕양구", "수원시장안구", "수원시권선구",  # 중하급지
+    "수원시팔달구", "성남시수정구", "성남시중원구",
+    "부천시원미구", "부천시소사구", "부천시오정구",
+    "안양시만안구", "군포시", "의왕시", "남양주시", "의정부시",
+    "평택시", "오산시", "광주시", "용인시처인구",                    # 하급지
+    "시흥시", "김포시",
+]
+EXTRA_CODES = {name: REGION_CODES[name] for name in GYEONGGI_NAMES}
+# 화성시: API가 4개 코드로 분리 → gu명 "화성시"로 통일
+HWASEONG_CODES = ["41591", "41593", "41595", "41597"]
 
 
 async def collect_extra(months: int = 75):
@@ -60,8 +70,12 @@ async def collect_extra(months: int = 75):
     for gu_name, code in EXTRA_CODES.items():
         for ymd in ymds:
             tasks.append(fetch_one(gu_name, code, ymd))
+    # 화성시: 4개 API 코드, gu명 "화성시"로 통일
+    for hcode in HWASEONG_CODES:
+        for ymd in ymds:
+            tasks.append(fetch_one("화성시", hcode, ymd))
 
-    print(f"추가 수집: {len(EXTRA_CODES)}개 지역 × {months}개월 = {len(tasks)}건")
+    print(f"추가 수집: {len(EXTRA_CODES)}개 지역 + 화성시(4코드) × {months}개월 = {len(tasks)}건")
     results = await asyncio.gather(*tasks)
 
     for t_list, r_list in results:
@@ -77,7 +91,7 @@ async def collect_extra(months: int = 75):
         existing_rents = json.load(f)
 
     # 기존 데이터에서 추가 지역 제거 (중복 방지)
-    extra_gus = set(EXTRA_CODES.keys())
+    extra_gus = set(EXTRA_CODES.keys()) | {"화성시"}
     existing_trades = [t for t in existing_trades if t["gu"] not in extra_gus]
     existing_rents = [r for r in existing_rents if r["gu"] not in extra_gus]
 
