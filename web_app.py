@@ -152,16 +152,30 @@ with st.sidebar:
         "지역 등급",
         options=tier_options,
         default=["전체"],
-        help="상급지: 강남/서초/송파/용산 | 중상급지: 마포/성동/광진/동작/강동/영등포/양천 | 중하급지: 노원/도봉/강북/성북/중랑/동대문/서대문/은평 | 하급지: 강서/구로/금천/관악/종로/중구"
+        help="상급지: 강남/서초/송파/용산 | 상급지(경기): 과천/분당/영통/수지 | 중상급지: 마포/성동/광진/동작/강동/영등포/양천 | 중상급지(경기): 일산동/광명/하남/안양동안/기흥/구리 | 중하급지: 노원/도봉/강북/성북/중랑/동대문/서대문/은평 | 중하급지(경기): 고양/수원/성남/부천/군포/의왕/남양주/의정부/평택 | 하급지: 강서/구로/금천/관악/종로/중구 | 하급지(경기): 오산/광주/처인/시흥/김포/화성"
     )
 
-    # 구/동 필터
-    all_gus = sorted(set(r["gu"] for r in all_data))
-    selected_gus = st.multiselect("구 선택", options=["전체"] + all_gus, default=["전체"])
-    filter_all_gus = "전체" in selected_gus
+    # 지역/구/동 필터
+    seoul_gus = sorted(set(r["gu"] for r in all_data if "경기" not in r.get("tier", "")))
+    gyeonggi_gus = sorted(set(r["gu"] for r in all_data if "경기" in r.get("tier", "")))
+    region_choice = st.radio("지역", ["전체", "서울", "경기"], horizontal=True)
+    if region_choice == "서울":
+        available_gus = seoul_gus
+    elif region_choice == "경기":
+        available_gus = gyeonggi_gus
+    else:
+        available_gus = sorted(seoul_gus + gyeonggi_gus)
+    selected_gus = st.multiselect("구 선택", options=["전체"] + available_gus, default=["전체"])
+    # "전체" 선택이어도 지역 라디오에 따라 해당 지역 구만 포함
+    if "전체" in selected_gus:
+        effective_gus = set(available_gus)
+        filter_all_gus = (region_choice == "전체")  # 지역도 전체일 때만 진짜 전체
+    else:
+        effective_gus = set(selected_gus)
+        filter_all_gus = False
 
     all_dongs = sorted(set(r.get("dong", "") for r in all_data
-                           if r.get("dong") and (filter_all_gus or r["gu"] in selected_gus)))
+                           if r.get("dong") and (filter_all_gus or r["gu"] in effective_gus)))
     if all_dongs:
         selected_dongs = st.multiselect("동 선택", options=["전체"] + all_dongs, default=["전체"])
         filter_all_dongs = "전체" in selected_dongs
@@ -266,7 +280,7 @@ with tab1:
                 continue
             if not filter_all_tiers and r.get("tier", "") not in selected_tiers:
                 continue
-            if not filter_all_gus and r["gu"] not in selected_gus:
+            if not filter_all_gus and r["gu"] not in effective_gus:
                 continue
             if not filter_all_dongs and r.get("dong", "") not in selected_dongs:
                 continue
