@@ -18,40 +18,6 @@ from src.calculator import (
 # ─────────────────────────────────────
 st.set_page_config(page_title="집피티 — 내집마련 AI 비서", page_icon="🏠", layout="wide", initial_sidebar_state="expanded")
 
-# ─────────────────────────────────────
-# 다크/라이트 테마 토글 (CSS 주입)
-# ─────────────────────────────────────
-if "dark_mode" not in st.session_state:
-    st.session_state.dark_mode = False
-
-def _inject_theme():
-    if st.session_state.dark_mode:
-        css = """
-        <style>
-        [data-testid="stAppViewContainer"], [data-testid="stHeader"] {
-            background-color: #0F1117; color: #FAFAFA;
-        }
-        [data-testid="stSidebar"] { background-color: #1A1D26; }
-        .stMarkdown, .stCaption, p, span, label, h1, h2, h3, h4 { color: #FAFAFA !important; }
-        [data-testid="stMetricValue"], [data-testid="stMetricLabel"] { color: #FAFAFA !important; }
-        [data-testid="stSidebar"] button[kind="secondary"] {
-            background-color: #2D3039 !important;
-            color: #FAFAFA !important;
-            border: 1px solid #555 !important;
-        }
-        </style>"""
-    else:
-        css = """
-        <style>
-        [data-testid="stAppViewContainer"], [data-testid="stHeader"] {
-            background-color: #FFFFFF; color: #1A1A1A;
-        }
-        [data-testid="stSidebar"] { background-color: #F7F7F8; }
-        </style>"""
-    st.markdown(css, unsafe_allow_html=True)
-
-_inject_theme()
-
 st.title("🏠 집피티")
 st.caption("내 월급으로 서울 어디 살 수 있을까?")
 
@@ -103,14 +69,7 @@ trade_index = build_trade_index(raw_trades)
 # 사이드바: 유저 입력
 # ─────────────────────────────────────
 with st.sidebar:
-    theme_col1, theme_col2 = st.columns([3, 1])
-    with theme_col1:
-        st.header("📋 내 조건 입력")
-    with theme_col2:
-        theme_icon = "☀️" if st.session_state.dark_mode else "🌙"
-        if st.button(theme_icon, help="다크/라이트 모드 전환"):
-            st.session_state.dark_mode = not st.session_state.dark_mode
-            st.rerun()
+    st.header("📋 내 조건 입력")
 
     seed_money_억 = st.number_input(
         "종잣돈 (억원)", min_value=0.0, max_value=50.0, value=0.0, step=0.5,
