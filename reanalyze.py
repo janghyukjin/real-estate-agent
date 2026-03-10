@@ -98,7 +98,9 @@ def reanalyze():
         if avg_rent <= 0:
             continue
         ratio = calculate_jeonse_ratio(avg_price, avg_rent)
-        gap = avg_price - avg_rent
+        if ratio >= 100:
+            ratio = 99.9  # 역전세(전세>매매) cap 처리
+        gap = max(avg_price - avg_rent, 0)  # 역전세 시 갭 0으로
 
         # 전고점/전저점 (전체 기간)
         peak = max(all_prices)
@@ -176,6 +178,24 @@ def reanalyze():
             "diff_peak": diff_peak, "diff_trough": diff_trough,
             "price_history": price_history,
         })
+
+    # 동명이인 해소: 같은 (gu, apt, area_type)인데 dong이 다른 경우 이름에 동 표기
+    from collections import defaultdict
+    key_groups = defaultdict(list)
+    for i, a in enumerate(analysis):
+        key_groups[(a["gu"], a["apt"], a["area_type"])].append(i)
+    disambiguated = 0
+    for key, indices in key_groups.items():
+        if len(indices) > 1:
+            dongs = set(analysis[i]["dong"] for i in indices)
+            if len(dongs) > 1:  # 실제로 dong이 다를 때만
+                for i in indices:
+                    dong = analysis[i]["dong"]
+                    if dong:
+                        analysis[i]["apt"] = f"{analysis[i]['apt']}({dong})"
+                        disambiguated += 1
+    if disambiguated:
+        print(f"동명이인 해소: {disambiguated}개 아파트명에 동 표기 추가")
 
     with open(os.path.join(DATA_DIR, "analysis.json"), "w") as f:
         json.dump(analysis, f, ensure_ascii=False, indent=2)
