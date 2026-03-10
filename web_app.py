@@ -1,5 +1,5 @@
 """
-🏠 집피티 — 내집마련 AI 비서 — 웹앱 (토스 스타일 UX)
+🏠 집피티 — 내집마련 AI 비서 — 웹앱 (토스 스타일 + 스킬 기반)
 """
 import streamlit as st
 import json
@@ -11,6 +11,51 @@ sys.path.insert(0, os.path.dirname(__file__))
 from src.calculator import (
     BuyerType, LoanPolicy, UserFinance, calculate_affordability,
 )
+
+# ─────────────────────────────────────
+# 티어 표시명 매핑 (내부→UI)
+# ─────────────────────────────────────
+TIER_DISPLAY = {
+    "상급지": "1티어 (프리미엄)", "상급지(경기)": "1티어 경기",
+    "중상급지": "2티어 (핵심)", "중상급지(경기)": "2티어 경기",
+    "중하급지": "3티어 (주거안정)", "중하급지(경기)": "3티어 경기",
+    "하급지": "4티어 (가성비)", "하급지(경기)": "4티어 경기",
+}
+TIER_EMOJI = {
+    "상급지": "👑", "상급지(경기)": "👑",
+    "중상급지": "🏙️", "중상급지(경기)": "🏙️",
+    "중하급지": "🏘️", "중하급지(경기)": "🏘️",
+    "하급지": "🏠", "하급지(경기)": "🏠",
+}
+# UI 표시명 → 내부명 역매핑
+TIER_REVERSE = {v: k for k, v in TIER_DISPLAY.items()}
+
+# ─────────────────────────────────────
+# 프리셋 스킬 정의
+# ─────────────────────────────────────
+PRESETS = {
+    "🔍 저평가 발굴": {
+        "desc": "22년 고점 대비 미회복 + 500세대+ 대단지",
+        "max_recovery": 90, "min_hhld": 500,
+    },
+    "💰 소액갭": {
+        "desc": "전세가율 높은 순 → 적은 돈으로 내 집 마련",
+        "sort_by": "gap_asc", "min_ratio": 60,
+    },
+    "🏫 학군 프리미엄": {
+        "desc": "강남/서초/양천/송파 1000세대+ 대단지",
+        "force_gus": {"강남구", "서초구", "양천구", "송파구"}, "min_hhld": 1000,
+    },
+    "📈 안정투자": {
+        "desc": "1~2티어 + 회복률 80%↑ = 안정적 가치",
+        "force_tiers": {"상급지", "상급지(경기)", "중상급지", "중상급지(경기)"},
+        "min_recovery_override": 80,
+    },
+    "⚡ 급매 포착": {
+        "desc": "최근 거래가가 평균보다 낮은 급매물",
+        "sort_by": "drop_desc",
+    },
+}
 
 # ─────────────────────────────────────
 # 페이지 설정
@@ -26,15 +71,19 @@ st.set_page_config(
 st.markdown("""<style>
     /* 전체 */
     .block-container { max-width: 640px !important; padding: 1rem 1rem 4rem !important; }
+    .block-container { padding-top: 1.5rem !important; }
     [data-testid="stSidebar"] { display: none; }
     h1 { font-size: 1.8rem !important; font-weight: 800 !important; letter-spacing: -1px; user-select: none; -webkit-user-select: none; }
-    /* 상단 여백 확보 */
-    .block-container { padding-top: 1.5rem !important; }
     h3 { font-size: 1.1rem !important; font-weight: 700 !important; margin-bottom: 0 !important; }
     /* 입력 필드 */
     .stNumberInput > div > div > input { font-size: 1.2rem !important; font-weight: 700 !important; }
     .stRadio > div { gap: 0.5rem; }
     .stRadio label { font-weight: 600 !important; }
+    /* 프리셋 버튼 */
+    .stButton > button {
+        border-radius: 12px !important; font-weight: 600 !important;
+        padding: 8px 12px !important; font-size: 0.85rem !important;
+    }
     /* 카드 */
     .summary-card {
         background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
@@ -150,6 +199,43 @@ seed_money = int(seed_money_억 * 10000)
 region_choice = st.radio("📍 어디에서 찾을까요?", ["전체", "서울", "경기"], horizontal=True)
 
 # ─────────────────────────────────────
+# 전략 선택 (프리셋 스킬)
+# ─────────────────────────────────────
+st.markdown('<div class="divider"></div>', unsafe_allow_html=True)
+st.markdown("### 🎯 전략 선택")
+st.caption("원클릭으로 필터가 자동 설정돼요")
+
+if "selected_preset" not in st.session_state:
+    st.session_state.selected_preset = None
+
+preset_keys = list(PRESETS.keys())
+p_cols = st.columns(3)
+for idx, key in enumerate(preset_keys):
+    with p_cols[idx % 3]:
+        if st.button(key, key=f"preset_{idx}", use_container_width=True):
+            if st.session_state.selected_preset == key:
+                st.session_state.selected_preset = None  # 토글 해제
+            else:
+                st.session_state.selected_preset = key
+
+# 남은 2개 버튼 (2행)
+remaining = len(preset_keys) - 3
+if remaining > 0:
+    p_cols2 = st.columns(3)
+    for idx, key in enumerate(preset_keys[3:]):
+        with p_cols2[idx]:
+            if st.button(key, key=f"preset_{idx+3}", use_container_width=True):
+                if st.session_state.selected_preset == key:
+                    st.session_state.selected_preset = None
+                else:
+                    st.session_state.selected_preset = key
+
+active_preset = st.session_state.get("selected_preset")
+if active_preset and active_preset in PRESETS:
+    p_info = PRESETS[active_preset]
+    st.success(f"🎯 **{active_preset}** — {p_info['desc']}")
+
+# ─────────────────────────────────────
 # 상세 설정 (접기)
 # ─────────────────────────────────────
 with st.expander("⚙️ 상세 설정", expanded=False):
@@ -181,8 +267,13 @@ with st.expander("⚙️ 상세 설정", expanded=False):
     st.markdown("---")
     st.markdown("**필터**")
 
-    tier_options = ["전체", "상급지", "상급지(경기)", "중상급지", "중상급지(경기)", "중하급지", "중하급지(경기)", "하급지", "하급지(경기)"]
-    selected_tiers = st.multiselect("지역 등급", options=tier_options, default=["전체"])
+    tier_display_options = ["전체"] + [TIER_DISPLAY[t] for t in ["상급지", "상급지(경기)", "중상급지", "중상급지(경기)", "중하급지", "중하급지(경기)", "하급지", "하급지(경기)"]]
+    selected_tier_displays = st.multiselect("지역 등급", options=tier_display_options, default=["전체"])
+    # UI 표시명 → 내부명 변환
+    if "전체" in selected_tier_displays:
+        selected_tiers = ["전체"]
+    else:
+        selected_tiers = [TIER_REVERSE.get(d, d) for d in selected_tier_displays]
 
     if region_choice == "서울":
         available_gus = _seoul_gus
@@ -220,7 +311,7 @@ with st.expander("⚙️ 상세 설정", expanded=False):
 
     top_n = st.number_input("상위 표시 개수", min_value=5, max_value=50, value=10, step=5)
 
-# 상세 설정 밖에서 기본값 세팅
+# 상세 설정 밖 기본값
 if "bonus" not in dir():
     bonus = 0
 if "monthly_expense" not in dir():
@@ -251,6 +342,24 @@ if "min_hhld" not in dir():
     min_hhld = 300
 if "top_n" not in dir():
     top_n = 10
+
+# ─────────────────────────────────────
+# 프리셋 오버라이드 적용
+# ─────────────────────────────────────
+active_preset = st.session_state.get("selected_preset")
+if active_preset and active_preset in PRESETS:
+    p = PRESETS[active_preset]
+    if "max_recovery" in p:
+        max_recovery = p["max_recovery"]
+    if "min_hhld" in p:
+        min_hhld = p["min_hhld"]
+    if "force_gus" in p:
+        effective_gus = p["force_gus"]
+        filter_all_gus = False
+    if "force_tiers" in p:
+        selected_tiers = list(p["force_tiers"])
+    if "min_recovery_override" in p:
+        min_recovery = p["min_recovery_override"]
 
 # ─────────────────────────────────────
 # 자동 계산
@@ -284,10 +393,9 @@ pay_ratio = monthly_pay / monthly_income * 100 if monthly_income > 0 else 0
 if seed_money > 0 or annual_income > 0:
     if gap_invest_mode:
         budget_label = "갭투자 가능"
-        budget_display = f"{budget / 10000:.1f}억"
     else:
         budget_label = "매수 가능 집값"
-        budget_display = f"{budget / 10000:.1f}억"
+    budget_display = f"{budget / 10000:.1f}억"
 
     card_html = f"""
     <div class="summary-card">
@@ -358,6 +466,11 @@ with tab1:
                 if policy_pct > max_policy_change:
                     continue
 
+            # 소액갭 프리셋: 전세가율 필터
+            preset_cfg = PRESETS.get(active_preset, {}) if active_preset else {}
+            if preset_cfg.get("min_ratio") and r["ratio"] < preset_cfg["min_ratio"]:
+                continue
+
             if gap_invest_mode:
                 apt_gap = r["gap"]
                 if apt_gap > gap_max or apt_gap < gap_min:
@@ -413,16 +526,29 @@ with tab1:
             else:
                 mp = 0
 
-            candidates.append({**r, "score": score, "loan_needed": loan_needed, "monthly_pay": mp})
+            # 급매 포착용: 최근가 vs 평균 낙폭
+            latest_pr = r.get("latest_price", r["avg_price"])
+            drop_pct = (latest_pr - r["avg_price"]) / r["avg_price"] * 100 if r["avg_price"] > 0 else 0
 
-        candidates.sort(key=lambda x: -x["score"])
+            candidates.append({**r, "score": score, "loan_needed": loan_needed, "monthly_pay": mp, "drop_pct": drop_pct})
+
+        # 프리셋별 정렬
+        sort_mode = preset_cfg.get("sort_by") if active_preset else None
+        if sort_mode == "gap_asc":
+            candidates.sort(key=lambda x: x["gap"])
+        elif sort_mode == "drop_desc":
+            candidates.sort(key=lambda x: x["drop_pct"])
+        else:
+            candidates.sort(key=lambda x: -x["score"])
+
         top_list = candidates[:top_n]
 
         if top_list:
             st.caption(f"{len(candidates)}개 후보 중 TOP {len(top_list)}")
 
             for i, r in enumerate(top_list, 1):
-                tier_emoji = {"상급지": "👑", "상급지(경기)": "👑", "중상급지": "🏙️", "중상급지(경기)": "🏙️", "중하급지": "🏘️", "중하급지(경기)": "🏘️", "하급지": "🏠", "하급지(경기)": "🏠"}.get(r["tier"], "")
+                tier_display = TIER_DISPLAY.get(r["tier"], r["tier"])
+                tier_emoji = TIER_EMOJI.get(r["tier"], "")
                 area_type = r.get("area_type", "")
                 area_num = int(area_type.replace("㎡", "")) if "㎡" in area_type else 0
                 pyeong = round(area_num * 0.3025) if area_num else ""
@@ -446,7 +572,7 @@ with tab1:
                 if r["ratio"] >= 65:
                     tags += '<span class="tag tag-green">소액갭</span>'
                 if r["tier"] in ("상급지", "상급지(경기)"):
-                    tags += '<span class="tag tag-gray">상급지</span>'
+                    tags += '<span class="tag tag-gray">프리미엄</span>'
 
                 # 10.15 변동
                 pa = r.get("policy_avg", 0)
@@ -470,7 +596,7 @@ with tab1:
                         <span class="apt-rank">{i}</span>
                         <span class="apt-name">{r['apt']}</span>
                     </div>
-                    <div class="apt-meta">{tier_emoji} {loc} · {r['tier']} · {area_type}({pyeong}평) · {r.get('hhld',0):,}세대</div>
+                    <div class="apt-meta">{tier_emoji} {loc} · {tier_display} · {area_type}({pyeong}평) · {r.get('hhld',0):,}세대</div>
                     <div style="margin-top:8px">{tags}</div>
                     <div class="metric-grid">
                         <div class="metric-item"><span class="metric-label">최근 거래가</span><span class="metric-value">{latest/10000:.1f}억 <span style="font-size:0.7rem;color:#888">{latest_ym}</span></span></div>
@@ -484,7 +610,7 @@ with tab1:
                 """
                 st.markdown(card_html, unsafe_allow_html=True)
 
-                # 시기별 비교 + 그래프 (접기)
+                # 상세 분석 (접기)
                 pcp = r.get("pre_crash_peak", 0)
                 ct = r.get("crash_trough", 0)
                 history = r.get("price_history", {})
@@ -557,7 +683,7 @@ with tab1:
                             st.dataframe(pd.DataFrame(rows), hide_index=True, use_container_width=True)
         else:
             if gap_invest_mode:
-                st.info(f"갭 범위에 맞는 아파트가 없어요. 상세 설정에서 조건을 조정해보세요.")
+                st.info("갭 범위에 맞는 아파트가 없어요. 상세 설정에서 조건을 조정해보세요.")
             elif seed_money > 0 or annual_income > 0:
                 st.info(f"예산 범위({budget_min/10000:.1f}~{budget_max/10000:.1f}억)에 맞는 아파트가 없어요. 조건을 조정해보세요.")
 
@@ -572,8 +698,7 @@ with tab2:
     if annual_income == 0:
         st.info("연봉을 입력하면 연도별 로드맵을 볼 수 있어요.")
     else:
-        st.caption(f"연간 저축 {annual_saving/10000:.1f}억 기준 (월급저축 {(monthly_income-monthly_expense)*12:,}만 + 인센 {bonus:,}만)")
-
+        st.caption(f"연간 저축 {annual_saving/10000:.1f}억 기준")
         roadmap_data = []
         for yr in range(7):
             year = 2026 + yr
@@ -586,14 +711,14 @@ with tab2:
                 loan_used = loan_amount
                 total_adj = total
             tiers = []
-            if total_adj >= 150000: tiers.append("상급지")
-            if total_adj >= 100000: tiers.append("중상급지")
-            if total_adj >= 80000: tiers.append("중하급지")
-            if total_adj >= 60000: tiers.append("하급지")
+            if total_adj >= 150000: tiers.append("1티어")
+            if total_adj >= 100000: tiers.append("2티어")
+            if total_adj >= 80000: tiers.append("3티어")
+            if total_adj >= 60000: tiers.append("4티어")
             roadmap_data.append({
                 "연도": f"{year}년", "종잣돈": f"{s/10000:.0f}억",
                 "대출": f"{loan_used/10000:.0f}억", "매수가능": f"{total_adj/10000:.1f}억",
-                "가능지역": tiers[0] if tiers else "경기",
+                "가능지역": tiers[0] if tiers else "경기 4티어",
             })
         st.table(roadmap_data)
         st.caption("⚠️ 15억 초과 시 대출 한도 축소")
@@ -684,8 +809,6 @@ with tab4:
 > 대출 한도는 은행/신용등급/상품에 따라 달라지므로 반드시 은행 상담을 병행하세요.
 """)
 
-# ─────────────────────────────────────
 # 푸터
-# ─────────────────────────────────────
 st.markdown('<div class="divider"></div>', unsafe_allow_html=True)
 st.caption("🏠 집피티 | 국토교통부 실거래가 API 기반 | 투자 판단은 본인 책임")
