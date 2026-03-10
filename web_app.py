@@ -211,19 +211,20 @@ if loan_amount > 0 and mr > 0:
 else:
     monthly_pay = 0
 
-col1, col2, col3, col4 = st.columns(4)
-with col1:
-    if gap_invest_mode:
-        st.metric("💰 갭투자 내돈", f"{(seed_money + loan_amount) / 10000:.1f}억원")
-    else:
-        st.metric("💰 매수 가능 집값", f"{budget / 10000:.1f}억원")
-with col2:
-    st.metric("🏦 대출", f"{loan_amount / 10000:.1f}억원")
-with col3:
-    st.metric("📅 월 상환액", f"{monthly_pay:,.0f}만원")
-with col4:
-    pay_ratio = monthly_pay / monthly_income * 100 if monthly_income > 0 else 0
-    st.metric("📊 월급 대비", f"{pay_ratio:.1f}%")
+pay_ratio = monthly_pay / monthly_income * 100 if monthly_income > 0 else 0
+budget_label = "💰 갭투자 내돈" if gap_invest_mode else "💰 매수 가능 집값"
+budget_val = f"{(seed_money + loan_amount) / 10000:.1f}억원" if gap_invest_mode else f"{budget / 10000:.1f}억원"
+fin_cells = [
+    (budget_label, budget_val),
+    ("🏦 대출", f"{loan_amount / 10000:.1f}억원"),
+    ("📅 월 상환액", f"{monthly_pay:,.0f}만원"),
+    ("📊 월급 대비", f"{pay_ratio:.1f}%"),
+]
+fin_html = '<div style="display:grid;grid-template-columns:repeat(2,1fr);gap:4px 12px;margin:0.5rem 0 1rem;">'
+for fl, fv in fin_cells:
+    fin_html += f'<div style="padding:8px 0;border-bottom:1px solid rgba(128,128,128,0.15)"><span style="font-size:0.75rem;color:#888;display:block">{fl}</span><span style="font-size:1.2rem;font-weight:700">{fv}</span></div>'
+fin_html += '</div>'
+st.markdown(fin_html, unsafe_allow_html=True)
 
 for w in sys_result.warnings:
     st.warning(w)
