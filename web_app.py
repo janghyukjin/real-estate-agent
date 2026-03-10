@@ -27,7 +27,9 @@ st.markdown("""<style>
     /* 전체 */
     .block-container { max-width: 640px !important; padding: 1rem 1rem 4rem !important; }
     [data-testid="stSidebar"] { display: none; }
-    h1 { font-size: 1.8rem !important; font-weight: 800 !important; letter-spacing: -1px; }
+    h1 { font-size: 1.8rem !important; font-weight: 800 !important; letter-spacing: -1px; user-select: none; -webkit-user-select: none; }
+    /* 상단 여백 확보 */
+    .block-container { padding-top: 1.5rem !important; }
     h3 { font-size: 1.1rem !important; font-weight: 700 !important; margin-bottom: 0 !important; }
     /* 입력 필드 */
     .stNumberInput > div > div > input { font-size: 1.2rem !important; font-weight: 700 !important; }
