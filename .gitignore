@@ -5,5 +5,4 @@ __pycache__/
 dist/
 *.egg-info/
 .streamlit/secrets.toml
-data/raw_trades.json
 data/raw_rents.json
