@@ -313,15 +313,14 @@ if seed_money > 0 or annual_income > 0:
         render_summary_card(budget_label, budget_display, seed_money_억, loan_amount, monthly_pay, pay_ratio, max_loan=max_loan),
         unsafe_allow_html=True,
     )
-    all_warnings = list(sys_result.warnings) if sys_result.warnings else []
     if loan_over_limit:
         if max_loan > 0:
-            all_warnings.insert(0, f"희망 대출 {desired_loan_억:.1f}억이 한도({max_loan/10000:.1f}억)를 초과하여 {max_loan/10000:.1f}억으로 적용됩니다.")
+            st.warning(f"희망 대출 {desired_loan_억:.1f}억이 한도({max_loan/10000:.1f}억)를 초과하여 {max_loan/10000:.1f}억으로 적용됩니다.", icon=None)
         else:
-            all_warnings.insert(0, f"희망 대출 {desired_loan_억:.1f}억을 입력했지만 연봉 미입력으로 대출 한도가 0입니다. 연봉을 입력해주세요.")
-    if all_warnings:
-        with st.expander(f"참고사항 ({len(all_warnings)}건)", expanded=loan_over_limit):
-            for w in all_warnings:
+            st.warning(f"희망 대출 {desired_loan_억:.1f}억을 입력했지만 연봉 미입력으로 대출 한도가 0입니다. 연봉을 입력해주세요.", icon=None)
+    if sys_result.warnings:
+        with st.expander(f"참고사항 ({len(sys_result.warnings)}건)", expanded=False):
+            for w in sys_result.warnings:
                 st.warning(w, icon=None)
 else:
     st.markdown(render_empty_summary_card(), unsafe_allow_html=True)
