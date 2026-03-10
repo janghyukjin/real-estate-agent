@@ -418,6 +418,17 @@ with tab1:
                                     "비고": "직거래" if deal_type == "직거래" else "",
                                 })
                             st.dataframe(pd.DataFrame(rows), hide_index=True, width="stretch")
+
+            # 카카오톡 공유 버튼 (추천 결과 하단)
+            import streamlit.components.v1 as components
+            top_apt_name = top_list[0]["apt"] if top_list else ""
+            share_html = build_kakao_share_html(
+                seed_억=seed_money_억,
+                loan_억=loan_amount / 10000,
+                budget_억=budget / 10000,
+                top_apt=top_apt_name,
+            )
+            components.html(share_html, height=70)
         else:
             if gap_invest_mode:
                 st.info("갭 범위에 맞는 아파트가 없어요. 상세 설정에서 조건을 조정해보세요.")
