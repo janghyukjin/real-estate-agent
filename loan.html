@@ -275,35 +275,6 @@
     </div>
 </div>
 
-<!-- 계산 흐름 -->
-<section>
-    <div class="container">
-        <h2>계산 흐름</h2>
-        <div class="flow">
-            <div class="flow-step">
-                <div class="step-num">1</div>
-                <h4>재무 입력</h4>
-                <p>연봉, 종잣돈,<br>인센티브</p>
-            </div>
-            <div class="flow-step">
-                <div class="step-num">2</div>
-                <h4>DSR 한도</h4>
-                <p>소득 기반<br>상환능력</p>
-            </div>
-            <div class="flow-step">
-                <div class="step-num">3</div>
-                <h4>LTV 한도</h4>
-                <p>담보가치 기반<br>대출비율</p>
-            </div>
-            <div class="flow-step">
-                <div class="step-num">4</div>
-                <h4>최종 한도</h4>
-                <p>min(DSR, LTV)<br>= 실제 대출액</p>
-            </div>
-        </div>
-    </div>
-</section>
-
 <!-- DSR -->
 <section style="background: var(--bg-card);">
     <div class="container">
@@ -325,18 +296,18 @@
         </div>
 
         <div class="example-box">
-            <h3>예시: 연봉 1.23억 / 금리 4.2%</h3>
+            <h3>예시: 연봉 5,000만원 / 금리 4%</h3>
             <div class="example-row">
                 <span class="label">연간 상환 한도</span>
-                <span class="value">1.23억 × 40% = 4,920만원/년</span>
+                <span class="value">5,000만 × 40% = 2,000만원/년</span>
             </div>
             <div class="example-row">
                 <span class="label">스트레스 심사 금리</span>
-                <span class="value">4.2% + 3% = 7.2%</span>
+                <span class="value">4% + 3% = 7%</span>
             </div>
             <div class="example-row">
                 <span class="label">30년 원리금균등 기준</span>
-                <span class="value primary">DSR 한도 약 6.1억</span>
+                <span class="value primary">DSR 한도 약 2.5억</span>
             </div>
         </div>
     </div>
@@ -422,17 +393,17 @@
         <div class="scenario-grid">
             <div class="scenario-card">
                 <h4>30년 원리금균등</h4>
-                <div class="big-num">286만</div>
-                <div class="desc">6억 대출 / 4% 기준<br>총 이자 약 4.3억</div>
+                <div class="big-num">143만</div>
+                <div class="desc">3억 대출 / 4% 기준<br>총 이자 약 2.2억</div>
             </div>
             <div class="scenario-card">
                 <h4>15년 원리금균등</h4>
-                <div class="big-num">444만</div>
-                <div class="desc">6억 대출 / 4% 기준<br>총 이자 약 2.0억</div>
+                <div class="big-num">222만</div>
+                <div class="desc">3억 대출 / 4% 기준<br>총 이자 약 1.0억</div>
             </div>
             <div class="scenario-card">
                 <h4>거치 3년 + 27년</h4>
-                <div class="big-num">200→312만</div>
+                <div class="big-num">100→156만</div>
                 <div class="desc">처음 3년 이자만<br>이후 27년 원리금균등</div>
             </div>
         </div>
