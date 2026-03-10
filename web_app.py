@@ -205,12 +205,15 @@ with st.expander("⚙️ 상세 설정", expanded=False):
         selected_dongs = ["전체"]
         filter_all_dongs = True
 
+    max_recovery = st.slider(
+        "최대 회복률 — 22년 고점 대비 (%)", 0, 200, 200, 5,
+        help="100% 미만 = 아직 고점 못 돌파 (저평가). 낮출수록 더 저평가된 곳만 표시"
+    )
+    min_recovery = 0
     f_col1, f_col2 = st.columns(2)
     with f_col1:
-        min_recovery = st.slider("최소 회복률 (%)", 0, 150, 0, 5)
         max_policy_change = st.slider("토허제 후 최대 변동률 (%)", -100, 100, 100, 5)
     with f_col2:
-        max_recovery = st.slider("최대 회복률 (%)", 0, 200, 200, 5)
         min_hhld = st.number_input("최소 세대수", min_value=300, max_value=5000, value=300, step=100)
 
     top_n = st.number_input("상위 표시 개수", min_value=5, max_value=50, value=10, step=5)
@@ -238,8 +241,6 @@ if "filter_all_dongs" not in dir():
     filter_all_dongs = True
 if "selected_dongs" not in dir():
     selected_dongs = ["전체"]
-if "min_recovery" not in dir():
-    min_recovery = 0
 if "max_recovery" not in dir():
     max_recovery = 200
 if "max_policy_change" not in dir():
