@@ -113,9 +113,9 @@ with st.expander("⚙️ 상세 설정", expanded=False):
             "대출 금리 (%)", min_value=2.5, max_value=6.0, value=4.2, step=0.1,
         )
     desired_loan_억 = st.number_input(
-        "💰 희망 대출 (억원, 0=최대한도)",
+        "💰 희망 대출 (억원)",
         min_value=0.0, max_value=20.0, value=0.0, step=0.5,
-        help="0이면 DSR/LTV 최대한도 자동 적용. 줄이면 월 상환 부담↓",
+        help="0이면 대출 없이 종잣돈으로만 매수. DSR/LTV 한도 초과분은 자동 차감됩니다.",
     )
 
     will_reside = st.checkbox("실거주 예정", value=True)
@@ -178,7 +178,7 @@ with st.expander("⚙️ 상세 설정", expanded=False):
     p_cols = st.columns(3)
     for idx, key in enumerate(row1):
         with p_cols[idx]:
-            if st.button(key, key=f"preset_{idx}", use_container_width=True):
+            if st.button(key, key=f"preset_{idx}", width="stretch"):
                 if st.session_state.selected_preset == key:
                     st.session_state.selected_preset = None
                 else:
@@ -188,7 +188,7 @@ with st.expander("⚙️ 상세 설정", expanded=False):
         p_cols2 = st.columns(3)
         for idx, key in enumerate(row2):
             with p_cols2[idx]:
-                if st.button(key, key=f"preset_{idx+3}", use_container_width=True):
+                if st.button(key, key=f"preset_{idx+3}", width="stretch"):
                     if st.session_state.selected_preset == key:
                         st.session_state.selected_preset = None
                     else:
@@ -283,12 +283,12 @@ user = UserFinance(
 sys_result = calculate_affordability(user, policy)
 max_loan = int(sys_result.final_max_loan)
 
-# 희망 대출 적용 (0이면 최대한도)
-if "desired_loan_억" in dir() and desired_loan_억 > 0:
+# 희망 대출 적용 (0이면 대출 없음)
+if desired_loan_억 > 0:
     desired_loan = int(desired_loan_억 * 10000)
     loan_amount = min(desired_loan, max_loan)
 else:
-    loan_amount = max_loan
+    loan_amount = 0
 
 budget = seed_money + loan_amount
 mr = (interest_rate / 100) / 12
@@ -307,7 +307,7 @@ if seed_money > 0 or annual_income > 0:
     budget_label = "갭투자 가능" if gap_invest_mode else "매수 가능 집값"
     budget_display = f"{budget / 10000:.1f}억"
     st.markdown(
-        render_summary_card(budget_label, budget_display, seed_money_억, loan_amount, monthly_pay, pay_ratio),
+        render_summary_card(budget_label, budget_display, seed_money_억, loan_amount, monthly_pay, pay_ratio, max_loan=max_loan),
         unsafe_allow_html=True,
     )
     if sys_result.warnings:
@@ -605,9 +605,9 @@ with tab5:
                 col_a, col_b = st.columns([1, 1])
                 with col_a:
                     if skill["name"] in saved_names:
-                        st.button("✅ 저장됨", key=f"comm_save_{rank}", disabled=True, use_container_width=True)
+                        st.button("✅ 저장됨", key=f"comm_save_{rank}", disabled=True, width="stretch")
                     else:
-                        if st.button("💾 내 스킬로 저장", key=f"comm_save_{rank}", use_container_width=True):
+                        if st.button("💾 내 스킬로 저장", key=f"comm_save_{rank}", width="stretch"):
                             st.session_state.custom_skills.append({
                                 "name": skill["name"], "desc": skill["desc"],
                                 "author": skill["author"], "config": cfg, "source": "community",
@@ -615,7 +615,7 @@ with tab5:
                             st.toast(f"✅ '{skill['name']}' 저장!")
                             st.rerun()
                 with col_b:
-                    if st.button("🎯 바로 적용", key=f"comm_apply_{rank}", use_container_width=True):
+                    if st.button("🎯 바로 적용", key=f"comm_apply_{rank}", width="stretch"):
                         st.session_state.active_community_skill = cfg
                         st.session_state.selected_preset = None
                         st.toast(f"✅ '{skill['name']}' 적용! 🏆 추천 탭을 확인하세요")
@@ -685,7 +685,7 @@ with tab5:
                 key="cs_sort", help="추천 리스트 정렬 기준",
             )
 
-            submitted = st.form_submit_button("💾 스킬 저장하기", use_container_width=True)
+            submitted = st.form_submit_button("💾 스킬 저장하기", width="stretch")
 
         if submitted:
             if not skill_name.strip():
@@ -749,12 +749,12 @@ with tab5:
 
                 c1, c2 = st.columns([4, 1])
                 with c1:
-                    if st.button("🎯 추천에 적용", key=f"my_apply_{idx}", use_container_width=True):
+                    if st.button("🎯 추천에 적용", key=f"my_apply_{idx}", width="stretch"):
                         st.session_state.active_community_skill = cfg
                         st.session_state.selected_preset = None
                         st.toast(f"✅ '{skill['name']}' 적용! 🏆 추천 탭을 확인하세요")
                 with c2:
-                    if st.button("🗑️", key=f"my_del_{idx}", use_container_width=True):
+                    if st.button("🗑️", key=f"my_del_{idx}", width="stretch"):
                         st.session_state.custom_skills.pop(idx)
                         st.rerun()
 
@@ -765,7 +765,7 @@ with tab5:
             with exp_col:
                 st.download_button(
                     "📤 내보내기", data=json.dumps(saved, ensure_ascii=False, indent=2),
-                    file_name="jipiti_skills.json", mime="application/json", use_container_width=True,
+                    file_name="jipiti_skills.json", mime="application/json", width="stretch",
                 )
             with imp_col:
                 uploaded = st.file_uploader("📥", type=["json"], key="skill_import", label_visibility="collapsed")

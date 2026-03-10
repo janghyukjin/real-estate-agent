@@ -364,53 +364,28 @@
 <!-- 스코어링 -->
 <section>
     <div class="container">
-        <h2>맞춤 스코어링</h2>
-        <p class="subtitle">6개 항목을 종합해 "지금 이 예산에 최선인 아파트"를 점수로 산출합니다.</p>
-        <table class="score-table">
-            <thead>
-                <tr>
-                    <th>항목</th>
-                    <th>기준</th>
-                    <th>배점</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td>📍 지역등급</td>
-                    <td>1티어 프리미엄(강남·서초·송파·용산) → 2티어 핵심 → 3티어 주거안정 → 4티어 가성비. 경기 지역도 각 티어별 차등</td>
-                    <td class="positive">최대 40점</td>
-                </tr>
-                <tr>
-                    <td>💰 전세가율</td>
-                    <td>50~70% 구간이 최고점. 너무 높으면(역전세 리스크) 감점, 너무 낮으면(갭 큼) 감점</td>
-                    <td class="positive">최대 30점</td>
-                </tr>
-                <tr>
-                    <td>🏢 세대수</td>
-                    <td>100세대당 1점. 대단지일수록 유동성/인프라/시세 안정성 우수</td>
-                    <td class="positive">최대 20점</td>
-                </tr>
-                <tr>
-                    <td>📊 거래량</td>
-                    <td>최근 3개월 거래 건수. 활발한 거래 = 높은 유동성</td>
-                    <td class="positive">최대 15점</td>
-                </tr>
-                <tr>
-                    <td>📉 회복률</td>
-                    <td>2022년 고점 대비 현재가. 100% 미만 = 가점(저평가), 초과 = 감점(고평가)</td>
-                    <td>±30점</td>
-                </tr>
-                <tr>
-                    <td>🏛️ 토허제 변동</td>
-                    <td>10.15 토허제 전(24년 7~9월) 대비 변동률. 덜 오를수록 가점</td>
-                    <td>±15점</td>
-                </tr>
-            </tbody>
-        </table>
-        <p style="color: var(--text-muted); font-size: 13px; margin-top: 16px;">
-            <strong>설계 철학</strong>: "싸고 저평가된 곳"에 높은 점수를 줍니다.
-            회복률이 낮을수록(아직 안 올랐을수록), 토허제 후 덜 올랐을수록 가점이 붙어
-            무주택 실수요자에게 유리한 매물이 상위에 올라옵니다.
+        <h2>어떻게 추천하나요?</h2>
+        <p class="subtitle">6가지 데이터를 종합해서 "지금 내 예산에 최선인 아파트"를 골라드려요.</p>
+        <div class="data-grid" style="grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));">
+            <div class="data-card" style="text-align:center;">
+                <div style="font-size:2rem;margin-bottom:8px;">📍</div>
+                <h3>어디?</h3>
+                <p>지역등급 1~4티어<br>서울+경기 차등 배점</p>
+            </div>
+            <div class="data-card" style="text-align:center;">
+                <div style="font-size:2rem;margin-bottom:8px;">💰</div>
+                <h3>얼마나 저평가?</h3>
+                <p>22년 고점 대비 회복률<br>낮을수록 가점</p>
+            </div>
+            <div class="data-card" style="text-align:center;">
+                <div style="font-size:2rem;margin-bottom:8px;">🏢</div>
+                <h3>살기 좋은가?</h3>
+                <p>세대수·거래량·전세가율<br>대단지+유동성 우선</p>
+            </div>
+        </div>
+        <p style="color: var(--text-muted); font-size: 13px; margin-top: 20px; text-align:center;">
+            핵심 철학 — <strong style="color:var(--primary);">"아직 안 오른 곳"</strong>에 높은 점수를 줍니다.
+            무주택 실수요자에게 유리한 매물이 상위에 올라와요.
         </p>
     </div>
 </section>
@@ -418,46 +393,28 @@
 <!-- 스킬 기반 전략 -->
 <section>
     <div class="container">
-        <h2>🎯 스킬 기반 전략</h2>
-        <p class="subtitle">목적에 따라 원클릭으로 필터+스코어링이 자동 설정됩니다.</p>
-        <div class="data-grid">
+        <h2>🎯 원클릭 전략</h2>
+        <p class="subtitle">목적 하나만 고르면, 필터+정렬이 자동으로 설정돼요.</p>
+        <div class="data-grid" style="grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));">
             <div class="data-card">
                 <div class="icon">🔍</div>
                 <h3>저평가 발굴</h3>
-                <p>2022년 고점 대비 아직 회복 안 된 500세대+ 대단지를 자동 필터링</p>
-                <span class="tag">출시</span>
+                <p>고점 대비 아직 안 오른 대단지만 쏙쏙</p>
             </div>
             <div class="data-card">
                 <div class="icon">💰</div>
                 <h3>소액갭</h3>
-                <p>전세가율 높은 순 → 적은 돈으로 내 집 마련 가능한 아파트 우선 추천</p>
-                <span class="tag">출시</span>
-            </div>
-            <div class="data-card">
-                <div class="icon">🏫</div>
-                <h3>학군 프리미엄</h3>
-                <p>강남/서초/양천/송파 대단지 위주 학군 최우선 전략</p>
-                <span class="tag">출시</span>
-            </div>
-            <div class="data-card">
-                <div class="icon">📈</div>
-                <h3>안정투자</h3>
-                <p>1~2티어 + 높은 회복률 = 안정적 가치 상승 기대</p>
-                <span class="tag">출시</span>
+                <p>적은 돈으로 내 집 마련 가능한 순서대로</p>
             </div>
             <div class="data-card">
                 <div class="icon">⚡</div>
                 <h3>급매 포착</h3>
-                <p>최근 거래가가 평균 대비 크게 하락한 급매물 자동 포착</p>
-                <span class="tag">출시</span>
-            </div>
-            <div class="data-card">
-                <div class="icon">🆕</div>
-                <h3>커스텀</h3>
-                <p>나만의 조건 조합으로 맞춤 전략 생성 (상세 설정)</p>
-                <span class="tag">출시</span>
+                <p>최근 시세보다 싸게 나온 매물 자동 감지</p>
             </div>
         </div>
+        <p style="color: var(--text-muted); font-size: 13px; margin-top: 16px; text-align:center;">
+            + 학군 프리미엄, 안정투자, 나만의 커스텀 전략까지 총 6가지
+        </p>
     </div>
 </section>
 

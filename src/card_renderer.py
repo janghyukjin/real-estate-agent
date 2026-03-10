@@ -4,14 +4,17 @@
 from src.constants import TIER_DISPLAY, TIER_EMOJI
 
 
-def render_summary_card(budget_label, budget_display, seed_money_억, loan_amount, monthly_pay, pay_ratio):
+def render_summary_card(budget_label, budget_display, seed_money_억, loan_amount, monthly_pay, pay_ratio, max_loan=None):
     """결과 요약 카드 HTML을 반환한다."""
+    loan_line = f"대출 {loan_amount/10000:.1f}억"
+    if max_loan is not None and max_loan != loan_amount:
+        loan_line += f" <span style='font-size:0.75rem;opacity:0.7'>(한도 {max_loan/10000:.1f}억)</span>"
     return f"""
     <div class="summary-card">
         <div style="font-size:0.85rem;opacity:0.8">{budget_label}</div>
         <div class="big">{budget_display}</div>
         <div class="sub">
-            종잣돈 {seed_money_억:.1f}억 + 대출 {loan_amount/10000:.1f}억
+            종잣돈 {seed_money_억:.1f}억 + {loan_line}
             &nbsp;&middot;&nbsp; 월 상환 {monthly_pay:,.0f}만원 ({pay_ratio:.0f}%)
         </div>
     </div>
