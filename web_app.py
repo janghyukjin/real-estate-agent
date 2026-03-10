@@ -18,6 +18,33 @@ from src.calculator import (
 # ─────────────────────────────────────
 st.set_page_config(page_title="집피티 — 내집마련 AI 비서", page_icon="🏠", layout="wide", initial_sidebar_state="expanded")
 
+st.markdown("""
+<style>
+/* 모바일: 메트릭 카드 컴팩트화 */
+@media (max-width: 768px) {
+    /* 추천 카드 4컬럼 → 2x2 그리드 */
+    [data-testid="stHorizontalBlock"] {
+        flex-wrap: wrap !important;
+    }
+    [data-testid="stHorizontalBlock"] > [data-testid="stColumn"] {
+        flex: 0 0 48% !important;
+        min-width: 48% !important;
+        margin-bottom: 0.3rem;
+    }
+    /* 메트릭 카드 패딩 축소 */
+    [data-testid="stMetric"] {
+        padding: 0.3rem 0 !important;
+    }
+    [data-testid="stMetric"] label {
+        font-size: 0.75rem !important;
+    }
+    [data-testid="stMetric"] [data-testid="stMetricValue"] {
+        font-size: 1.1rem !important;
+    }
+}
+</style>
+""", unsafe_allow_html=True)
+
 st.title("🏠 집피티")
 st.caption("내 월급으로 서울 어디 살 수 있을까?")
 st.info("👈 **왼쪽 사이드바**에서 종잣돈·연봉을 입력하면 맞춤 추천이 시작됩니다! (모바일: 좌측 상단 **>** 버튼)")
@@ -345,16 +372,18 @@ with tab1:
         if top10:
             for i, r in enumerate(top10, 1):
                 with st.container():
-                    c1, c2, c3, c4 = st.columns([3, 2, 2, 2])
-                    with c1:
-                        tier_emoji = {"상급지": "👑", "중상급지": "🏙️", "중하급지": "🏘️", "하급지": "🏠"}.get(r["tier"], "")
-                        area_type = r.get("area_type", "")
-                        area_num = int(area_type.replace("㎡", "")) if "㎡" in area_type else 0
-                        pyeong = round(area_num * 0.3025) if area_num else ""
-                        st.markdown(f"### {i}. {r['apt']}")
-                        dong = r.get("dong", "")
-                        loc = f"{r['gu']} {dong}" if dong else r['gu']
-                        st.caption(f"{tier_emoji} {loc} {r['tier']} · **전용 {area_type} ({pyeong}평)** · {r.get('hhld', 0):,}세대 · 거래 {r['count']}건")
+                    # 아파트명 (전체 너비)
+                    tier_emoji = {"상급지": "👑", "중상급지": "🏙️", "중하급지": "🏘️", "하급지": "🏠"}.get(r["tier"], "")
+                    area_type = r.get("area_type", "")
+                    area_num = int(area_type.replace("㎡", "")) if "㎡" in area_type else 0
+                    pyeong = round(area_num * 0.3025) if area_num else ""
+                    st.markdown(f"### {i}. {r['apt']}")
+                    dong = r.get("dong", "")
+                    loc = f"{r['gu']} {dong}" if dong else r['gu']
+                    st.caption(f"{tier_emoji} {loc} {r['tier']} · **전용 {area_type} ({pyeong}평)** · {r.get('hhld', 0):,}세대 · 거래 {r['count']}건")
+
+                    # 메트릭 3컬럼 (모바일에서 CSS로 2x2 wrap)
+                    c2, c3, c4 = st.columns(3)
                     with c2:
                         latest = r.get("latest_price", r["avg_price"])
                         latest_ym = r.get("latest_ym", "")
@@ -365,15 +394,15 @@ with tab1:
                         st.metric("전세가율", f"{r['ratio']}%")
                     with c3:
                         gap = r["gap"]
-                        st.metric("갭 (매매가-전세가)", f"{gap/10000:.1f}억")
+                        st.metric("갭 (매매-전세)", f"{gap/10000:.1f}억")
                         if gap_invest_mode:
                             remain = gap_budget - gap
-                            st.caption(f"전세 {r['avg_rent']/10000:.1f}억 + 내돈(종잣돈+대출) {gap/10000:.1f}억 = 매매가 {r['avg_price']/10000:.1f}억")
+                            st.caption(f"전세 {r['avg_rent']/10000:.1f}억 + 내돈 {gap/10000:.1f}억")
                             if remain >= 0:
                                 st.caption(f"✅ 잔여 {remain/10000:.1f}억")
                         else:
                             if seed_money > 0 and gap <= seed_money:
-                                st.caption("✅ 종잣돈으로 갭투자도 가능")
+                                st.caption("✅ 종잣돈으로 갭투자 가능")
                             elif seed_money > 0:
                                 st.caption(f"갭투자 시 {(gap - seed_money)/10000:.1f}억 부족")
                             st.metric("월 상환", f"{r['monthly_pay']:,}만원")
@@ -383,16 +412,16 @@ with tab1:
                             latest = r.get("latest_price", r["avg_price"])
                             diff_policy = latest - pa
                             pct = round(diff_policy / pa * 100, 1)
-                            st.metric("10.15 이후 변동", f"{pct:+.1f}%")
-                            st.caption(f"토허제 전 {pa/10000:.1f}억→현재 {latest/10000:.1f}억")
+                            st.metric("10.15 변동", f"{pct:+.1f}%")
+                            st.caption(f"토허제 전 {pa/10000:.1f}→현재 {latest/10000:.1f}억")
                     with c4:
                         if r.get("is_at_peak"):
-                            st.metric("📈 현재 최고점!", f"{r.get('recent_high', r['avg_price'])/10000:.1f}억")
+                            st.metric("📈 최고점!", f"{r.get('recent_high', r['avg_price'])/10000:.1f}억")
                             st.caption(f"이전 고점 {r['peak']/10000:.1f}억 ({r['peak_ym']}) 돌파")
                         else:
                             peak_gap = r["avg_price"] - r["peak"]
                             st.metric("전고점 대비", f"{r['diff_peak']:+.1f}%")
-                            st.caption(f"고점 {r['peak']/10000:.1f}억 ({r['peak_ym']})\n\n전고점대비 **{abs(peak_gap)/10000:.1f}억 하락**")
+                            st.caption(f"고점 {r['peak']/10000:.1f}억 ({r['peak_ym']})\n\n**{abs(peak_gap)/10000:.1f}억 하락**")
 
                         # 회복률 (22년 고점 대비)
                         rr = r.get("recovery_rate", 0)
