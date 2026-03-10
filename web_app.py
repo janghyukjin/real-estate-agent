@@ -205,40 +205,24 @@ with st.expander("⚙️ 상세 설정", expanded=False):
             st.session_state.active_community_skill = None
             st.rerun()
 
-# 상세 설정 밖 기본값 — expander가 접혀있으면 변수가 정의되지 않으므로 기본값 적용
-_defaults = ADVANCED_DEFAULTS
-if "bonus" not in dir():
-    bonus = _defaults["bonus"]
-if "monthly_expense" not in dir():
-    monthly_expense = _defaults["monthly_expense"]
-if "buyer_type" not in dir():
-    buyer_type = BuyerType.FIRST_TIME
-if "interest_rate" not in dir():
-    interest_rate = _defaults["interest_rate"]
-if "will_reside" not in dir():
-    will_reside = _defaults["will_reside"]
-if "gap_invest_mode" not in dir():
-    gap_invest_mode = _defaults["gap_invest_mode"]
-if "selected_tiers" not in dir():
-    selected_tiers = _defaults["selected_tiers"]
-if "filter_all_gus" not in dir():
-    filter_all_gus = _defaults["filter_all_gus"]
-if "effective_gus" not in dir():
-    effective_gus = set(_seoul_gus + _gyeonggi_gus)
-if "filter_all_dongs" not in dir():
-    filter_all_dongs = _defaults["filter_all_dongs"]
-if "selected_dongs" not in dir():
-    selected_dongs = _defaults["selected_dongs"]
-if "max_recovery" not in dir():
-    max_recovery = _defaults["max_recovery"]
-if "max_policy_change" not in dir():
-    max_policy_change = _defaults["max_policy_change"]
-if "min_hhld" not in dir():
-    min_hhld = _defaults["min_hhld"]
-if "top_n" not in dir():
-    top_n = _defaults["top_n"]
-if "desired_loan_억" not in dir():
-    desired_loan_억 = 0.0
+# 상세 설정 기본값 — Streamlit expander는 항상 실행되므로 여기는 안전장치
+_d = ADVANCED_DEFAULTS
+bonus = locals().get("bonus", _d["bonus"])
+monthly_expense = locals().get("monthly_expense", _d["monthly_expense"])
+buyer_type = locals().get("buyer_type", BuyerType.FIRST_TIME)
+interest_rate = locals().get("interest_rate", _d["interest_rate"])
+will_reside = locals().get("will_reside", _d["will_reside"])
+gap_invest_mode = locals().get("gap_invest_mode", _d["gap_invest_mode"])
+selected_tiers = locals().get("selected_tiers", _d["selected_tiers"])
+filter_all_gus = locals().get("filter_all_gus", _d["filter_all_gus"])
+effective_gus = locals().get("effective_gus", set(_seoul_gus + _gyeonggi_gus))
+filter_all_dongs = locals().get("filter_all_dongs", _d["filter_all_dongs"])
+selected_dongs = locals().get("selected_dongs", _d["selected_dongs"])
+max_recovery = locals().get("max_recovery", _d["max_recovery"])
+max_policy_change = locals().get("max_policy_change", _d["max_policy_change"])
+min_hhld = locals().get("min_hhld", _d["min_hhld"])
+top_n = locals().get("top_n", _d["top_n"])
+desired_loan_억 = locals().get("desired_loan_억", 0.0)
 
 # ─────────────────────────────────────
 # 프리셋/스킬 오버라이드 적용
