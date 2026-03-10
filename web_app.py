@@ -112,6 +112,11 @@ with st.expander("⚙️ 상세 설정", expanded=False):
         interest_rate = st.slider(
             "대출 금리 (%)", min_value=2.5, max_value=6.0, value=4.2, step=0.1,
         )
+    desired_loan_억 = st.number_input(
+        "💰 희망 대출 (억원, 0=최대한도)",
+        min_value=0.0, max_value=20.0, value=0.0, step=0.5,
+        help="0이면 DSR/LTV 최대한도 자동 적용. 줄이면 월 상환 부담↓",
+    )
 
     will_reside = st.checkbox("실거주 예정", value=True)
     gap_invest_mode = st.checkbox("갭투자 모드 (전세끼고 매수)", value=False)
@@ -232,6 +237,8 @@ if "min_hhld" not in dir():
     min_hhld = _defaults["min_hhld"]
 if "top_n" not in dir():
     top_n = _defaults["top_n"]
+if "desired_loan_억" not in dir():
+    desired_loan_억 = 0.0
 
 # ─────────────────────────────────────
 # 프리셋/스킬 오버라이드 적용
@@ -276,17 +283,12 @@ user = UserFinance(
 sys_result = calculate_affordability(user, policy)
 max_loan = int(sys_result.final_max_loan)
 
-# 대출 금액 조절 (최대 한도 내에서)
-if max_loan > 0:
-    loan_step = 1000  # 1000만원 단위
-    loan_amount = st.slider(
-        f"🏦 대출 금액 (최대 {max_loan/10000:.1f}억)",
-        min_value=0, max_value=max_loan, value=max_loan, step=loan_step,
-        help=f"DSR/LTV 기준 최대 {max_loan/10000:.1f}억. 줄이면 월 상환 부담이 낮아져요",
-        format="%d만원",
-    )
+# 희망 대출 적용 (0이면 최대한도)
+if "desired_loan_억" in dir() and desired_loan_억 > 0:
+    desired_loan = int(desired_loan_억 * 10000)
+    loan_amount = min(desired_loan, max_loan)
 else:
-    loan_amount = 0
+    loan_amount = max_loan
 
 budget = seed_money + loan_amount
 mr = (interest_rate / 100) / 12
