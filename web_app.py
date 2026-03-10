@@ -108,17 +108,17 @@ with st.sidebar:
             st.rerun()
 
     seed_money_억 = st.number_input(
-        "종잣돈 (억원)", min_value=0.0, max_value=50.0, value=5.0, step=0.5,
+        "종잣돈 (억원)", min_value=0.0, max_value=50.0, value=0.0, step=0.5,
         help="현재 보유 현금 + 예금 + 주식 등 동원 가능한 총 금액"
     )
     seed_money = int(seed_money_억 * 10000)
 
     contract_salary = st.number_input(
-        "계약연봉 (만원)", min_value=0, max_value=100000, value=8000, step=100,
+        "계약연봉 (만원)", min_value=0, max_value=100000, value=0, step=100,
         help="인센/상여 제외한 계약연봉 (세전)"
     )
     bonus = st.number_input(
-        "연간 인센티브/상여 (만원)", min_value=0, max_value=50000, value=4000, step=100,
+        "연간 인센티브/상여 (만원)", min_value=0, max_value=50000, value=0, step=100,
         help="성과급, 상여금 등 연간 합계 (세전)"
     )
     annual_income = contract_salary + bonus  # 원천징수 총급여
