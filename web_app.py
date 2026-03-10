@@ -13,7 +13,7 @@ from src.calculator import (
 )
 from src.constants import (
     TIER_DISPLAY, TIER_EMOJI, TIER_REVERSE, TIER_KEYS_ORDERED,
-    PRESETS, ADVANCED_DEFAULTS, SORT_LABELS,
+    PRESETS, ADVANCED_DEFAULTS,
 )
 from src.scoring import apply_skill_overrides, filter_and_score
 from src.card_renderer import (
@@ -21,6 +21,7 @@ from src.card_renderer import (
     render_community_skill_card, render_my_skill_card,
     build_skill_tags_html, build_my_skill_summary,
 )
+from src.kakao_share import build_kakao_share_html
 
 # ─────────────────────────────────────
 # 데이터 로드 (@st.cache_data는 src/data_loader.py에 분리 — Python 3.14 tokenizer 호환)

@@ -29,12 +29,15 @@ def load_trade_index():
     if not os.path.exists(raw_path):
         return {}
     idx = {}
+    # Only keep fields needed for display: year, month, price, floor, deal_type
+    # The index key already captures gu, apt, dong, area — no need to store them per record
+    _KEEP = ("year", "month", "price", "floor", "deal_type")
     with open(raw_path) as f:
         raw_trades = json.load(f)
     for t in raw_trades:
         area_type = f"{int(t['area'])}㎡"
         key = (t["gu"], t["apt"], t.get("dong", ""), area_type)
-        idx.setdefault(key, []).append(t)
+        idx.setdefault(key, []).append({k: t[k] for k in _KEEP if k in t})
     del raw_trades
     for key in idx:
         idx[key].sort(key=lambda x: (x["year"], x["month"]), reverse=True)
