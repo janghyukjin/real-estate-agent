@@ -30,7 +30,7 @@ DATA_DIR = os.path.join(os.path.dirname(__file__), "data")
 
 @st.cache_data
 def load_data():
-    analysis, meta, raw_trades = [], {}, []
+    analysis, meta = [], {}
     path = os.path.join(DATA_DIR, "analysis.json")
     if os.path.exists(path):
         with open(path) as f:
@@ -39,32 +39,29 @@ def load_data():
     if os.path.exists(meta_path):
         with open(meta_path) as f:
             meta = json.load(f)
-    raw_path = os.path.join(DATA_DIR, "raw_trades.json")
-    if os.path.exists(raw_path):
-        with open(raw_path) as f:
-            raw_trades = json.load(f)
-    return analysis, meta, raw_trades
+    return analysis, meta
 
 
-all_data, meta, raw_trades = load_data()
+all_data, meta = load_data()
 
-# 아파트별+평형별 raw 거래 인덱스 (실거래가 테이블용)
-def _get_area_type(area):
-    return f"{int(area)}㎡"
 
+# 실거래 인덱스: 필요할 때 1회만 로드 (메모리 절약)
 @st.cache_data
-def build_trade_index(_raw_trades):
+def load_trade_index():
+    raw_path = os.path.join(DATA_DIR, "raw_trades.json")
+    if not os.path.exists(raw_path):
+        return {}
     idx = {}
-    for t in _raw_trades:
-        area_type = _get_area_type(t["area"])
+    with open(raw_path) as f:
+        raw_trades = json.load(f)
+    for t in raw_trades:
+        area_type = f"{int(t['area'])}㎡"
         key = (t["gu"], t["apt"], t.get("dong", ""), area_type)
         idx.setdefault(key, []).append(t)
-    # 최신순 정렬
+    del raw_trades  # 원본 리스트 즉시 해제
     for key in idx:
         idx[key].sort(key=lambda x: (x["year"], x["month"]), reverse=True)
     return idx
-
-trade_index = build_trade_index(raw_trades)
 
 # ─────────────────────────────────────
 # 사이드바: 유저 입력
@@ -532,6 +529,7 @@ with tab1:
                             st.plotly_chart(fig, width="stretch")
 
                             # --- 실거래가 테이블 (같은 평형만) ---
+                            trade_index = load_trade_index()
                             apt_trades_filtered = trade_index.get((r["gu"], r["apt"], r.get("dong", ""), r.get("area_type", "")), [])
                             if apt_trades_filtered:
                                 st.markdown("**최근 실거래 내역**")
