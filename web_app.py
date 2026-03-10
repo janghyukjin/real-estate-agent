@@ -283,7 +283,19 @@ user = UserFinance(
     will_reside=will_reside,
 )
 sys_result = calculate_affordability(user, policy)
-loan_amount = int(sys_result.final_max_loan)
+max_loan = int(sys_result.final_max_loan)
+
+# 대출 금액 조절 (최대 한도 내에서)
+if max_loan > 0:
+    loan_step = 1000  # 1000만원 단위
+    loan_amount = st.slider(
+        f"🏦 대출 금액 (최대 {max_loan/10000:.1f}억)",
+        min_value=0, max_value=max_loan, value=max_loan, step=loan_step,
+        help=f"DSR/LTV 기준 최대 {max_loan/10000:.1f}억. 줄이면 월 상환 부담이 낮아져요",
+        format="%d만원",
+    )
+else:
+    loan_amount = 0
 
 budget = seed_money + loan_amount
 mr = (interest_rate / 100) / 12
