@@ -11,60 +11,37 @@ sys.path.insert(0, os.path.dirname(__file__))
 from src.calculator import (
     BuyerType, LoanPolicy, UserFinance, calculate_affordability,
 )
-from src.data_loader import load_data, load_trade_index, load_community_skills
+from src.constants import (
+    TIER_DISPLAY, TIER_EMOJI, TIER_REVERSE, TIER_KEYS_ORDERED,
+    PRESETS, ADVANCED_DEFAULTS, SORT_LABELS,
+)
+from src.scoring import apply_skill_overrides, filter_and_score
+from src.card_renderer import (
+    render_summary_card, render_empty_summary_card, render_apt_card,
+    render_community_skill_card, render_my_skill_card,
+    build_skill_tags_html, build_my_skill_summary,
+)
 
 # ─────────────────────────────────────
-# 데이터 로드 (@st.cache_data는 src/data_loader.py에 분리 — Python 3.14 호환)
+# 데이터 로드 (@st.cache_data는 src/data_loader.py에 분리 — Python 3.14 tokenizer 호환)
 # ─────────────────────────────────────
+from src.data_loader import load_data, load_trade_index, load_community_skills
+
+STATIC_DIR = os.path.join(os.path.dirname(__file__), "static")
+
+
+@st.cache_data
+def load_css():
+    css_path = os.path.join(STATIC_DIR, "style.css")
+    if os.path.exists(css_path):
+        with open(css_path) as f:
+            return f.read()
+    return ""
+
+
 all_data, meta = load_data()
 _seoul_gus = sorted(set(r["gu"] for r in all_data if "경기" not in r.get("tier", "")))
 _gyeonggi_gus = sorted(set(r["gu"] for r in all_data if "경기" in r.get("tier", "")))
-
-# ─────────────────────────────────────
-# 티어 표시명 매핑 (내부→UI)
-# ─────────────────────────────────────
-TIER_DISPLAY = {
-    "상급지": "1티어 (프리미엄)", "상급지(경기)": "1티어 경기",
-    "중상급지": "2티어 (핵심)", "중상급지(경기)": "2티어 경기",
-    "중하급지": "3티어 (주거안정)", "중하급지(경기)": "3티어 경기",
-    "하급지": "4티어 (가성비)", "하급지(경기)": "4티어 경기",
-}
-TIER_EMOJI = {
-    "상급지": "👑", "상급지(경기)": "👑",
-    "중상급지": "🏙️", "중상급지(경기)": "🏙️",
-    "중하급지": "🏘️", "중하급지(경기)": "🏘️",
-    "하급지": "🏠", "하급지(경기)": "🏠",
-}
-# UI 표시명 → 내부명 역매핑
-TIER_REVERSE = {v: k for k, v in TIER_DISPLAY.items()}
-
-# ─────────────────────────────────────
-# 프리셋 스킬 정의
-# ─────────────────────────────────────
-PRESETS = {
-    "🔍 저평가 발굴": {
-        "desc": "22년 고점 대비 미회복 + 500세대+ 대단지",
-        "max_recovery": 90, "min_hhld": 500,
-    },
-    "💰 소액갭": {
-        "desc": "전세가율 높은 순 → 적은 돈으로 내 집 마련",
-        "sort_by": "gap_asc", "min_ratio": 60,
-    },
-    "🏫 학군 프리미엄": {
-        "desc": "강남/서초/양천/송파 1000세대+ 대단지",
-        "force_gus": {"강남구", "서초구", "양천구", "송파구"}, "min_hhld": 1000,
-    },
-    "📈 안정투자": {
-        "desc": "1~2티어 + 회복률 80%↑ = 안정적 가치",
-        "force_tiers": {"상급지", "상급지(경기)", "중상급지", "중상급지(경기)"},
-        "min_recovery_override": 80,
-    },
-    "⚡ 급매 포착": {
-        "desc": "최근 거래가가 평균보다 낮은 급매물",
-        "sort_by": "drop_desc",
-    },
-}
-
 COMMUNITY_SKILLS = load_community_skills()
 
 # ─────────────────────────────────────
@@ -77,68 +54,10 @@ st.set_page_config(
     initial_sidebar_state="collapsed",
 )
 
-# 토스 스타일 CSS
-st.markdown("""<style>
-    /* 전체 */
-    .block-container { max-width: 640px !important; padding: 1rem 1rem 4rem !important; }
-    .block-container { padding-top: 1.5rem !important; }
-    [data-testid="stSidebar"] { display: none; }
-    [data-testid="stHeader"] { display: none; }
-    [data-testid="stDecoration"] { display: none; }
-    h1 { font-size: 1.8rem !important; font-weight: 800 !important; letter-spacing: -1px; user-select: none; -webkit-user-select: none; }
-    h3 { font-size: 1.1rem !important; font-weight: 700 !important; margin-bottom: 0 !important; }
-    /* 입력 필드 */
-    .stNumberInput > div > div > input { font-size: 1.2rem !important; font-weight: 700 !important; }
-    .stRadio > div { gap: 0.5rem; }
-    .stRadio label { font-weight: 600 !important; }
-    /* 프리셋 버튼 */
-    .stButton > button {
-        border-radius: 12px !important; font-weight: 600 !important;
-        padding: 8px 12px !important; font-size: 0.85rem !important;
-    }
-    /* 카드 */
-    .summary-card {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        border-radius: 16px; padding: 24px; margin: 16px 0; color: white;
-    }
-    .summary-card .big { font-size: 2rem; font-weight: 800; }
-    .summary-card .sub { font-size: 0.9rem; opacity: 0.85; margin-top: 4px; }
-    .apt-card {
-        background: #1a1d26; border: 1px solid #2d3039; border-radius: 16px;
-        padding: 20px; margin: 12px 0; transition: border-color 0.2s;
-    }
-    .apt-card:hover { border-color: #FF6B6B; }
-    .apt-rank {
-        display: inline-block; background: #FF6B6B; color: white;
-        width: 28px; height: 28px; border-radius: 50%; text-align: center;
-        line-height: 28px; font-weight: 800; font-size: 0.85rem; margin-right: 8px;
-    }
-    .apt-name { font-size: 1.1rem; font-weight: 700; }
-    .apt-meta { font-size: 0.8rem; color: #9CA3AF; margin-top: 2px; }
-    .metric-grid {
-        display: grid; grid-template-columns: repeat(2, 1fr);
-        gap: 4px 12px; margin: 12px 0 8px;
-    }
-    .metric-item {
-        padding: 8px 0; border-bottom: 1px solid rgba(128,128,128,0.12);
-    }
-    .metric-label { font-size: 0.72rem; color: #888; display: block; }
-    .metric-value { font-size: 0.95rem; font-weight: 600; }
-    .tag {
-        display: inline-block; padding: 2px 8px; border-radius: 4px;
-        font-size: 0.7rem; font-weight: 600; margin-right: 4px;
-    }
-    .tag-green { background: rgba(81,207,102,0.15); color: #51CF66; }
-    .tag-red { background: rgba(255,107,107,0.15); color: #FF6B6B; }
-    .tag-blue { background: rgba(77,171,247,0.15); color: #4DABF7; }
-    .tag-gray { background: rgba(156,163,175,0.1); color: #9CA3AF; }
-    /* 구분선 */
-    .divider { border-top: 1px solid #2d3039; margin: 20px 0; }
-    /* 상세 설정 */
-    .stExpander { border: 1px solid #2d3039 !important; border-radius: 12px !important; }
-    /* word-break */
-    * { word-break: keep-all; }
-</style>""", unsafe_allow_html=True)
+# CSS 로드
+css_text = load_css()
+if css_text:
+    st.markdown(f"<style>{css_text}</style>", unsafe_allow_html=True)
 
 # ─────────────────────────────────────
 # 히어로
@@ -167,8 +86,52 @@ seed_money = int(seed_money_억 * 10000)
 
 region_choice = st.radio("📍 어디에서 찾을까요?", ["전체", "서울", "경기"], horizontal=True)
 
+# ─────────────────────────────────────
+# 전략 선택 (프리셋 스킬)
+# ─────────────────────────────────────
+st.markdown('<div class="divider"></div>', unsafe_allow_html=True)
+st.markdown("### 🎯 전략 선택")
+st.caption("원클릭으로 필터가 자동 설정돼요")
+
 if "selected_preset" not in st.session_state:
     st.session_state.selected_preset = None
+
+preset_keys = list(PRESETS.keys())
+row1 = preset_keys[:3]
+p_cols = st.columns(3)
+for idx, key in enumerate(row1):
+    with p_cols[idx]:
+        if st.button(key, key=f"preset_{idx}", use_container_width=True):
+            if st.session_state.selected_preset == key:
+                st.session_state.selected_preset = None
+            else:
+                st.session_state.selected_preset = key
+
+row2 = preset_keys[3:]
+if row2:
+    p_cols2 = st.columns(3)
+    for idx, key in enumerate(row2):
+        with p_cols2[idx]:
+            if st.button(key, key=f"preset_{idx+3}", use_container_width=True):
+                if st.session_state.selected_preset == key:
+                    st.session_state.selected_preset = None
+                else:
+                    st.session_state.selected_preset = key
+
+active_preset = st.session_state.get("selected_preset")
+if active_preset and active_preset in PRESETS:
+    p_info = PRESETS[active_preset]
+    st.success(f"🎯 **{active_preset}** — {p_info['desc']}")
+elif st.session_state.get("active_community_skill"):
+    # 커뮤니티/커스텀 스킬 적용 중 표시
+    cs_desc = st.session_state.active_community_skill.get("desc", "커뮤니티 스킬")
+    col_cs1, col_cs2 = st.columns([5, 1])
+    with col_cs1:
+        st.info(f"🎯 커스텀 스킬 적용 중 — {cs_desc}")
+    with col_cs2:
+        if st.button("해제", key="clear_community_skill"):
+            st.session_state.active_community_skill = None
+            st.rerun()
 
 # ─────────────────────────────────────
 # 상세 설정 (접기)
@@ -202,7 +165,7 @@ with st.expander("⚙️ 상세 설정", expanded=False):
     st.markdown("---")
     st.markdown("**필터**")
 
-    tier_display_options = ["전체"] + [TIER_DISPLAY[t] for t in ["상급지", "상급지(경기)", "중상급지", "중상급지(경기)", "중하급지", "중하급지(경기)", "하급지", "하급지(경기)"]]
+    tier_display_options = ["전체"] + [TIER_DISPLAY[t] for t in TIER_KEYS_ORDERED]
     selected_tier_displays = st.multiselect("지역 등급", options=tier_display_options, default=["전체"])
     # UI 표시명 → 내부명 변환
     if "전체" in selected_tier_displays:
@@ -246,115 +209,65 @@ with st.expander("⚙️ 상세 설정", expanded=False):
 
     top_n = st.number_input("상위 표시 개수", min_value=5, max_value=50, value=10, step=5)
 
-    # 전략 프리셋 (상세 설정 하단)
-    st.markdown("---")
-    st.markdown("**🎯 전략 프리셋** (원클릭 필터)")
-    preset_keys = list(PRESETS.keys())
-    row1 = preset_keys[:3]
-    p_cols = st.columns(3)
-    for idx, key in enumerate(row1):
-        with p_cols[idx]:
-            if st.button(key, key=f"preset_{idx}", use_container_width=True):
-                if st.session_state.selected_preset == key:
-                    st.session_state.selected_preset = None
-                else:
-                    st.session_state.selected_preset = key
-    row2 = preset_keys[3:]
-    if row2:
-        p_cols2 = st.columns(3)
-        for idx, key in enumerate(row2):
-            with p_cols2[idx]:
-                if st.button(key, key=f"preset_{idx+3}", use_container_width=True):
-                    if st.session_state.selected_preset == key:
-                        st.session_state.selected_preset = None
-                    else:
-                        st.session_state.selected_preset = key
-
-    active_preset = st.session_state.get("selected_preset")
-    if active_preset and active_preset in PRESETS:
-        p_info = PRESETS[active_preset]
-        st.success(f"🎯 **{active_preset}** — {p_info['desc']}")
-    elif st.session_state.get("active_community_skill"):
-        cs_desc = st.session_state.active_community_skill.get("desc", "커뮤니티 스킬")
-        st.info(f"🎯 커스텀 스킬 적용 중 — {cs_desc}")
-        if st.button("해제", key="clear_community_skill"):
-            st.session_state.active_community_skill = None
-            st.rerun()
-
-# 상세 설정 밖 기본값
+# 상세 설정 밖 기본값 — expander가 접혀있으면 변수가 정의되지 않으므로 기본값 적용
+_defaults = ADVANCED_DEFAULTS
 if "bonus" not in dir():
-    bonus = 0
+    bonus = _defaults["bonus"]
 if "monthly_expense" not in dir():
-    monthly_expense = 150
+    monthly_expense = _defaults["monthly_expense"]
 if "buyer_type" not in dir():
     buyer_type = BuyerType.FIRST_TIME
 if "interest_rate" not in dir():
-    interest_rate = 4.2
+    interest_rate = _defaults["interest_rate"]
 if "will_reside" not in dir():
-    will_reside = True
+    will_reside = _defaults["will_reside"]
 if "gap_invest_mode" not in dir():
-    gap_invest_mode = False
+    gap_invest_mode = _defaults["gap_invest_mode"]
 if "selected_tiers" not in dir():
-    selected_tiers = ["전체"]
+    selected_tiers = _defaults["selected_tiers"]
 if "filter_all_gus" not in dir():
-    filter_all_gus = True
+    filter_all_gus = _defaults["filter_all_gus"]
 if "effective_gus" not in dir():
     effective_gus = set(_seoul_gus + _gyeonggi_gus)
 if "filter_all_dongs" not in dir():
-    filter_all_dongs = True
+    filter_all_dongs = _defaults["filter_all_dongs"]
 if "selected_dongs" not in dir():
-    selected_dongs = ["전체"]
+    selected_dongs = _defaults["selected_dongs"]
 if "max_recovery" not in dir():
-    max_recovery = 200
+    max_recovery = _defaults["max_recovery"]
 if "max_policy_change" not in dir():
-    max_policy_change = 100
+    max_policy_change = _defaults["max_policy_change"]
 if "min_hhld" not in dir():
-    min_hhld = 300
+    min_hhld = _defaults["min_hhld"]
 if "top_n" not in dir():
-    top_n = 10
+    top_n = _defaults["top_n"]
 
 # ─────────────────────────────────────
-# 프리셋 오버라이드 적용
+# 프리셋/스킬 오버라이드 적용
 # ─────────────────────────────────────
 active_preset = st.session_state.get("selected_preset")
 active_community = st.session_state.get("active_community_skill")
 
-# 커뮤니티/커스텀 스킬이 적용된 경우
-if active_community and not active_preset:
-    p = active_community
-    if "max_recovery" in p:
-        max_recovery = p["max_recovery"]
-    if "min_hhld" in p:
-        min_hhld = p["min_hhld"]
-    if "force_gus" in p:
-        effective_gus = set(p["force_gus"])
-        filter_all_gus = False
-    if "force_tiers" in p:
-        selected_tiers = list(p["force_tiers"])
-    if "min_recovery_override" in p:
-        min_recovery = p["min_recovery_override"]
-    if "min_ratio" in p:
-        pass  # handled in candidate filtering below
-    if "max_gap" in p:
-        pass  # handled in candidate filtering below
-    if "max_policy_change" in p:
-        max_policy_change = p["max_policy_change"]
-
-# 프리셋 스킬이 적용된 경우 (프리셋 우선)
 if active_preset and active_preset in PRESETS:
     st.session_state.active_community_skill = None  # 프리셋 선택 시 커뮤니티 해제
-    p = PRESETS[active_preset]
-    if "max_recovery" in p:
-        max_recovery = p["max_recovery"]
-    if "min_hhld" in p:
-        min_hhld = p["min_hhld"]
-    if "force_gus" in p:
-        effective_gus = p["force_gus"]
-        filter_all_gus = False
-    if "force_tiers" in p:
-        selected_tiers = list(p["force_tiers"])
-    if "min_recovery_override" in p:
-        min_recovery = p["min_recovery_override"]
+    active_community = None
+
+filter_params = {
+    "max_recovery": max_recovery, "min_hhld": min_hhld,
+    "effective_gus": effective_gus, "filter_all_gus": filter_all_gus,
+    "selected_tiers": selected_tiers, "min_recovery": 0,
+    "max_policy_change": max_policy_change,
+}
+apply_skill_overrides(filter_params, active_preset, active_community)
+
+# 오버라이드된 값 꺼내기
+max_recovery = filter_params["max_recovery"]
+min_hhld = filter_params["min_hhld"]
+effective_gus = filter_params["effective_gus"]
+filter_all_gus = filter_params["filter_all_gus"]
+selected_tiers = filter_params["selected_tiers"]
+min_recovery = filter_params.get("min_recovery", 0)
+max_policy_change = filter_params["max_policy_change"]
 
 # ─────────────────────────────────────
 # 자동 계산
@@ -386,33 +299,18 @@ pay_ratio = monthly_pay / monthly_income * 100 if monthly_income > 0 else 0
 # 결과 요약 카드
 # ─────────────────────────────────────
 if seed_money > 0 or annual_income > 0:
-    if gap_invest_mode:
-        budget_label = "갭투자 가능"
-    else:
-        budget_label = "매수 가능 집값"
+    budget_label = "갭투자 가능" if gap_invest_mode else "매수 가능 집값"
     budget_display = f"{budget / 10000:.1f}억"
-
-    card_html = f"""
-    <div class="summary-card">
-        <div style="font-size:0.85rem;opacity:0.8">{budget_label}</div>
-        <div class="big">{budget_display}</div>
-        <div class="sub">
-            종잣돈 {seed_money_억:.1f}억 + 대출 {loan_amount/10000:.1f}억
-            &nbsp;·&nbsp; 월 상환 {monthly_pay:,.0f}만원 ({pay_ratio:.0f}%)
-        </div>
-    </div>
-    """
-    st.markdown(card_html, unsafe_allow_html=True)
-
-    for w in sys_result.warnings:
-        st.warning(w)
+    st.markdown(
+        render_summary_card(budget_label, budget_display, seed_money_억, loan_amount, monthly_pay, pay_ratio),
+        unsafe_allow_html=True,
+    )
+    if sys_result.warnings:
+        with st.expander(f"ℹ️ 참고사항 ({len(sys_result.warnings)}건)", expanded=False):
+            for w in sys_result.warnings:
+                st.caption(f"• {w}")
 else:
-    st.markdown("""
-    <div class="summary-card" style="text-align:center;">
-        <div class="big" style="font-size:1.5rem;">종잣돈과 연봉을 입력해보세요</div>
-        <div class="sub">30초면 맞춤 추천을 받을 수 있어요</div>
-    </div>
-    """, unsafe_allow_html=True)
+    st.markdown(render_empty_summary_card(), unsafe_allow_html=True)
 
 # ─────────────────────────────────────
 # 탭
@@ -431,183 +329,24 @@ with tab1:
         if meta:
             st.caption(f"📊 {meta.get('apt_count', 0):,}개 아파트 · 매매 {meta.get('trade_count', 0):,}건 · 전세 {meta.get('rent_count', 0):,}건")
 
-        gap_budget = seed_money + loan_amount
-        if gap_invest_mode:
-            gap_max = int(gap_budget * 1.10)
-            gap_min = int(gap_budget * 0.90)
-        else:
-            budget_max = int(budget * 1.10)
-            budget_min = int(budget * 0.80)
-
-        # 스코어링
-        filter_all_tiers = "전체" in selected_tiers
-        candidates = []
-        for r in all_data:
-            if r.get("hhld", 0) < min_hhld:
-                continue
-            if not filter_all_tiers and r.get("tier", "") not in selected_tiers:
-                continue
-            if not filter_all_gus and r["gu"] not in effective_gus:
-                continue
-            if not filter_all_dongs and r.get("dong", "") not in selected_dongs:
-                continue
-            rr = r.get("recovery_rate", 0)
-            if rr < min_recovery or rr > max_recovery:
-                continue
-            pa = r.get("policy_avg", 0)
-            if pa > 0:
-                latest_p = r.get("latest_price", r["avg_price"])
-                policy_pct = round((latest_p - pa) / pa * 100, 1)
-                if policy_pct > max_policy_change:
-                    continue
-
-            # 전세가율/갭 필터 (프리셋 또는 커뮤니티 스킬)
-            preset_cfg = PRESETS.get(active_preset, {}) if active_preset else {}
-            skill_cfg = active_community if (active_community and not active_preset) else {}
-            effective_cfg = {**skill_cfg, **preset_cfg}  # 프리셋 우선
-            if effective_cfg.get("min_ratio") and r["ratio"] < effective_cfg["min_ratio"]:
-                continue
-            if effective_cfg.get("max_gap") and r["gap"] > effective_cfg["max_gap"]:
-                continue
-
-            if gap_invest_mode:
-                apt_gap = r["gap"]
-                if apt_gap > gap_max or apt_gap < gap_min:
-                    continue
-            else:
-                if r["avg_price"] > budget_max or r["avg_price"] < budget_min:
-                    continue
-
-            # 스코어링
-            tier_score = {
-                "상급지": 40, "상급지(경기)": 30,
-                "중상급지": 25, "중상급지(경기)": 20,
-                "중하급지": 10, "중하급지(경기)": 8,
-                "하급지": 0, "하급지(경기)": 0,
-            }.get(r["tier"], 0)
-
-            ratio_val = r["ratio"]
-            if 50 <= ratio_val <= 70:
-                ratio_score = 30
-            elif ratio_val < 50:
-                ratio_score = max(0, 30 - (50 - ratio_val) * 1.0)
-            else:
-                ratio_score = max(0, 30 - (ratio_val - 70) * 1.5)
-
-            hhld_score = min(r.get("hhld", 0) / 100, 20)
-            volume_score = min(r["count"] * 3, 15)
-
-            if rr > 0:
-                recovery_score = (100 - rr) * 0.3
-                recovery_score = max(-30, min(30, recovery_score))
-            else:
-                recovery_score = 0
-
-            pa = r.get("policy_avg", 0)
-            if pa > 0:
-                latest_p = r.get("latest_price", r["avg_price"])
-                policy_pct_val = (latest_p - pa) / pa * 100
-                policy_score = -policy_pct_val * 0.5
-                policy_score = max(-15, min(15, policy_score))
-            else:
-                policy_score = 0
-
-            score = round(tier_score + ratio_score + hhld_score + volume_score + recovery_score + policy_score, 1)
-
-            if gap_invest_mode:
-                loan_needed = min(r["gap"] - seed_money, loan_amount)
-            else:
-                loan_needed = min(r["avg_price"] - seed_money, loan_amount)
-            if loan_needed < 0:
-                loan_needed = 0
-            if loan_needed > 0 and mr > 0:
-                mp = int(loan_needed * (mr * (1 + mr) ** n) / ((1 + mr) ** n - 1))
-            else:
-                mp = 0
-
-            # 급매 포착용: 최근가 vs 평균 낙폭
-            latest_pr = r.get("latest_price", r["avg_price"])
-            drop_pct = (latest_pr - r["avg_price"]) / r["avg_price"] * 100 if r["avg_price"] > 0 else 0
-
-            candidates.append({**r, "score": score, "loan_needed": loan_needed, "monthly_pay": mp, "drop_pct": drop_pct})
-
-        # 프리셋/커뮤니티 스킬별 정렬
-        sort_mode = effective_cfg.get("sort_by")
-        if sort_mode == "gap_asc":
-            candidates.sort(key=lambda x: x["gap"])
-        elif sort_mode == "drop_desc":
-            candidates.sort(key=lambda x: x["drop_pct"])
-        else:
-            candidates.sort(key=lambda x: -x["score"])
-
+        scoring_params = {
+            "min_hhld": min_hhld, "selected_tiers": selected_tiers,
+            "filter_all_gus": filter_all_gus, "effective_gus": effective_gus,
+            "filter_all_dongs": filter_all_dongs, "selected_dongs": selected_dongs,
+            "min_recovery": min_recovery, "max_recovery": max_recovery,
+            "max_policy_change": max_policy_change,
+            "gap_invest_mode": gap_invest_mode, "budget": budget,
+            "seed_money": seed_money, "loan_amount": loan_amount,
+            "interest_rate": interest_rate,
+        }
+        candidates = filter_and_score(all_data, scoring_params, active_preset, active_community)
         top_list = candidates[:top_n]
 
         if top_list:
             st.caption(f"{len(candidates)}개 후보 중 TOP {len(top_list)}")
 
             for i, r in enumerate(top_list, 1):
-                tier_display = TIER_DISPLAY.get(r["tier"], r["tier"])
-                tier_emoji = TIER_EMOJI.get(r["tier"], "")
-                area_type = r.get("area_type", "")
-                area_num = int(area_type.replace("㎡", "")) if "㎡" in area_type else 0
-                pyeong = round(area_num * 0.3025) if area_num else ""
-                dong = r.get("dong", "")
-                loc = f"{r['gu']} {dong}" if dong else r['gu']
-                latest = r.get("latest_price", r["avg_price"])
-                latest_ym = r.get("latest_ym", "")
-                gap = r["gap"]
-                rr = r.get("recovery_rate", 0)
-
-                # 태그
-                tags = ""
-                if rr > 0 and rr < 85:
-                    tags += '<span class="tag tag-red">저평가</span>'
-                elif rr > 0 and rr < 95:
-                    tags += '<span class="tag tag-red">미회복</span>'
-                elif rr >= 100:
-                    tags += '<span class="tag tag-green">고점 돌파</span>'
-                if r.get("hhld", 0) >= 1000:
-                    tags += '<span class="tag tag-blue">대단지</span>'
-                if r["ratio"] >= 65:
-                    tags += '<span class="tag tag-green">소액갭</span>'
-                if r["tier"] in ("상급지", "상급지(경기)"):
-                    tags += '<span class="tag tag-gray">프리미엄</span>'
-
-                # 10.15 변동
-                pa = r.get("policy_avg", 0)
-                policy_str = ""
-                if pa > 0:
-                    diff_policy = latest - pa
-                    pct = round(diff_policy / pa * 100, 1)
-                    policy_str = f'<div class="metric-item"><span class="metric-label">10.15 전후</span><span class="metric-value">{pct:+.1f}%</span></div>'
-
-                # 회복률
-                recovery_str = ""
-                if rr > 0:
-                    if rr >= 100:
-                        recovery_str = f'<div class="metric-item"><span class="metric-label">22년 고점 대비</span><span class="metric-value" style="color:#51CF66">{rr:.0f}% 돌파</span></div>'
-                    else:
-                        recovery_str = f'<div class="metric-item"><span class="metric-label">22년 고점 대비</span><span class="metric-value" style="color:#FF6B6B">{rr:.0f}% ({100-rr:.0f}%↓)</span></div>'
-
-                card_html = f"""
-                <div class="apt-card">
-                    <div>
-                        <span class="apt-rank">{i}</span>
-                        <span class="apt-name">{r['apt']}</span>
-                    </div>
-                    <div class="apt-meta">{tier_emoji} {loc} · {tier_display} · {area_type}({pyeong}평) · {r.get('hhld',0):,}세대</div>
-                    <div style="margin-top:8px">{tags}</div>
-                    <div class="metric-grid">
-                        <div class="metric-item"><span class="metric-label">최근 거래가</span><span class="metric-value">{latest/10000:.1f}억 <span style="font-size:0.7rem;color:#888">{latest_ym}</span></span></div>
-                        <div class="metric-item"><span class="metric-label">전세가율</span><span class="metric-value">{r['ratio']:.0f}%</span></div>
-                        <div class="metric-item"><span class="metric-label">갭(매매-전세)</span><span class="metric-value">{gap/10000:.1f}억</span></div>
-                        <div class="metric-item"><span class="metric-label">월 상환</span><span class="metric-value">{r['monthly_pay']:,}만원</span></div>
-                        {policy_str}
-                        {recovery_str}
-                    </div>
-                </div>
-                """
-                st.markdown(card_html, unsafe_allow_html=True)
+                st.markdown(render_apt_card(i, r), unsafe_allow_html=True)
 
                 # 상세 분석 (접기)
                 pcp = r.get("pre_crash_peak", 0)
@@ -615,6 +354,7 @@ with tab1:
                 history = r.get("price_history", {})
 
                 if (pcp > 0 and ct > 0) or (history and len(history) >= 2):
+                    rr = r.get("recovery_rate", 0)
                     with st.expander(f"📊 {r['apt']} 상세 분석"):
                         if pcp > 0 and ct > 0:
                             import pandas as pd
@@ -684,6 +424,8 @@ with tab1:
             if gap_invest_mode:
                 st.info("갭 범위에 맞는 아파트가 없어요. 상세 설정에서 조건을 조정해보세요.")
             elif seed_money > 0 or annual_income > 0:
+                budget_max = int(budget * 1.10)
+                budget_min = int(budget * 0.80)
                 st.info(f"예산 범위({budget_min/10000:.1f}~{budget_max/10000:.1f}억)에 맞는 아파트가 없어요. 조건을 조정해보세요.")
 
 # ─────────────────────────────────────
@@ -852,43 +594,8 @@ with tab5:
 
             for rank, skill in enumerate(ranked, 1):
                 cfg = skill.get("config", {})
-
-                # 필터 태그
-                tags = []
-                if "force_tiers" in cfg:
-                    for t in cfg["force_tiers"]:
-                        tags.append(TIER_DISPLAY.get(t, t))
-                if "force_gus" in cfg:
-                    tags.extend(cfg["force_gus"])
-                if "min_hhld" in cfg:
-                    tags.append(f"{cfg['min_hhld']}세대+")
-                if "max_recovery" in cfg:
-                    tags.append(f"회복률~{cfg['max_recovery']}%")
-                if "min_ratio" in cfg:
-                    tags.append(f"전세가율{cfg['min_ratio']}%+")
-                if "max_gap" in cfg:
-                    tags.append(f"갭~{cfg['max_gap']/10000:.0f}억")
-                sort_labels = {"gap_asc": "갭적은순", "drop_desc": "급매순"}
-                if "sort_by" in cfg:
-                    tags.append(sort_labels.get(cfg["sort_by"], cfg["sort_by"]))
-                tags_html = " ".join(f'<span class="tag tag-blue">{t}</span>' for t in tags)
-
-                medal = {1: "🥇", 2: "🥈", 3: "🥉"}.get(rank, f"#{rank}")
-
-                st.markdown(f"""
-                <div class="apt-card">
-                    <div style="display:flex;justify-content:space-between;align-items:center">
-                        <div>
-                            <span style="font-size:1.2rem;margin-right:6px">{medal}</span>
-                            <span class="apt-name">{skill['name']}</span>
-                        </div>
-                        <span style="color:#FF6B6B;font-size:0.85rem">❤️ {skill['likes']}</span>
-                    </div>
-                    <div class="apt-meta" style="margin-top:4px">by {skill['author']}</div>
-                    <div style="font-size:0.85rem;margin-top:8px;color:#d1d5db">{skill['desc']}</div>
-                    <div style="margin-top:8px">{tags_html}</div>
-                </div>
-                """, unsafe_allow_html=True)
+                tags_html = build_skill_tags_html(cfg)
+                st.markdown(render_community_skill_card(rank, skill, tags_html), unsafe_allow_html=True)
 
                 col_a, col_b = st.columns([1, 1])
                 with col_a:
@@ -930,8 +637,7 @@ with tab5:
             cs_col1, cs_col2 = st.columns(2)
             with cs_col1:
                 cs_tiers_display = st.multiselect(
-                    "지역 등급", options=[TIER_DISPLAY[t] for t in
-                    ["상급지", "상급지(경기)", "중상급지", "중상급지(경기)", "중하급지", "중하급지(경기)", "하급지", "하급지(경기)"]],
+                    "지역 등급", options=[TIER_DISPLAY[t] for t in TIER_KEYS_ORDERED],
                     default=[], key="cs_tiers",
                     help="비워두면 전체 등급에서 찾아요",
                 )
@@ -1033,29 +739,8 @@ with tab5:
                 elif skill.get("source") == "custom":
                     source_tag = '<span class="tag tag-green">직접 만든 스킬</span>'
 
-                # 필터 요약
-                parts = []
-                if "force_tiers" in cfg:
-                    parts.append(", ".join(TIER_DISPLAY.get(t, t) for t in cfg["force_tiers"]))
-                if "force_gus" in cfg:
-                    parts.append(", ".join(cfg["force_gus"]))
-                if "min_hhld" in cfg:
-                    parts.append(f"{cfg['min_hhld']}세대+")
-                if "max_recovery" in cfg:
-                    parts.append(f"회복률~{cfg['max_recovery']}%")
-                if "min_ratio" in cfg:
-                    parts.append(f"전세가율{cfg['min_ratio']}%+")
-                summary = " · ".join(parts) if parts else "기본 필터"
-
-                st.markdown(f"""
-                <div class="apt-card">
-                    <div>
-                        <span class="apt-name">{skill['name']}</span> {source_tag}
-                    </div>
-                    <div style="font-size:0.85rem;margin-top:4px;color:#d1d5db">{skill.get('desc', '')}</div>
-                    <div style="font-size:0.75rem;margin-top:6px;color:#888">{summary}</div>
-                </div>
-                """, unsafe_allow_html=True)
+                summary = build_my_skill_summary(cfg)
+                st.markdown(render_my_skill_card(skill, source_tag, summary), unsafe_allow_html=True)
 
                 c1, c2 = st.columns([4, 1])
                 with c1:
