@@ -11,45 +11,11 @@ sys.path.insert(0, os.path.dirname(__file__))
 from src.calculator import (
     BuyerType, LoanPolicy, UserFinance, calculate_affordability,
 )
+from src.data_loader import load_data, load_trade_index, load_community_skills
 
 # ─────────────────────────────────────
-# 데이터 로드 (CSS보다 먼저 — Python 3.14 tokenizer 호환)
+# 데이터 로드 (@st.cache_data는 src/data_loader.py에 분리 — Python 3.14 호환)
 # ─────────────────────────────────────
-DATA_DIR = os.path.join(os.path.dirname(__file__), "data")
-
-
-@st.cache_data
-def load_data():
-    analysis, meta = [], {}
-    path = os.path.join(DATA_DIR, "analysis.json")
-    if os.path.exists(path):
-        with open(path) as f:
-            analysis = json.load(f)
-    meta_path = os.path.join(DATA_DIR, "meta.json")
-    if os.path.exists(meta_path):
-        with open(meta_path) as f:
-            meta = json.load(f)
-    return analysis, meta
-
-
-@st.cache_data
-def load_trade_index():
-    raw_path = os.path.join(DATA_DIR, "raw_trades.json")
-    if not os.path.exists(raw_path):
-        return {}
-    idx = {}
-    with open(raw_path) as f:
-        raw_trades = json.load(f)
-    for t in raw_trades:
-        area_type = f"{int(t['area'])}㎡"
-        key = (t["gu"], t["apt"], t.get("dong", ""), area_type)
-        idx.setdefault(key, []).append(t)
-    del raw_trades
-    for key in idx:
-        idx[key].sort(key=lambda x: (x["year"], x["month"]), reverse=True)
-    return idx
-
-
 all_data, meta = load_data()
 _seoul_gus = sorted(set(r["gu"] for r in all_data if "경기" not in r.get("tier", "")))
 _gyeonggi_gus = sorted(set(r["gu"] for r in all_data if "경기" in r.get("tier", "")))
@@ -99,6 +65,8 @@ PRESETS = {
     },
 }
 
+COMMUNITY_SKILLS = load_community_skills()
+
 # ─────────────────────────────────────
 # 페이지 설정
 # ─────────────────────────────────────
@@ -115,6 +83,8 @@ st.markdown("""<style>
     .block-container { max-width: 640px !important; padding: 1rem 1rem 4rem !important; }
     .block-container { padding-top: 1.5rem !important; }
     [data-testid="stSidebar"] { display: none; }
+    [data-testid="stHeader"] { display: none; }
+    [data-testid="stDecoration"] { display: none; }
     h1 { font-size: 1.8rem !important; font-weight: 800 !important; letter-spacing: -1px; user-select: none; -webkit-user-select: none; }
     h3 { font-size: 1.1rem !important; font-weight: 700 !important; margin-bottom: 0 !important; }
     /* 입력 필드 */
@@ -166,6 +136,8 @@ st.markdown("""<style>
     .divider { border-top: 1px solid #2d3039; margin: 20px 0; }
     /* 상세 설정 */
     .stExpander { border: 1px solid #2d3039 !important; border-radius: 12px !important; }
+    /* 스킬 탭 라디오 */
+    .stRadio > div > label > div:first-child { display: none; }
     /* word-break */
     * { word-break: keep-all; }
 </style>""", unsafe_allow_html=True)
@@ -208,20 +180,22 @@ if "selected_preset" not in st.session_state:
     st.session_state.selected_preset = None
 
 preset_keys = list(PRESETS.keys())
+# 1행: 처음 3개
+row1 = preset_keys[:3]
 p_cols = st.columns(3)
-for idx, key in enumerate(preset_keys):
-    with p_cols[idx % 3]:
+for idx, key in enumerate(row1):
+    with p_cols[idx]:
         if st.button(key, key=f"preset_{idx}", use_container_width=True):
             if st.session_state.selected_preset == key:
-                st.session_state.selected_preset = None  # 토글 해제
+                st.session_state.selected_preset = None
             else:
                 st.session_state.selected_preset = key
 
-# 남은 2개 버튼 (2행)
-remaining = len(preset_keys) - 3
-if remaining > 0:
+# 2행: 나머지
+row2 = preset_keys[3:]
+if row2:
     p_cols2 = st.columns(3)
-    for idx, key in enumerate(preset_keys[3:]):
+    for idx, key in enumerate(row2):
         with p_cols2[idx]:
             if st.button(key, key=f"preset_{idx+3}", use_container_width=True):
                 if st.session_state.selected_preset == key:
@@ -233,6 +207,16 @@ active_preset = st.session_state.get("selected_preset")
 if active_preset and active_preset in PRESETS:
     p_info = PRESETS[active_preset]
     st.success(f"🎯 **{active_preset}** — {p_info['desc']}")
+elif st.session_state.get("active_community_skill"):
+    # 커뮤니티/커스텀 스킬 적용 중 표시
+    cs_desc = st.session_state.active_community_skill.get("desc", "커뮤니티 스킬")
+    col_cs1, col_cs2 = st.columns([5, 1])
+    with col_cs1:
+        st.info(f"🎯 커스텀 스킬 적용 중 — {cs_desc}")
+    with col_cs2:
+        if st.button("해제", key="clear_community_skill"):
+            st.session_state.active_community_skill = None
+            st.rerun()
 
 # ─────────────────────────────────────
 # 상세 설정 (접기)
@@ -346,7 +330,32 @@ if "top_n" not in dir():
 # 프리셋 오버라이드 적용
 # ─────────────────────────────────────
 active_preset = st.session_state.get("selected_preset")
+active_community = st.session_state.get("active_community_skill")
+
+# 커뮤니티/커스텀 스킬이 적용된 경우
+if active_community and not active_preset:
+    p = active_community
+    if "max_recovery" in p:
+        max_recovery = p["max_recovery"]
+    if "min_hhld" in p:
+        min_hhld = p["min_hhld"]
+    if "force_gus" in p:
+        effective_gus = set(p["force_gus"])
+        filter_all_gus = False
+    if "force_tiers" in p:
+        selected_tiers = list(p["force_tiers"])
+    if "min_recovery_override" in p:
+        min_recovery = p["min_recovery_override"]
+    if "min_ratio" in p:
+        pass  # handled in candidate filtering below
+    if "max_gap" in p:
+        pass  # handled in candidate filtering below
+    if "max_policy_change" in p:
+        max_policy_change = p["max_policy_change"]
+
+# 프리셋 스킬이 적용된 경우 (프리셋 우선)
 if active_preset and active_preset in PRESETS:
+    st.session_state.active_community_skill = None  # 프리셋 선택 시 커뮤니티 해제
     p = PRESETS[active_preset]
     if "max_recovery" in p:
         max_recovery = p["max_recovery"]
@@ -421,7 +430,7 @@ else:
 # ─────────────────────────────────────
 # 탭
 # ─────────────────────────────────────
-tab1, tab2, tab3, tab4 = st.tabs(["🏆 추천", "📈 로드맵", "🏦 상환", "ℹ️ 소개"])
+tab1, tab5, tab2, tab3, tab4 = st.tabs(["🏆 추천", "🎯 스킬", "📈 로드맵", "🏦 상환", "ℹ️ 소개"])
 
 # ─────────────────────────────────────
 # TAB 1: TOP N 추천
@@ -465,9 +474,13 @@ with tab1:
                 if policy_pct > max_policy_change:
                     continue
 
-            # 소액갭 프리셋: 전세가율 필터
+            # 전세가율/갭 필터 (프리셋 또는 커뮤니티 스킬)
             preset_cfg = PRESETS.get(active_preset, {}) if active_preset else {}
-            if preset_cfg.get("min_ratio") and r["ratio"] < preset_cfg["min_ratio"]:
+            skill_cfg = active_community if (active_community and not active_preset) else {}
+            effective_cfg = {**skill_cfg, **preset_cfg}  # 프리셋 우선
+            if effective_cfg.get("min_ratio") and r["ratio"] < effective_cfg["min_ratio"]:
+                continue
+            if effective_cfg.get("max_gap") and r["gap"] > effective_cfg["max_gap"]:
                 continue
 
             if gap_invest_mode:
@@ -531,8 +544,8 @@ with tab1:
 
             candidates.append({**r, "score": score, "loan_needed": loan_needed, "monthly_pay": mp, "drop_pct": drop_pct})
 
-        # 프리셋별 정렬
-        sort_mode = preset_cfg.get("sort_by") if active_preset else None
+        # 프리셋/커뮤니티 스킬별 정렬
+        sort_mode = effective_cfg.get("sort_by")
         if sort_mode == "gap_asc":
             candidates.sort(key=lambda x: x["gap"])
         elif sort_mode == "drop_desc":
@@ -807,6 +820,297 @@ with tab4:
 > ⚠️ 본 서비스는 참고용 정보 제공 도구입니다. 투자 판단은 본인 책임이며,
 > 대출 한도는 은행/신용등급/상품에 따라 달라지므로 반드시 은행 상담을 병행하세요.
 """)
+
+# ─────────────────────────────────────
+# TAB 5: 스킬 (커스텀 + 커뮤니티)
+# ─────────────────────────────────────
+with tab5:
+    st.markdown("### 🎯 스킬 마켓 <span style='display:inline-block;background:linear-gradient(135deg,#667eea,#764ba2);color:white;padding:2px 10px;border-radius:12px;font-size:0.65rem;font-weight:700;vertical-align:middle;margin-left:8px'>BETA</span>", unsafe_allow_html=True)
+    st.caption("다른 투자자의 전략을 구경하고, 나만의 스킬을 만들어보세요")
+
+    # 온보딩 가이드
+    with st.expander("💡 스킬이 뭔가요? (처음이라면 읽어보세요)"):
+        st.markdown("""
+**스킬 = 나만의 투자 필터 조합**
+
+집피티는 **스킬 기반**으로 동작해요.
+"어디서, 어떤 조건으로, 어떻게 정렬할지"를 하나의 스킬로 만들면
+매번 필터를 다시 설정할 필요 없이 **원클릭으로 전략을 적용**할 수 있어요.
+
+1. **커뮤니티 랭킹** — 다른 투자자들이 만든 인기 전략을 구경
+2. **마음에 드는 스킬 적용** — 버튼 한 번이면 🏆 추천 탭에 바로 반영
+3. **직접 만들기** — 원하는 조건을 조합해서 나만의 스킬 생성
+
+> ⚠️ 현재 Beta: 스킬은 현재 세션에만 저장돼요. 새로고침하면 초기화됩니다.
+> 향후 로그인 기능과 함께 영구 저장이 지원될 예정이에요.
+""")
+
+    # 세션 초기화
+    if "custom_skills" not in st.session_state:
+        st.session_state.custom_skills = []
+
+    skill_section = st.radio(
+        "skill_section", ["🏆 커뮤니티 랭킹", "✏️ 스킬 만들기", "📁 내 스킬"],
+        horizontal=True, label_visibility="collapsed",
+    )
+
+    # ── 커뮤니티 스킬 랭킹 ──
+    if skill_section == "🏆 커뮤니티 랭킹":
+        if not COMMUNITY_SKILLS:
+            st.info("커뮤니티 스킬이 아직 없습니다.")
+        else:
+            st.caption(f"{len(COMMUNITY_SKILLS)}개 스킬 · 좋아요순")
+            ranked = sorted(COMMUNITY_SKILLS, key=lambda s: -s["likes"])
+            saved_names = {s["name"] for s in st.session_state.custom_skills}
+
+            for rank, skill in enumerate(ranked, 1):
+                cfg = skill.get("config", {})
+
+                # 필터 태그
+                tags = []
+                if "force_tiers" in cfg:
+                    for t in cfg["force_tiers"]:
+                        tags.append(TIER_DISPLAY.get(t, t))
+                if "force_gus" in cfg:
+                    tags.extend(cfg["force_gus"])
+                if "min_hhld" in cfg:
+                    tags.append(f"{cfg['min_hhld']}세대+")
+                if "max_recovery" in cfg:
+                    tags.append(f"회복률~{cfg['max_recovery']}%")
+                if "min_ratio" in cfg:
+                    tags.append(f"전세가율{cfg['min_ratio']}%+")
+                if "max_gap" in cfg:
+                    tags.append(f"갭~{cfg['max_gap']/10000:.0f}억")
+                sort_labels = {"gap_asc": "갭적은순", "drop_desc": "급매순"}
+                if "sort_by" in cfg:
+                    tags.append(sort_labels.get(cfg["sort_by"], cfg["sort_by"]))
+                tags_html = " ".join(f'<span class="tag tag-blue">{t}</span>' for t in tags)
+
+                medal = {1: "🥇", 2: "🥈", 3: "🥉"}.get(rank, f"#{rank}")
+
+                st.markdown(f"""
+                <div class="apt-card">
+                    <div style="display:flex;justify-content:space-between;align-items:center">
+                        <div>
+                            <span style="font-size:1.2rem;margin-right:6px">{medal}</span>
+                            <span class="apt-name">{skill['name']}</span>
+                        </div>
+                        <span style="color:#FF6B6B;font-size:0.85rem">❤️ {skill['likes']}</span>
+                    </div>
+                    <div class="apt-meta" style="margin-top:4px">by {skill['author']}</div>
+                    <div style="font-size:0.85rem;margin-top:8px;color:#d1d5db">{skill['desc']}</div>
+                    <div style="margin-top:8px">{tags_html}</div>
+                </div>
+                """, unsafe_allow_html=True)
+
+                col_a, col_b = st.columns([1, 1])
+                with col_a:
+                    if skill["name"] in saved_names:
+                        st.button("✅ 저장됨", key=f"comm_save_{rank}", disabled=True, use_container_width=True)
+                    else:
+                        if st.button("💾 내 스킬로 저장", key=f"comm_save_{rank}", use_container_width=True):
+                            st.session_state.custom_skills.append({
+                                "name": skill["name"], "desc": skill["desc"],
+                                "author": skill["author"], "config": cfg, "source": "community",
+                            })
+                            st.toast(f"✅ '{skill['name']}' 저장!")
+                            st.rerun()
+                with col_b:
+                    if st.button("🎯 바로 적용", key=f"comm_apply_{rank}", use_container_width=True):
+                        st.session_state.active_community_skill = cfg
+                        st.session_state.selected_preset = None
+                        st.toast(f"✅ '{skill['name']}' 적용! 🏆 추천 탭을 확인하세요")
+
+    # ── 스킬 만들기 ──
+    elif skill_section == "✏️ 스킬 만들기":
+        st.markdown("""
+        <div style="background:#1a1d26;border:1px solid #2d3039;border-radius:12px;padding:14px;margin:8px 0;font-size:0.85rem">
+            💡 모든 항목을 채울 필요 없어요. 원하는 조건만 설정하면 나머지는 기본값이 적용됩니다.
+        </div>
+        """, unsafe_allow_html=True)
+
+        with st.form("create_skill_form"):
+            skill_name = st.text_input(
+                "스킬 이름 *", placeholder="예: 나의 강남 저평가 전략",
+                help="나중에 구분하기 쉬운 이름을 지어주세요",
+            )
+            skill_desc = st.text_input(
+                "설명", placeholder="예: 강남3구에서 고점 대비 80% 미만 회복된 대단지",
+                help="어떤 전략인지 간단히 메모 (선택)",
+            )
+
+            st.markdown("**📍 지역 조건**")
+            cs_col1, cs_col2 = st.columns(2)
+            with cs_col1:
+                cs_tiers_display = st.multiselect(
+                    "지역 등급", options=[TIER_DISPLAY[t] for t in
+                    ["상급지", "상급지(경기)", "중상급지", "중상급지(경기)", "중하급지", "중하급지(경기)", "하급지", "하급지(경기)"]],
+                    default=[], key="cs_tiers",
+                    help="비워두면 전체 등급에서 찾아요",
+                )
+            with cs_col2:
+                cs_gus = st.multiselect(
+                    "특정 구", options=sorted(_seoul_gus + _gyeonggi_gus),
+                    default=[], key="cs_gus",
+                    help="비워두면 전체 구에서 찾아요",
+                )
+
+            st.markdown("**🏢 아파트 조건**")
+            ac_col1, ac_col2 = st.columns(2)
+            with ac_col1:
+                cs_min_hhld = st.number_input(
+                    "최소 세대수", min_value=300, max_value=5000, value=300, step=100, key="cs_hhld",
+                    help="대단지를 원하면 1000+",
+                )
+            with ac_col2:
+                cs_min_ratio = st.number_input(
+                    "최소 전세가율 (%)", min_value=0, max_value=100, value=0, step=5, key="cs_ratio",
+                    help="소액갭은 65%+ 추천",
+                )
+
+            st.markdown("**📈 가격 조건**")
+            pr_col1, pr_col2 = st.columns(2)
+            with pr_col1:
+                cs_max_recovery = st.slider(
+                    "최대 회복률 (22년 고점 대비 %)", 0, 200, 200, 5, key="cs_recovery",
+                    help="낮출수록 저평가. 90% = 아직 10%↓",
+                )
+            with pr_col2:
+                cs_max_gap = st.number_input(
+                    "최대 갭 (만원, 0=제한없음)", min_value=0, max_value=200000, value=0, step=5000, key="cs_gap",
+                    help="소액갭이면 20000(2억) 추천",
+                )
+
+            st.markdown("**🔢 정렬**")
+            cs_sort = st.selectbox(
+                "결과 정렬", ["🏆 종합 점수순 (기본)", "💰 갭 적은순 (소액갭)", "📉 급매순 (최근 하락)"],
+                key="cs_sort", help="추천 리스트 정렬 기준",
+            )
+
+            submitted = st.form_submit_button("💾 스킬 저장하기", use_container_width=True)
+
+        if submitted:
+            if not skill_name.strip():
+                st.error("스킬 이름을 입력해주세요!")
+            else:
+                new_cfg = {}
+                if cs_tiers_display:
+                    new_cfg["force_tiers"] = [TIER_REVERSE.get(d, d) for d in cs_tiers_display]
+                if cs_gus:
+                    new_cfg["force_gus"] = cs_gus
+                if cs_min_hhld > 300:
+                    new_cfg["min_hhld"] = cs_min_hhld
+                if cs_max_recovery < 200:
+                    new_cfg["max_recovery"] = cs_max_recovery
+                if cs_min_ratio > 0:
+                    new_cfg["min_ratio"] = cs_min_ratio
+                if cs_max_gap > 0:
+                    new_cfg["max_gap"] = cs_max_gap
+                sort_map = {"💰 갭 적은순 (소액갭)": "gap_asc", "📉 급매순 (최근 하락)": "drop_desc"}
+                if cs_sort in sort_map:
+                    new_cfg["sort_by"] = sort_map[cs_sort]
+
+                # 같은 이름 덮어쓰기
+                st.session_state.custom_skills = [
+                    s for s in st.session_state.custom_skills if s["name"] != skill_name.strip()
+                ]
+                st.session_state.custom_skills.append({
+                    "name": skill_name.strip(),
+                    "desc": skill_desc.strip() or skill_name.strip(),
+                    "author": "나", "config": new_cfg, "source": "custom",
+                })
+                st.success(f"✅ '{skill_name}' 저장 완료! 📁 내 스킬 탭에서 확인하세요")
+
+    # ── 내 스킬 ──
+    elif skill_section == "📁 내 스킬":
+        saved = st.session_state.custom_skills
+        if not saved:
+            st.markdown("""
+            <div style="text-align:center;padding:40px 20px;color:#888">
+                <div style="font-size:2rem;margin-bottom:12px">📭</div>
+                <div style="font-size:1rem;font-weight:600;margin-bottom:8px">아직 저장된 스킬이 없어요</div>
+                <div style="font-size:0.85rem">
+                    🏆 커뮤니티 랭킹에서 마음에 드는 스킬을 저장하거나<br>
+                    ✏️ 스킬 만들기에서 직접 만들어보세요!
+                </div>
+            </div>
+            """, unsafe_allow_html=True)
+        else:
+            st.caption(f"💾 {len(saved)}개 스킬 · 현재 세션에 저장됨")
+
+            for idx, skill in enumerate(saved):
+                cfg = skill.get("config", {})
+                source_tag = ""
+                if skill.get("source") == "community":
+                    source_tag = '<span class="tag tag-blue">커뮤니티</span>'
+                elif skill.get("source") == "custom":
+                    source_tag = '<span class="tag tag-green">직접 만든 스킬</span>'
+
+                # 필터 요약
+                parts = []
+                if "force_tiers" in cfg:
+                    parts.append(", ".join(TIER_DISPLAY.get(t, t) for t in cfg["force_tiers"]))
+                if "force_gus" in cfg:
+                    parts.append(", ".join(cfg["force_gus"]))
+                if "min_hhld" in cfg:
+                    parts.append(f"{cfg['min_hhld']}세대+")
+                if "max_recovery" in cfg:
+                    parts.append(f"회복률~{cfg['max_recovery']}%")
+                if "min_ratio" in cfg:
+                    parts.append(f"전세가율{cfg['min_ratio']}%+")
+                summary = " · ".join(parts) if parts else "기본 필터"
+
+                st.markdown(f"""
+                <div class="apt-card">
+                    <div>
+                        <span class="apt-name">{skill['name']}</span> {source_tag}
+                    </div>
+                    <div style="font-size:0.85rem;margin-top:4px;color:#d1d5db">{skill.get('desc', '')}</div>
+                    <div style="font-size:0.75rem;margin-top:6px;color:#888">{summary}</div>
+                </div>
+                """, unsafe_allow_html=True)
+
+                c1, c2 = st.columns([4, 1])
+                with c1:
+                    if st.button("🎯 추천에 적용", key=f"my_apply_{idx}", use_container_width=True):
+                        st.session_state.active_community_skill = cfg
+                        st.session_state.selected_preset = None
+                        st.toast(f"✅ '{skill['name']}' 적용! 🏆 추천 탭을 확인하세요")
+                with c2:
+                    if st.button("🗑️", key=f"my_del_{idx}", use_container_width=True):
+                        st.session_state.custom_skills.pop(idx)
+                        st.rerun()
+
+            # JSON 내보내기/가져오기
+            st.markdown('<div class="divider"></div>', unsafe_allow_html=True)
+            st.caption("💡 JSON으로 내보내면 나중에 다시 가져올 수 있어요")
+            exp_col, imp_col = st.columns(2)
+            with exp_col:
+                st.download_button(
+                    "📤 내보내기", data=json.dumps(saved, ensure_ascii=False, indent=2),
+                    file_name="jipiti_skills.json", mime="application/json", use_container_width=True,
+                )
+            with imp_col:
+                uploaded = st.file_uploader("📥", type=["json"], key="skill_import", label_visibility="collapsed")
+
+            if uploaded:
+                try:
+                    imported = json.loads(uploaded.read().decode("utf-8"))
+                    if isinstance(imported, list):
+                        existing = {s["name"] for s in st.session_state.custom_skills}
+                        added = sum(1 for s in imported if isinstance(s, dict) and s.get("name") and s["name"] not in existing)
+                        for s in imported:
+                            if isinstance(s, dict) and s.get("name") and s["name"] not in existing:
+                                st.session_state.custom_skills.append(s)
+                        if added:
+                            st.success(f"✅ {added}개 스킬 가져오기 완료!")
+                            st.rerun()
+                        else:
+                            st.info("새로 추가할 스킬이 없어요")
+                    else:
+                        st.error("올바른 JSON 형식이 아닙니다")
+                except Exception as e:
+                    st.error(f"파일 오류: {e}")
 
 # 푸터
 st.markdown('<div class="divider"></div>', unsafe_allow_html=True)

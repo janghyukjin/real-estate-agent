@@ -1,0 +1,86 @@
+[
+  {
+    "name": "🏆 강남 저평가 대단지",
+    "author": "집피티 팀",
+    "desc": "강남3구 + 용산에서 고점 대비 아직 미회복된 1000세대+ 대단지",
+    "likes": 342,
+    "config": {
+      "force_tiers": ["상급지"],
+      "min_hhld": 1000,
+      "max_recovery": 95
+    }
+  },
+  {
+    "name": "💰 2억 이하 소액갭",
+    "author": "갭투자연구소",
+    "desc": "전세가율 65%+ → 갭 2억 이하로 내 집 마련",
+    "likes": 287,
+    "config": {
+      "min_ratio": 65,
+      "sort_by": "gap_asc",
+      "max_gap": 20000
+    }
+  },
+  {
+    "name": "📈 경기 반등 기대",
+    "author": "수도권분석가",
+    "desc": "경기 1~2티어에서 회복률 60~85% 구간 (반등 여력 큰 곳)",
+    "likes": 198,
+    "config": {
+      "force_tiers": ["상급지(경기)", "중상급지(경기)"],
+      "min_recovery_override": 60,
+      "max_recovery": 85
+    }
+  },
+  {
+    "name": "🏫 목동+대치 학군",
+    "author": "학부모연합",
+    "desc": "양천구 + 강남구 중심 학군지 대단지",
+    "likes": 176,
+    "config": {
+      "force_gus": ["양천구", "강남구"],
+      "min_hhld": 800
+    }
+  },
+  {
+    "name": "⚡ 토허제 급락 매물",
+    "author": "정책분석봇",
+    "desc": "10.15 토허제 이후 -5% 이상 하락한 곳 (반등 기대)",
+    "likes": 163,
+    "config": {
+      "max_policy_change": -5
+    }
+  },
+  {
+    "name": "🏘️ 3티어 가성비 신혼",
+    "author": "신혼부부모임",
+    "desc": "3~4티어에서 500세대+ 전세가율 60%+ 가성비 좋은 곳",
+    "likes": 145,
+    "config": {
+      "force_tiers": ["중하급지", "중하급지(경기)", "하급지", "하급지(경기)"],
+      "min_hhld": 500,
+      "min_ratio": 60
+    }
+  },
+  {
+    "name": "🔥 고점 돌파 상승세",
+    "author": "모멘텀투자",
+    "desc": "22년 고점을 이미 돌파한 상승 모멘텀 아파트",
+    "likes": 134,
+    "config": {
+      "min_recovery_override": 100,
+      "max_recovery": 200,
+      "min_hhld": 500
+    }
+  },
+  {
+    "name": "🏙️ 마용성 핵심 입지",
+    "author": "서울핵심연구",
+    "desc": "마포/용산/성동구 2티어 핵심 입지만",
+    "likes": 121,
+    "config": {
+      "force_gus": ["마포구", "용산구", "성동구"],
+      "min_hhld": 500
+    }
+  }
+]
