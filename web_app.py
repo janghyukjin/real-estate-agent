@@ -21,7 +21,6 @@ from src.card_renderer import (
     render_community_skill_card, render_my_skill_card,
     build_skill_tags_html, build_my_skill_summary,
 )
-from src.kakao_share import build_kakao_share_html
 
 # ─────────────────────────────────────
 # 데이터 로드 (@st.cache_data는 src/data_loader.py에 분리 — Python 3.14 tokenizer 호환)
@@ -419,16 +418,6 @@ with tab1:
                                 })
                             st.dataframe(pd.DataFrame(rows), hide_index=True, width="stretch")
 
-            # 카카오톡 공유 버튼 (추천 결과 하단)
-            import streamlit.components.v1 as components
-            top_apt_name = top_list[0]["apt"] if top_list else ""
-            share_html = build_kakao_share_html(
-                seed_억=seed_money_억,
-                loan_억=loan_amount / 10000,
-                budget_억=budget / 10000,
-                top_apt=top_apt_name,
-            )
-            components.html(share_html, height=70)
         else:
             if gap_invest_mode:
                 st.info("갭 범위에 맞는 아파트가 없어요. 상세 설정에서 조건을 조정해보세요.")
