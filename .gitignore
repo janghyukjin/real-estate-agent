@@ -7,3 +7,4 @@ dist/
 .streamlit/secrets.toml
 data/raw_rents.json
 data/raw_trades.json
+.github/
