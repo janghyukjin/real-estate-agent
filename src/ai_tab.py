@@ -8,6 +8,19 @@ from typing import Optional
 
 import streamlit as st
 
+
+def _get_user_ip() -> str:
+    """Streamlit Cloud에서 사용자 IP 추출 (로컬은 127.0.0.1)"""
+    try:
+        headers = st.context.headers
+        # Streamlit Cloud는 X-Forwarded-For 헤더 사용
+        forwarded = headers.get("X-Forwarded-For", "")
+        if forwarded:
+            return forwarded.split(",")[0].strip()
+        return headers.get("X-Real-Ip", "127.0.0.1")
+    except Exception:
+        return "127.0.0.1"
+
 # ---------------------------------------------------------------------------
 # Lazy imports — avoid crashing if heavy deps are not yet installed
 # ---------------------------------------------------------------------------
@@ -47,6 +60,8 @@ EXAMPLE_QUESTIONS = [
     "동탄 아파트 투자",
     "전세가율 높은 아파트",
 ]
+
+from .rate_limiter import check_limit, log_question, get_stats, DAILY_LIMIT
 
 
 def render_ai_tab(
@@ -142,7 +157,18 @@ def render_ai_tab(
         key="ai_question_input",
     )
 
+    # -----------------------------------------------------------------------
+    # Rate limit (SQLite, IP별 일일 10회)
+    # -----------------------------------------------------------------------
+    user_ip = _get_user_ip()
+    allowed, remaining = check_limit(user_ip)
+    st.caption(f"남은 질문 횟수: {remaining}/{DAILY_LIMIT} (일일 제한)")
+
     if st.button("질문하기", key="ai_ask_btn", type="primary") and question:
+        if not allowed:
+            st.warning("오늘 질문 횟수를 모두 사용했습니다 (10회/일). 내일 다시 이용해주세요!")
+            return
+
         engine = _get_rag_engine()
 
         with st.spinner("답변 생성 중..."):
@@ -151,6 +177,7 @@ def render_ai_tab(
                 context_from_app=user_context,
                 n_results=5,
             )
+        log_question(user_ip)
 
         # -------------------------------------------------------------------
         # Display answer

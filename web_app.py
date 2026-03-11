@@ -312,7 +312,7 @@ else:
 # ─────────────────────────────────────
 # 탭
 # ─────────────────────────────────────
-tab1, tab5, tab2, tab3, tab4 = st.tabs(["🏆 추천", "🎯 스킬", "📈 로드맵", "🏦 상환", "ℹ️ 소개"])
+tab1, tab5, tab2, tab3, tab6, tab4 = st.tabs(["🏆 추천", "🎯 스킬", "📈 로드맵", "🏦 상환", "🤖 AI 비서", "ℹ️ 소개"])
 
 # ─────────────────────────────────────
 # TAB 1: TOP N 추천
@@ -781,6 +781,27 @@ with tab5:
                         st.error("올바른 JSON 형식이 아닙니다")
                 except Exception as e:
                     st.error(f"파일 오류: {e}")
+
+# ─────────────────────────────────────
+# TAB 6: AI 비서
+# ─────────────────────────────────────
+with tab6:
+    from src.ai_tab import render_ai_tab
+
+    # 사용자 컨텍스트 전달 (AI가 맞춤 답변할 수 있도록)
+    _user_ctx = {}
+    if budget > 0:
+        _user_ctx["예산"] = f"{budget / 10000:.1f}억"
+    if seed_money > 0:
+        _user_ctx["종잣돈"] = f"{seed_money / 10000:.1f}억"
+    if loan_amount > 0:
+        _user_ctx["대출"] = f"{loan_amount / 10000:.1f}억"
+    if annual_income > 0:
+        _user_ctx["연봉"] = f"{annual_income / 10000:.0f}만원"
+    if active_preset:
+        _user_ctx["활성스킬"] = active_preset
+
+    render_ai_tab(user_context=_user_ctx if _user_ctx else None)
 
 # 푸터
 st.markdown('<div class="divider"></div>', unsafe_allow_html=True)
