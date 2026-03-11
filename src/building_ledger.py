@@ -258,34 +258,41 @@ def get_household_count(apt_name: str, dong: str = "") -> int | None:
         if best_match is not None:
             return best_match
 
-    # 4) apt 정확 매칭
-    if apt_name in APT_HOUSEHOLD_CACHE:
-        return APT_HOUSEHOLD_CACHE[apt_name]
-
-    # 5) apt 정규화 매칭
+    # 4~7단계: 전역 매칭 (dong 없는 키에서 검색)
+    # dong이 주어졌고 이름이 짧으면(6자 이하) 전역 매칭 차단 → 오매칭 방지
+    # (예: "대림1", "현대", "경남" 같은 범용 이름이 다른 동에 매칭되는 것 방지)
     norm_apt = _normalize(apt_name)
-    if norm_apt in norm_cache:
-        return norm_cache[norm_apt]
+    is_short_name = len(norm_apt) <= 6  # "대림1"=3자, "현대"=2자 등
+    skip_global = dong and is_short_name
 
-    # 6) 캐시의 동명 접두사 제거 후 매칭 (예: "가락동헬리오시티" → "헬리오시티")
-    apt_only = _get_apt_only_cache()
-    if norm_apt in apt_only:
-        return apt_only[norm_apt]
+    if not skip_global:
+        # 4) apt 정확 매칭
+        if apt_name in APT_HOUSEHOLD_CACHE:
+            return APT_HOUSEHOLD_CACHE[apt_name]
 
-    # 7) 부분매칭: 정규화된 apt_name이 캐시의 apt-only 키에 포함되거나 반대
-    if len(norm_apt) >= 4:  # 너무 짧은 이름은 오매칭 방지
-        best_match = None
-        best_len = 0
-        for cached_napt, val in apt_only.items():
-            if not cached_napt:
-                continue
-            if norm_apt in cached_napt or cached_napt in norm_apt:
-                match_len = min(len(norm_apt), len(cached_napt))
-                if match_len > best_len and match_len >= 4:
-                    best_match = val
-                    best_len = match_len
-        if best_match is not None:
-            return best_match
+        # 5) apt 정규화 매칭
+        if norm_apt in norm_cache:
+            return norm_cache[norm_apt]
+
+        # 6) 동명 접두사 제거 매칭 (예: "가락동헬리오시티" → "헬리오시티")
+        apt_only = _get_apt_only_cache()
+        if norm_apt in apt_only:
+            return apt_only[norm_apt]
+
+        # 7) 부분매칭
+        if len(norm_apt) >= 4:
+            best_match = None
+            best_len = 0
+            for cached_napt, val in apt_only.items():
+                if not cached_napt:
+                    continue
+                if norm_apt in cached_napt or cached_napt in norm_apt:
+                    match_len = min(len(norm_apt), len(cached_napt))
+                    if match_len > best_len and match_len >= 4:
+                        best_match = val
+                        best_len = match_len
+            if best_match is not None:
+                return best_match
 
     return None
 
