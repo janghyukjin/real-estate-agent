@@ -9,26 +9,19 @@ def render_summary_card(budget_label, budget_display, seed_money_억, loan_amoun
     loan_line = f"대출 {loan_amount/10000:.1f}억"
     if max_loan is not None and max_loan != loan_amount:
         loan_line += f" <span style='font-size:0.75rem;opacity:0.7'>(한도 {max_loan/10000:.1f}억)</span>"
-    return f"""
-    <div class="summary-card">
-        <div style="font-size:0.85rem;opacity:0.8">{budget_label}</div>
-        <div class="big">{budget_display}</div>
-        <div class="sub">
-            종잣돈 {seed_money_억:.1f}억 + {loan_line}
-            &nbsp;&middot;&nbsp; 월 상환 {monthly_pay:,.0f}만원 ({pay_ratio:.0f}%)
-        </div>
-    </div>
-    """
+    return f"""<div class="summary-card">
+<div style="font-size:0.85rem;opacity:0.8">{budget_label}</div>
+<div class="big">{budget_display}</div>
+<div class="sub">종잣돈 {seed_money_억:.1f}억 + {loan_line} &nbsp;&middot;&nbsp; 월 상환 {monthly_pay:,.0f}만원 ({pay_ratio:.0f}%)</div>
+</div>"""
 
 
 def render_empty_summary_card():
     """입력 전 빈 요약 카드 HTML을 반환한다."""
-    return """
-    <div class="summary-card" style="text-align:center;">
-        <div class="big" style="font-size:1.5rem;">종잣돈과 연봉을 입력해보세요</div>
-        <div class="sub">30초면 맞춤 추천을 받을 수 있어요</div>
-    </div>
-    """
+    return """<div class="summary-card" style="text-align:center;">
+<div class="big" style="font-size:1.5rem;">종잣돈과 연봉을 입력해보세요</div>
+<div class="sub">30초면 맞춤 추천을 받을 수 있어요</div>
+</div>"""
 
 
 def render_apt_card(rank, r):
@@ -54,56 +47,40 @@ def render_apt_card(rank, r):
     # 회복률
     recovery_str = _build_recovery_metric(rr)
 
-    return f"""
-    <div class="apt-card">
-        <div>
-            <span class="apt-rank">{rank}</span>
-            <span class="apt-name">{r['apt']}</span>
-        </div>
-        <div class="apt-meta">{tier_emoji} {loc} &middot; {tier_display} &middot; {area_type}({pyeong}평) &middot; {r.get('hhld',0):,}세대</div>
-        <div style="margin-top:8px">{tags}</div>
-        <div class="metric-grid">
-            <div class="metric-item"><span class="metric-label">최근 거래가</span><span class="metric-value">{latest/10000:.1f}억 <span style="font-size:0.7rem;color:#888">{latest_ym}</span></span></div>
-            <div class="metric-item"><span class="metric-label">전세가율</span><span class="metric-value">{r['ratio']:.0f}%</span></div>
-            <div class="metric-item"><span class="metric-label">갭(매매-전세)</span><span class="metric-value">{gap/10000:.1f}억</span></div>
-            <div class="metric-item"><span class="metric-label">월 상환</span><span class="metric-value">{r['monthly_pay']:,}만원</span></div>
-            {policy_str}
-            {recovery_str}
-        </div>
-    </div>
-    """
+    return f"""<div class="apt-card">
+<div><span class="apt-rank">{rank}</span><span class="apt-name">{r['apt']}</span></div>
+<div class="apt-meta">{tier_emoji} {loc} &middot; {tier_display} &middot; {area_type}({pyeong}평) &middot; {r.get('hhld',0):,}세대</div>
+<div style="margin-top:8px">{tags}</div>
+<div class="metric-grid">
+<div class="metric-item"><span class="metric-label">최근 거래가</span><span class="metric-value">{latest/10000:.1f}억 <span style="font-size:0.7rem;color:#888">{latest_ym}</span></span></div>
+<div class="metric-item"><span class="metric-label">전세가율</span><span class="metric-value">{r['ratio']:.0f}%</span></div>
+<div class="metric-item"><span class="metric-label">갭(매매-전세)</span><span class="metric-value">{gap/10000:.1f}억</span></div>
+<div class="metric-item"><span class="metric-label">월 상환</span><span class="metric-value">{r['monthly_pay']:,}만원</span></div>
+{policy_str}{recovery_str}
+</div></div>"""
 
 
 def render_community_skill_card(rank, skill, tags_html):
     """커뮤니티 스킬 카드 HTML을 반환한다."""
     medal = {1: "\U0001f947", 2: "\U0001f948", 3: "\U0001f949"}.get(rank, f"#{rank}")
-    return f"""
-    <div class="apt-card">
-        <div style="display:flex;justify-content:space-between;align-items:center">
-            <div>
-                <span style="font-size:1.2rem;margin-right:6px">{medal}</span>
-                <span class="apt-name">{skill['name']}</span>
-            </div>
-            <span style="color:#FF6B6B;font-size:0.85rem">\u2764\ufe0f {skill['likes']}</span>
-        </div>
-        <div class="apt-meta" style="margin-top:4px">by {skill['author']}</div>
-        <div style="font-size:0.85rem;margin-top:8px;color:#d1d5db">{skill['desc']}</div>
-        <div style="margin-top:8px">{tags_html}</div>
-    </div>
-    """
+    return f"""<div class="apt-card">
+<div style="display:flex;justify-content:space-between;align-items:center">
+<div><span style="font-size:1.2rem;margin-right:6px">{medal}</span><span class="apt-name">{skill['name']}</span></div>
+<span style="color:#FF6B6B;font-size:0.85rem">\u2764\ufe0f {skill['likes']}</span>
+</div>
+<div class="apt-meta" style="margin-top:4px">by {skill['author']}</div>
+<div style="font-size:0.85rem;margin-top:8px;color:#d1d5db">{skill['desc']}</div>
+<div style="margin-top:8px">{tags_html}</div>
+</div>"""
 
 
 def render_my_skill_card(skill, source_tag, summary):
     """내 스킬 카드 HTML을 반환한다."""
-    return f"""
-    <div class="apt-card">
-        <div>
-            <span class="apt-name">{skill['name']}</span> {source_tag}
-        </div>
-        <div style="font-size:0.85rem;margin-top:4px;color:#d1d5db">{skill.get('desc', '')}</div>
-        <div style="font-size:0.75rem;margin-top:6px;color:#888">{summary}</div>
-    </div>
-    """
+    return f"""<div class="apt-card">
+<div><span class="apt-name">{skill['name']}</span> {source_tag}</div>
+<div style="font-size:0.85rem;margin-top:4px;color:#d1d5db">{skill.get('desc', '')}</div>
+<div style="font-size:0.75rem;margin-top:6px;color:#888">{summary}</div>
+</div>"""
 
 
 def build_skill_tags_html(cfg):
