@@ -8,3 +8,4 @@ dist/
 data/raw_rents.json
 data/raw_trades.json
 .github/
+data/chroma_db/
