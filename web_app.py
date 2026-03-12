@@ -544,7 +544,7 @@ with tab5:
             cs_col1, cs_col2 = st.columns(2)
             with cs_col1:
                 cs_tiers_display = st.multiselect(
-                    "지역 등급", options=[TIER_DISPLAY[t] for t in TIER_KEYS_ORDERED],
+                    "지역 등급", options=[TIER_DISPLAY[t] for t in TIER_KEYS_ORDERED_UI],
                     default=[], key="cs_tiers",
                     help="비워두면 전체 등급에서 찾아요",
                 )
@@ -595,7 +595,10 @@ with tab5:
             else:
                 new_cfg = {}
                 if cs_tiers_display:
-                    new_cfg["force_tiers"] = [TIER_REVERSE.get(d, d) for d in cs_tiers_display]
+                    tiers = []
+                    for d in cs_tiers_display:
+                        tiers.extend(TIER_REVERSE.get(d, [d]))
+                    new_cfg["force_tiers"] = set(tiers)
                 if cs_gus:
                     new_cfg["force_gus"] = cs_gus
                 if cs_min_hhld > 300:
