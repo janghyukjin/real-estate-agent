@@ -82,27 +82,9 @@ def render_ai_tab(
     # Dependency check
     # -----------------------------------------------------------------------
     missing = _check_dependencies()
-    if missing:
-        st.error(
-            f"필요한 패키지가 설치되지 않았습니다: **{', '.join(missing)}**\n\n"
-            "```bash\n"
-            f"pip3 install {' '.join(missing)}\n"
-            "```"
-        )
-        return
-
-    # -----------------------------------------------------------------------
-    # API key check
-    # -----------------------------------------------------------------------
     api_key = os.getenv("ANTHROPIC_API_KEY", "")
-    if not api_key:
-        st.warning(
-            "**ANTHROPIC_API_KEY**가 설정되지 않았습니다.\n\n"
-            "`.env` 파일에 다음을 추가하세요:\n"
-            "```\n"
-            "ANTHROPIC_API_KEY=sk-ant-...\n"
-            "```"
-        )
+    if missing or not api_key:
+        st.info("AI 비서 기능을 준비하고 있어요. 곧 만나보실 수 있습니다!")
         return
 
     # -----------------------------------------------------------------------
