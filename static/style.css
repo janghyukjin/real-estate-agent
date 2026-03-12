@@ -18,6 +18,8 @@ h3 { font-size: 1.1rem !important; font-weight: 700 !important; margin-bottom: 0
 .stButton > button {
     border-radius: 12px !important; font-weight: 600 !important;
     padding: 8px 12px !important; font-size: 0.85rem !important;
+    white-space: nowrap !important; overflow: hidden !important;
+    text-overflow: ellipsis !important;
 }
 
 /* 카드 */
