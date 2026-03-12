@@ -180,7 +180,7 @@ with st.expander("⚙️ 상세 설정", expanded=False):
     for idx, key in enumerate(row1):
         with p_cols[idx]:
             is_active = (_active_p == key)
-            label = f"✅ {key}" if is_active else key
+            label = key
             if st.button(label, key=f"preset_{idx}", width="stretch", type="primary" if is_active else "secondary"):
                 if is_active:
                     st.session_state.selected_preset = None
@@ -194,7 +194,7 @@ with st.expander("⚙️ 상세 설정", expanded=False):
         for idx, key in enumerate(row2):
             with p_cols2[idx]:
                 is_active = (_active_p == key)
-                label = f"✅ {key}" if is_active else key
+                label = key
                 if st.button(label, key=f"preset_{idx+3}", width="stretch", type="primary" if is_active else "secondary"):
                     if is_active:
                         st.session_state.selected_preset = None
@@ -215,7 +215,7 @@ with st.expander("⚙️ 상세 설정", expanded=False):
             for col_idx, skill in enumerate(row):
                 with my_cols[col_idx]:
                     is_active = (_active_c or {}).get("name") == skill["name"]
-                    skill_label = f"✅ ⭐ {skill['name']}" if is_active else f"⭐ {skill['name']}"
+                    skill_label = f"⭐ {skill['name']}"
                     if st.button(skill_label, key=f"my_preset_{row_idx}_{col_idx}", width="stretch", type="primary" if is_active else "secondary"):
                         if is_active:
                             st.session_state.active_community_skill = None
