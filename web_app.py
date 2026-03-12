@@ -170,31 +170,40 @@ with st.expander("⚙️ 상세 설정", expanded=False):
     st.markdown("---")
     st.markdown("**🎯 전략** (원클릭 필터)")
 
-    # 프리셋 버튼
+    # 프리셋 버튼 (선택된 건 primary 색상)
+    _active_p = st.session_state.get("selected_preset")
+    _active_c = st.session_state.get("active_community_skill")
+
     preset_keys = list(PRESETS.keys())
     row1 = preset_keys[:3]
     p_cols = st.columns(3)
     for idx, key in enumerate(row1):
         with p_cols[idx]:
-            if st.button(key, key=f"preset_{idx}", width="stretch"):
-                if st.session_state.selected_preset == key:
+            is_active = (_active_p == key)
+            label = f"✅ {key}" if is_active else key
+            if st.button(label, key=f"preset_{idx}", width="stretch", type="primary" if is_active else "secondary"):
+                if is_active:
                     st.session_state.selected_preset = None
                 else:
                     st.session_state.selected_preset = key
                     st.session_state.active_community_skill = None
+                st.rerun()
     row2 = preset_keys[3:]
     if row2:
         p_cols2 = st.columns(3)
         for idx, key in enumerate(row2):
             with p_cols2[idx]:
-                if st.button(key, key=f"preset_{idx+3}", width="stretch"):
-                    if st.session_state.selected_preset == key:
+                is_active = (_active_p == key)
+                label = f"✅ {key}" if is_active else key
+                if st.button(label, key=f"preset_{idx+3}", width="stretch", type="primary" if is_active else "secondary"):
+                    if is_active:
                         st.session_state.selected_preset = None
                     else:
                         st.session_state.selected_preset = key
                         st.session_state.active_community_skill = None
+                    st.rerun()
 
-    # 내 커스텀 스킬 버튼 (저장된 게 있으면 표시)
+    # 내 커스텀 스킬 버튼
     if "custom_skills" not in st.session_state:
         st.session_state.custom_skills = []
     my_skills = st.session_state.custom_skills
@@ -205,10 +214,10 @@ with st.expander("⚙️ 상세 설정", expanded=False):
             my_cols = st.columns(3)
             for col_idx, skill in enumerate(row):
                 with my_cols[col_idx]:
-                    skill_label = f"⭐ {skill['name']}"
-                    if st.button(skill_label, key=f"my_preset_{row_idx}_{col_idx}", width="stretch"):
-                        # 커스텀 스킬을 community skill로 적용
-                        if st.session_state.get("active_community_skill", {}).get("name") == skill["name"]:
+                    is_active = (_active_c or {}).get("name") == skill["name"]
+                    skill_label = f"✅ ⭐ {skill['name']}" if is_active else f"⭐ {skill['name']}"
+                    if st.button(skill_label, key=f"my_preset_{row_idx}_{col_idx}", width="stretch", type="primary" if is_active else "secondary"):
+                        if is_active:
                             st.session_state.active_community_skill = None
                         else:
                             st.session_state.active_community_skill = skill.get("config", skill)
