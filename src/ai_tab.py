@@ -75,16 +75,23 @@ def render_ai_tab(
         analysis_data: Apartment analysis data (for re-indexing).
         user_context: Dict with user budget/preferences for context.
     """
-    st.header("AI 부동산 비서 (집피티)")
-    st.caption("실거래가 데이터와 최신 뉴스를 기반으로 답변합니다.")
+    st.header("AI 부동산 비서")
+    st.caption("실거래가 데이터와 최신 뉴스를 기반으로 답변하는 AI 비서예요.")
 
     # -----------------------------------------------------------------------
-    # Dependency check
+    # Dependency / API key check
     # -----------------------------------------------------------------------
     missing = _check_dependencies()
     api_key = os.getenv("ANTHROPIC_API_KEY", "")
     if missing or not api_key:
-        st.info("AI 비서 기능을 준비하고 있어요. 곧 만나보실 수 있습니다!")
+        st.markdown("""
+<div style="background:#1a1d26;border:1px solid #2d3039;border-radius:16px;padding:32px;text-align:center;margin:20px 0;">
+<div style="font-size:2.5rem;margin-bottom:12px;">🤖</div>
+<div style="font-size:1.1rem;font-weight:700;margin-bottom:8px;">신기능 출시 준비 중!</div>
+<div style="font-size:0.9rem;color:#9CA3AF;">AI에게 부동산 관련 질문을 하면<br>실거래 데이터 + 최신 뉴스를 기반으로 답변해드려요.</div>
+<div style="margin-top:16px;font-size:0.8rem;color:#FF6B6B;font-weight:600;">Coming Soon</div>
+</div>
+""", unsafe_allow_html=True)
         return
 
     # -----------------------------------------------------------------------
