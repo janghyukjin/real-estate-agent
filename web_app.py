@@ -66,35 +66,50 @@ st.markdown("# 🏠 집피티")
 st.caption("내 월급으로 살 수 있는 저평가 아파트를 찾아드려요")
 
 # ─────────────────────────────────────
-# 핵심 입력 (3개만)
+# 핵심 입력 (카드형)
 # ─────────────────────────────────────
-st.markdown('<div class="divider"></div>', unsafe_allow_html=True)
+st.markdown('<div class="input-card"><div class="input-card-title">내 조건</div>', unsafe_allow_html=True)
 
-col1, col2 = st.columns(2)
+col1, col2, col3 = st.columns(3)
 with col1:
     seed_money_억 = st.number_input(
-        "💰 종잣돈 (억원)", min_value=0.0, max_value=50.0, value=0.0, step=0.5,
+        "종잣돈 (억)", min_value=0.0, max_value=50.0, value=0.0, step=0.5,
         help="현금 + 예금 + 주식 등 총 동원 가능 금액"
     )
 with col2:
     contract_salary = st.number_input(
-        "💵 계약연봉 (만원)", min_value=0, max_value=100000, value=0, step=100,
+        "계약연봉 (만)", min_value=0, max_value=100000, value=0, step=100,
         help="인센/상여 제외, 세전 기준"
+    )
+with col3:
+    desired_loan_억 = st.number_input(
+        "희망대출 (억)", min_value=0.0, max_value=10.0, value=0.0, step=0.5,
+        help="0이면 대출 없음. 한도 초과 시 자동 조정."
     )
 
 seed_money = int(seed_money_억 * 10000)
 
-region_choice = st.radio("📍 어디에서 찾을까요?", ["전체", "서울", "경기"], horizontal=True)
+c1, c2, c3 = st.columns(3)
+with c1:
+    buyer_type = st.selectbox(
+        "매수자 유형",
+        options=[BuyerType.FIRST_TIME, BuyerType.NO_HOUSE, BuyerType.ONE_HOUSE],
+        format_func=lambda x: x.value,
+    )
+with c2:
+    region_choice = st.selectbox("지역", ["전체", "서울", "경기"])
+with c3:
+    interest_rate = st.selectbox("대출 금리", [3.5, 3.8, 4.0, 4.2, 4.5, 5.0, 5.5], index=3, format_func=lambda x: f"{x}%")
+
+st.markdown('</div>', unsafe_allow_html=True)
 
 if "selected_preset" not in st.session_state:
     st.session_state.selected_preset = None
 
 # ─────────────────────────────────────
-# 상세 설정 (접기)
+# 상세 설정 (접기) — 고급 옵션만
 # ─────────────────────────────────────
-with st.expander("⚙️ 상세 설정", expanded=False):
-    st.caption("기본값으로도 충분해요. 세밀한 조정이 필요할 때 열어보세요.")
-
+with st.expander("상세 설정", expanded=False):
     adv_col1, adv_col2 = st.columns(2)
     with adv_col1:
         bonus = st.number_input(
@@ -104,31 +119,16 @@ with st.expander("⚙️ 상세 설정", expanded=False):
             "월 지출 (만원)", min_value=0, max_value=5000, value=150, step=50,
         )
     with adv_col2:
-        buyer_type = st.selectbox(
-            "매수자 유형",
-            options=[BuyerType.FIRST_TIME, BuyerType.NO_HOUSE, BuyerType.ONE_HOUSE],
-            format_func=lambda x: x.value,
-        )
-        interest_rate = st.slider(
-            "대출 금리 (%)", min_value=2.5, max_value=6.0, value=4.2, step=0.1,
-        )
-    desired_loan_억 = st.number_input(
-        "💰 희망 대출 (억원)",
-        min_value=0.0, max_value=10.0, value=0.0, step=0.5,
-        help="0이면 대출 없이 종잣돈으로만 매수. 한도 초과 시 자동으로 줄어듭니다.",
-    )
-
-    will_reside = st.checkbox("실거주 예정", value=True)
-    gap_invest_mode = st.checkbox("갭투자 모드 (전세끼고 매수)", value=False)
-    if gap_invest_mode:
-        will_reside = False
+        will_reside = st.checkbox("실거주 예정", value=True)
+        gap_invest_mode = st.checkbox("갭투자 모드 (전세끼고 매수)", value=False)
+        if gap_invest_mode:
+            will_reside = False
 
     st.markdown("---")
     st.markdown("**필터**")
 
     tier_display_options = ["전체"] + [TIER_DISPLAY[t] for t in TIER_KEYS_ORDERED]
     selected_tier_displays = st.multiselect("지역 등급", options=tier_display_options, default=["전체"])
-    # UI 표시명 → 내부명 변환
     if "전체" in selected_tier_displays:
         selected_tiers = ["전체"]
     else:
@@ -170,7 +170,7 @@ with st.expander("⚙️ 상세 설정", expanded=False):
 
     top_n = st.number_input("상위 표시 개수", min_value=5, max_value=50, value=10, step=5)
 
-    # 전략 프리셋 (상세 설정 하단)
+    # 전략 프리셋
     st.markdown("---")
     st.markdown("**🎯 전략 프리셋** (원클릭 필터)")
     preset_keys = list(PRESETS.keys())

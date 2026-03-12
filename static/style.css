@@ -60,6 +60,23 @@ h3 { font-size: 1.1rem !important; font-weight: 700 !important; margin-bottom: 0
 /* 구분선 */
 .divider { border-top: 1px solid #2d3039; margin: 20px 0; }
 
+/* 입력 카드 */
+.input-card {
+    background: #1a1d26;
+    border: 1px solid #2d3039;
+    border-radius: 16px;
+    padding: 24px 20px 16px;
+    margin: 8px 0 16px;
+}
+.input-card-title {
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: #FF6B6B;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 12px;
+}
+
 /* 상세 설정 */
 .stExpander { border: 1px solid #2d3039 !important; border-radius: 12px !important; }
 
