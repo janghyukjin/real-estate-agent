@@ -191,6 +191,7 @@
             .container { padding: 0 16px; }
             .hero { padding: 48px 0 40px; }
             .hero h1 { font-size: 28px; }
+            .hero .hero-logo { font-size: 48px !important; }
             .compare { grid-template-columns: 1fr; }
             .card-grid { grid-template-columns: 1fr 1fr; }
             * { word-break: keep-all; }
@@ -210,6 +211,7 @@
 <!-- Hero -->
 <div class="hero">
     <div class="container">
+        <div class="hero-logo" style="font-size:64px;font-weight:900;color:var(--primary);margin-bottom:12px;letter-spacing:-2px;">집피티</div>
         <h1>내 월급으로<br><span>어디 살 수 있을까?</span></h1>
         <p>연봉·종잣돈 입력하면 30초 만에<br>나한테 맞는 아파트를 추천해드려요.</p>
         <a href="https://my-zpt.streamlit.app" class="cta-btn">무료로 시작하기</a>
@@ -279,18 +281,18 @@
                 <h3 style="color: var(--primary);">집피티</h3>
                 <ul>
                     <li>내 재무 기반 맞춤 추천</li>
-                    <li>저평가·정책 영향 분석</li>
-                    <li>전략을 스킬로 저장·재사용</li>
-                    <li>100% 공공 API 기반</li>
+                    <li>저평가·정책 영향 자동 분석</li>
+                    <li>나만의 투자 전략을 스킬로 만들어 저장·공유</li>
+                    <li>다른 투자자의 인기 전략을 구경하고 바로 적용</li>
                 </ul>
             </div>
             <div class="compare-box others">
                 <h3>기존 플랫폼</h3>
                 <ul>
-                    <li>매물 검색 → 직접 비교</li>
-                    <li>시세만 보여줌</li>
-                    <li>매번 처음부터 필터링</li>
-                    <li>크롤링 기반 (법적 리스크)</li>
+                    <li>AI에 물어봐도 결국 직접 검색·비교해야 함</li>
+                    <li>시세는 보여주지만 "저평가"는 안 알려줌</li>
+                    <li>전략 저장 불가, 매번 처음부터 필터링</li>
+                    <li>모든 사용자에게 같은 결과</li>
                 </ul>
             </div>
         </div>
