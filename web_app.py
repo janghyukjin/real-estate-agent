@@ -312,7 +312,7 @@ else:
 # ─────────────────────────────────────
 # 탭
 # ─────────────────────────────────────
-tab1, tab5, tab2, tab3, tab6, tab4 = st.tabs(["🏆 추천", "🎯 스킬", "📈 로드맵", "🏦 상환", "🤖 AI 비서", "ℹ️ 소개"])
+tab1, tab5, tab6 = st.tabs(["🏆 추천", "🎯 스킬", "🤖 AI 비서"])
 
 # ─────────────────────────────────────
 # TAB 1: TOP N 추천
@@ -425,128 +425,6 @@ with tab1:
                 budget_max = int(budget * 1.10)
                 budget_min = int(budget * 0.80)
                 st.info(f"예산 범위({budget_min/10000:.1f}~{budget_max/10000:.1f}억)에 맞는 아파트가 없어요. 조건을 조정해보세요.")
-
-# ─────────────────────────────────────
-# TAB 2: 로드맵
-# ─────────────────────────────────────
-with tab2:
-    st.markdown("### 📈 연도별 매수 가능 금액")
-    annual_saving = (monthly_income - monthly_expense) * 12 + bonus
-    annual_save = int(annual_saving)
-
-    if annual_income == 0:
-        st.info("연봉을 입력하면 연도별 로드맵을 볼 수 있어요.")
-    else:
-        st.caption(f"연간 저축 {annual_saving/10000:.1f}억 기준")
-        roadmap_data = []
-        for yr in range(7):
-            year = 2026 + yr
-            s = seed_money + annual_save * yr
-            total = s + loan_amount
-            if total > 150000:
-                loan_used = min(loan_amount, 40000)
-                total_adj = s + loan_used
-            else:
-                loan_used = loan_amount
-                total_adj = total
-            tiers = []
-            if total_adj >= 150000: tiers.append("1티어")
-            if total_adj >= 100000: tiers.append("2티어")
-            if total_adj >= 80000: tiers.append("3티어")
-            if total_adj >= 60000: tiers.append("4티어")
-            roadmap_data.append({
-                "연도": f"{year}년", "종잣돈": f"{s/10000:.0f}억",
-                "대출": f"{loan_used/10000:.0f}억", "매수가능": f"{total_adj/10000:.1f}억",
-                "가능지역": tiers[0] if tiers else "경기 4티어",
-            })
-        st.table(roadmap_data)
-        st.caption("⚠️ 15억 초과 시 대출 한도 축소")
-
-# ─────────────────────────────────────
-# TAB 3: 상환 시뮬
-# ─────────────────────────────────────
-with tab3:
-    st.markdown("### 🏦 대출 상환 시뮬레이션")
-
-    if loan_amount <= 0:
-        st.info("대출 금액을 확인해주세요.")
-    else:
-        sim_loan_억 = st.slider(
-            "대출 금액 (억원)", min_value=0.5,
-            max_value=max(loan_amount / 10000, 1.0),
-            value=max(loan_amount / 10000, 0.5), step=0.5,
-        )
-        sim_loan = int(sim_loan_억 * 10000)
-        r_monthly = (interest_rate / 100) / 12
-
-        scenarios = [
-            ("30년 원리금균등", 30, False),
-            ("15년 조기상환", 15, False),
-            ("거치3년+27년", 30, True),
-        ]
-
-        for name, years, is_grace in scenarios:
-            months_s = years * 12
-            if is_grace:
-                grace_pay = sim_loan * (interest_rate / 100) / 12
-                after_months = 27 * 12
-                after_pay = sim_loan * (r_monthly * (1 + r_monthly) ** after_months) / ((1 + r_monthly) ** after_months - 1)
-                total_interest = grace_pay * 36 + after_pay * after_months - sim_loan
-                pay_str = f"처음 3년 **{grace_pay:,.0f}만** → 이후 **{after_pay:,.0f}만**/월"
-            else:
-                monthly_s = sim_loan * (r_monthly * (1 + r_monthly) ** months_s) / ((1 + r_monthly) ** months_s - 1)
-                total_interest = monthly_s * months_s - sim_loan
-                pct = monthly_s / monthly_income * 100 if monthly_income > 0 else 0
-                pay_str = f"월 **{monthly_s:,.0f}만원**" + (f" (월급의 {pct:.0f}%)" if pct > 0 else "")
-
-            st.markdown(f"""
-            <div style="background:#1a1d26;border:1px solid #2d3039;border-radius:12px;padding:16px;margin:8px 0">
-                <div style="font-weight:700;margin-bottom:4px">{name}</div>
-                <div style="font-size:0.9rem">{pay_str}</div>
-                <div style="font-size:0.8rem;color:#888;margin-top:4px">총 이자: {total_interest/10000:.1f}억</div>
-            </div>
-            """, unsafe_allow_html=True)
-
-        st.caption("※ 실제 금리·수수료는 은행/상품에 따라 다름")
-
-# ─────────────────────────────────────
-# TAB 4: 소개
-# ─────────────────────────────────────
-with tab4:
-    st.markdown("### ℹ️ 집피티")
-    st.markdown("""
-**집피티**는 무주택 실수요자를 위한 아파트 맞춤 추천 도구입니다.
-
-내 연봉·종잣돈을 입력하면 DSR/LTV를 자동 계산하고,
-예산에 맞는 아파트를 **6가지 항목으로 스코어링**하여 순위를 매깁니다.
-
----
-
-**데이터**: 국토교통부 실거래가 API + 건축물대장 API (100% 공공 데이터)
-
-**전처리**: 직거래 제외 · 1층 제외 · 25~34평 · 300세대+ · 최근 3개월 거래 기준
-
-**스코어링**: 지역등급(40) + 전세가율(30) + 세대수(20) + 거래량(15) + 회복률(±30) + 토허제(±15)
-
-> 설계 철학: "싸고 저평가된 곳"에 높은 점수를 줍니다.
-
----
-""")
-    if meta:
-        st.markdown(f"""
-| 항목 | 수치 |
-|------|------|
-| 분석 아파트 | {meta.get('apt_count', 0):,}개 |
-| 매매 거래 | {meta.get('trade_count', 0):,}건 |
-| 전월세 거래 | {meta.get('rent_count', 0):,}건 |
-| 수집일 | {meta.get('collected_at', '?')} |
-""")
-
-    st.markdown("""
----
-> ⚠️ 본 서비스는 참고용 정보 제공 도구입니다. 투자 판단은 본인 책임이며,
-> 대출 한도는 은행/신용등급/상품에 따라 달라지므로 반드시 은행 상담을 병행하세요.
-""")
 
 # ─────────────────────────────────────
 # TAB 5: 스킬 (커스텀 + 커뮤니티)

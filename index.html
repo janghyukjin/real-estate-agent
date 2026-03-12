@@ -10,12 +10,9 @@
             --primary-dark: #E85555;
             --bg: #0F1117;
             --bg-card: #1A1D26;
-            --bg-card-hover: #22252F;
             --text: #FAFAFA;
             --text-muted: #9CA3AF;
-            --accent-blue: #4DABF7;
             --accent-green: #51CF66;
-            --accent-yellow: #FFD43B;
             --border: #2D3039;
         }
         * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -25,7 +22,7 @@
             color: var(--text);
             line-height: 1.7;
         }
-        .container { max-width: 960px; margin: 0 auto; padding: 0 24px; }
+        .container { max-width: 720px; margin: 0 auto; padding: 0 24px; }
 
         /* Hero */
         .hero {
@@ -33,49 +30,17 @@
             padding: 80px 0 60px;
             background: linear-gradient(180deg, #1a1028 0%, var(--bg) 100%);
         }
-        .hero-badge {
-            display: inline-block;
-            background: rgba(255, 107, 107, 0.15);
-            color: var(--primary);
-            padding: 6px 16px;
-            border-radius: 20px;
-            font-size: 14px;
-            font-weight: 600;
-            margin-bottom: 20px;
-        }
         .hero h1 {
-            font-size: 42px;
+            font-size: 36px;
             font-weight: 800;
             margin-bottom: 16px;
             letter-spacing: -1px;
         }
         .hero h1 span { color: var(--primary); }
         .hero p {
-            font-size: 18px;
+            font-size: 17px;
             color: var(--text-muted);
-            max-width: 600px;
-            margin: 0 auto 32px;
-        }
-        .hero-stats {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 16px 40px;
-            margin-top: 32px;
-            max-width: 720px;
-            margin-left: auto;
-            margin-right: auto;
-        }
-        .hero-stat {
-            text-align: center;
-        }
-        .hero-stat .num {
-            font-size: 32px;
-            font-weight: 800;
-            color: var(--primary);
-        }
-        .hero-stat .label {
-            font-size: 13px;
-            color: var(--text-muted);
+            margin-bottom: 32px;
         }
         .cta-btn {
             display: inline-block;
@@ -91,176 +56,103 @@
         .cta-btn:hover { background: var(--primary-dark); }
 
         /* Section */
-        section { padding: 64px 0; }
+        section { padding: 48px 0; }
         section h2 {
-            font-size: 28px;
+            font-size: 24px;
             font-weight: 800;
-            margin-bottom: 12px;
-            letter-spacing: -0.5px;
+            margin-bottom: 8px;
         }
         section .subtitle {
             color: var(--text-muted);
-            font-size: 16px;
-            margin-bottom: 40px;
+            font-size: 15px;
+            margin-bottom: 28px;
         }
 
-        /* Data cards */
-        .data-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        /* Steps */
+        .steps {
+            display: flex;
+            flex-direction: column;
             gap: 16px;
         }
-        .data-card {
+        .step {
+            display: flex;
+            align-items: center;
+            gap: 16px;
             background: var(--bg-card);
             border: 1px solid var(--border);
             border-radius: 12px;
-            padding: 24px;
-            transition: border-color 0.2s;
+            padding: 20px;
         }
-        .data-card:hover { border-color: var(--primary); }
-        .data-card .icon {
-            font-size: 28px;
-            margin-bottom: 12px;
-        }
-        .data-card h3 {
-            font-size: 17px;
-            font-weight: 700;
-            margin-bottom: 8px;
-        }
-        .data-card p {
-            font-size: 14px;
-            color: var(--text-muted);
-            line-height: 1.6;
-        }
-        .data-card .tag {
-            display: inline-block;
-            background: rgba(255, 107, 107, 0.1);
-            color: var(--primary);
-            padding: 2px 10px;
-            border-radius: 4px;
-            font-size: 12px;
-            font-weight: 600;
-            margin-top: 10px;
-        }
-
-        /* Score breakdown */
-        .score-table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 16px;
-        }
-        .score-table th, .score-table td {
-            padding: 12px 16px;
-            text-align: left;
-            border-bottom: 1px solid var(--border);
-            font-size: 14px;
-        }
-        .score-table th {
-            color: var(--text-muted);
-            font-weight: 600;
-            font-size: 13px;
-            text-transform: uppercase;
-        }
-        .score-table td:last-child { text-align: right; font-weight: 600; }
-        .score-table .positive { color: var(--accent-green); }
-        .score-table .negative { color: var(--primary); }
-
-        /* Feature list */
-        .features {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 24px;
-        }
-        .feature {
-            display: flex;
-            gap: 16px;
-            align-items: flex-start;
-        }
-        .feature .icon-circle {
-            width: 44px;
-            height: 44px;
-            min-width: 44px;
-            background: var(--bg-card);
-            border-radius: 10px;
+        .step-num {
+            min-width: 36px;
+            height: 36px;
+            background: var(--primary);
+            color: #fff;
+            border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 20px;
+            font-weight: 800;
+            font-size: 15px;
         }
-        .feature h3 { font-size: 15px; font-weight: 700; margin-bottom: 4px; }
-        .feature p { font-size: 13px; color: var(--text-muted); }
+        .step-text h3 { font-size: 15px; font-weight: 700; margin-bottom: 2px; }
+        .step-text p { font-size: 13px; color: var(--text-muted); }
 
-        /* Comparison */
-        .compare-grid {
+        /* Cards */
+        .card-grid {
             display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 24px;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 12px;
         }
-        .compare-card {
+        .card {
             background: var(--bg-card);
             border: 1px solid var(--border);
             border-radius: 12px;
-            padding: 24px;
+            padding: 20px;
+            text-align: center;
         }
-        .compare-card.ours { border-color: var(--primary); }
-        .compare-card h3 {
-            font-size: 16px;
-            font-weight: 700;
-            margin-bottom: 16px;
-        }
-        .compare-card ul {
-            list-style: none;
-            padding: 0;
-        }
-        .compare-card li {
-            padding: 6px 0;
-            font-size: 14px;
-            color: var(--text-muted);
-        }
-        .compare-card li::before {
-            content: "✓ ";
-            color: var(--accent-green);
-            font-weight: 700;
-        }
-        .compare-card.others li::before {
-            content: "— ";
-            color: var(--text-muted);
-        }
+        .card .icon { font-size: 24px; margin-bottom: 8px; }
+        .card h3 { font-size: 15px; font-weight: 700; margin-bottom: 4px; }
+        .card p { font-size: 13px; color: var(--text-muted); }
 
-        /* Filter pills */
-        .pill-group {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 8px;
-            margin-top: 12px;
+        /* Compare */
+        .compare {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
         }
-        .pill {
+        .compare-box {
             background: var(--bg-card);
             border: 1px solid var(--border);
-            border-radius: 20px;
-            padding: 6px 14px;
-            font-size: 13px;
-            color: var(--text-muted);
+            border-radius: 12px;
+            padding: 20px;
         }
-
-        /* Footer */
-        footer {
-            text-align: center;
-            padding: 40px 0;
-            border-top: 1px solid var(--border);
-            color: var(--text-muted);
-            font-size: 13px;
-        }
+        .compare-box.ours { border-color: var(--primary); }
+        .compare-box h3 { font-size: 15px; font-weight: 700; margin-bottom: 12px; }
+        .compare-box ul { list-style: none; padding: 0; }
+        .compare-box li { padding: 4px 0; font-size: 13px; color: var(--text-muted); }
+        .compare-box li::before { content: "✓ "; color: var(--accent-green); font-weight: 700; }
+        .compare-box.others li::before { content: "— "; color: var(--text-muted); }
 
         /* Disclaimer */
         .disclaimer {
             background: rgba(255, 215, 59, 0.08);
             border: 1px solid rgba(255, 215, 59, 0.2);
             border-radius: 8px;
-            padding: 16px 20px;
-            font-size: 13px;
-            color: var(--accent-yellow);
-            margin-top: 40px;
+            padding: 14px 18px;
+            font-size: 12px;
+            color: #FFD43B;
+            margin-top: 32px;
+            text-align: center;
+        }
+
+        /* Footer */
+        footer {
+            text-align: center;
+            padding: 32px 0;
+            border-top: 1px solid var(--border);
+            color: var(--text-muted);
+            font-size: 12px;
         }
 
         /* Nav */
@@ -275,7 +167,7 @@
         nav .container {
             display: flex;
             align-items: center;
-            gap: 24px;
+            max-width: 720px;
         }
         nav .logo {
             font-size: 18px;
@@ -283,14 +175,6 @@
             color: var(--primary);
             text-decoration: none;
         }
-        nav a {
-            color: var(--text-muted);
-            text-decoration: none;
-            font-size: 14px;
-            font-weight: 500;
-            transition: color 0.2s;
-        }
-        nav a:hover { color: var(--text); }
         nav .spacer { flex: 1; }
         nav .cta-sm {
             background: var(--primary);
@@ -299,23 +183,16 @@
             border-radius: 6px;
             font-weight: 600;
             font-size: 13px;
+            text-decoration: none;
         }
-        nav .cta-sm:hover { background: var(--primary-dark); color: #fff; }
+        nav .cta-sm:hover { background: var(--primary-dark); }
 
         @media (max-width: 768px) {
             .container { padding: 0 16px; }
             .hero { padding: 48px 0 40px; }
-            .hero h1 { font-size: 32px; }
-            .hero p { font-size: 16px; max-width: 100%; padding: 0 8px; word-break: keep-all; }
-            .hero-stats { grid-template-columns: repeat(2, 1fr); gap: 12px 24px; max-width: 100%; }
-            .hero-stat .num { font-size: 24px; }
-            .compare-grid { grid-template-columns: 1fr; }
-            .data-grid { grid-template-columns: 1fr; }
-            .features { grid-template-columns: 1fr; }
-            section h2 { font-size: 22px; }
-            .score-table th, .score-table td { padding: 8px 10px; font-size: 13px; }
-            .cta-btn { padding: 12px 28px; font-size: 15px; }
-            nav .container { gap: 16px; flex-wrap: wrap; }
+            .hero h1 { font-size: 28px; }
+            .compare { grid-template-columns: 1fr; }
+            .card-grid { grid-template-columns: 1fr 1fr; }
             * { word-break: keep-all; }
         }
     </style>
@@ -325,274 +202,116 @@
 <nav>
     <div class="container">
         <a href="index.html" class="logo">집피티</a>
-        <a href="data.html">데이터</a>
-        <a href="loan.html">대출계산</a>
         <span class="spacer"></span>
-        <a href="https://my-zpt.streamlit.app" class="cta-sm">앱 시작하기</a>
+        <a href="https://my-zpt.streamlit.app" class="cta-sm">시작하기</a>
     </div>
 </nav>
 
 <!-- Hero -->
 <div class="hero">
     <div class="container">
-        <div class="hero-badge">100% 공공 데이터 기반</div>
-        <h1><span>집피티</span></h1>
-        <p>내 월급, 내 종잣돈으로 서울·수도권 어디에 살 수 있을까?<br>
-        4,400개+ 아파트를 분석해서 딱 맞는 곳을 추천해드립니다.</p>
-        <a href="https://my-zpt.streamlit.app" class="cta-btn">앱 시작하기</a>
-        <div class="hero-stats">
-            <div class="hero-stat">
-                <div class="num">4,429</div>
-                <div class="label">분석 아파트</div>
-            </div>
-            <div class="hero-stat">
-                <div class="num">103만+</div>
-                <div class="label">매매 거래 데이터</div>
-            </div>
-            <div class="hero-stat">
-                <div class="num">204만+</div>
-                <div class="label">전월세 거래 데이터</div>
-            </div>
-            <div class="hero-stat">
-                <div class="num">13,992</div>
-                <div class="label">세대수 캐시</div>
-            </div>
-        </div>
+        <h1>내 월급으로<br><span>어디 살 수 있을까?</span></h1>
+        <p>연봉·종잣돈 입력하면 30초 만에<br>나한테 맞는 아파트를 추천해드려요.</p>
+        <a href="https://my-zpt.streamlit.app" class="cta-btn">무료로 시작하기</a>
     </div>
 </div>
 
-<!-- 스코어링 -->
+<!-- 사용법 -->
 <section>
     <div class="container">
-        <h2>어떻게 추천하나요?</h2>
-        <p class="subtitle">6가지 데이터를 종합해서 "지금 내 예산에 최선인 아파트"를 골라드려요.</p>
-        <div class="data-grid" style="grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));">
-            <div class="data-card" style="text-align:center;">
-                <div style="font-size:2rem;margin-bottom:8px;">📍</div>
-                <h3>어디?</h3>
-                <p>지역등급 1~4티어<br>서울+경기 차등 배점</p>
+        <h2>이렇게 동작해요</h2>
+        <div class="steps">
+            <div class="step">
+                <div class="step-num">1</div>
+                <div class="step-text">
+                    <h3>내 조건 입력</h3>
+                    <p>종잣돈, 연봉, 매수자 유형만 넣으면 대출 한도를 자동 계산해요.</p>
+                </div>
             </div>
-            <div class="data-card" style="text-align:center;">
-                <div style="font-size:2rem;margin-bottom:8px;">💰</div>
-                <h3>얼마나 저평가?</h3>
-                <p>22년 고점 대비 회복률<br>낮을수록 가점</p>
+            <div class="step">
+                <div class="step-num">2</div>
+                <div class="step-text">
+                    <h3>AI 스코어링</h3>
+                    <p>4,000개+ 아파트를 지역·저평가·정책·세대수 기준으로 점수 매겨요.</p>
+                </div>
             </div>
-            <div class="data-card" style="text-align:center;">
-                <div style="font-size:2rem;margin-bottom:8px;">🏛️</div>
-                <h3>정책 영향은?</h3>
-                <p>10.15 토허제 전후 가격 변동<br>덜 오른 곳일수록 가점</p>
-            </div>
-            <div class="data-card" style="text-align:center;">
-                <div style="font-size:2rem;margin-bottom:8px;">🏢</div>
-                <h3>살기 좋은가?</h3>
-                <p>세대수·거래량·전세가율<br>대단지+유동성 우선</p>
+            <div class="step">
+                <div class="step-num">3</div>
+                <div class="step-text">
+                    <h3>맞춤 추천</h3>
+                    <p>내 예산 범위에서 가장 유망한 아파트를 랭킹으로 보여줘요.</p>
+                </div>
             </div>
         </div>
-        <p style="color: var(--text-muted); font-size: 13px; margin-top: 20px; text-align:center;">
-            핵심 철학 — <strong style="color:var(--primary);">"아직 안 오른 곳"</strong>에 높은 점수를 줍니다.
-            무주택 실수요자에게 유리한 매물이 상위에 올라와요.
-        </p>
     </div>
 </section>
 
-<!-- 스킬 기반 전략 -->
+<!-- 핵심 기능 -->
 <section>
     <div class="container">
-        <h2>🎯 원클릭 전략</h2>
-        <p class="subtitle">목적 하나만 고르면, 필터+정렬이 자동으로 설정돼요.</p>
-        <div class="data-grid" style="grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));">
-            <div class="data-card">
-                <div class="icon">🔍</div>
-                <h3>저평가 발굴</h3>
-                <p>고점 대비 아직 안 오른 대단지만 쏙쏙</p>
+        <h2>핵심 기능</h2>
+        <div class="card-grid">
+            <div class="card">
+                <div class="icon">🏆</div>
+                <h3>스코어링 랭킹</h3>
+                <p>6가지 데이터 종합 점수</p>
             </div>
-            <div class="data-card">
-                <div class="icon">💰</div>
-                <h3>소액갭</h3>
-                <p>적은 돈으로 내 집 마련 가능한 순서대로</p>
+            <div class="card">
+                <div class="icon">🎯</div>
+                <h3>원클릭 전략</h3>
+                <p>저평가·소액갭·급매 등</p>
             </div>
-            <div class="data-card">
-                <div class="icon">⚡</div>
-                <h3>급매 포착</h3>
-                <p>최근 시세보다 싸게 나온 매물 자동 감지</p>
-            </div>
-        </div>
-        <p style="color: var(--text-muted); font-size: 13px; margin-top: 16px; text-align:center;">
-            + 학군 프리미엄, 안정투자, 나만의 커스텀 전략까지 총 6가지
-        </p>
-    </div>
-</section>
-
-<!-- 필터 & 기능 -->
-<section style="background: var(--bg-card);">
-    <div class="container">
-        <h2>필터 & 기능</h2>
-        <p class="subtitle">세밀한 조건 설정으로 나에게 딱 맞는 아파트를 찾으세요.</p>
-
-        <h3 style="font-size: 16px; margin-bottom: 12px;">개인 재무 입력</h3>
-        <div class="pill-group">
-            <span class="pill">종잣돈</span>
-            <span class="pill">계약연봉</span>
-            <span class="pill">인센티브/상여</span>
-            <span class="pill">월 지출</span>
-            <span class="pill">매수자 유형 (생애최초/무주택/1주택)</span>
-            <span class="pill">실거주 여부</span>
-            <span class="pill">갭투자 모드</span>
-            <span class="pill">예상 대출 금리</span>
-        </div>
-
-        <h3 style="font-size: 16px; margin: 24px 0 12px;">아파트 필터</h3>
-        <div class="pill-group">
-            <span class="pill">지역등급 (1~4티어)</span>
-            <span class="pill">구/동 선택</span>
-            <span class="pill">최소 회복률</span>
-            <span class="pill">최대 회복률</span>
-            <span class="pill">토허제 후 최대 변동률</span>
-            <span class="pill">최소 세대수</span>
-            <span class="pill">상위 N개</span>
-        </div>
-
-        <h3 style="font-size: 16px; margin: 32px 0 12px;">제공 기능</h3>
-        <div class="features" style="margin-top: 0;">
-            <div class="feature">
-                <div class="icon-circle">🏆</div>
-                <div>
-                    <h3>TOP N 맞춤 추천</h3>
-                    <p>예산 범위(±10~20%) 내 아파트를 스코어 순으로 랭킹</p>
-                </div>
-            </div>
-            <div class="feature">
-                <div class="icon-circle">📈</div>
-                <div>
-                    <h3>매매가 추이 그래프</h3>
-                    <p>2020년~현재 월별 평균 매매가 + 전고점/전저점 기준선 + 최근 실거래가 포인트(★)</p>
-                </div>
-            </div>
-            <div class="feature">
-                <div class="icon-circle">📋</div>
-                <div>
-                    <h3>시기별 가격 비교</h3>
-                    <p>상승기 고점(20~22) → 하락기 저점(23~24) → 현재. 하락폭과 회복률 한눈에</p>
-                </div>
-            </div>
-            <div class="feature">
-                <div class="icon-circle">🏛️</div>
-                <div>
-                    <h3>10.15 토허제 전후 비교</h3>
-                    <p>토허제 직전(24.7~9월) vs 현재 가격 변동률. 정책 영향 시각화</p>
-                </div>
-            </div>
-            <div class="feature">
-                <div class="icon-circle">🔄</div>
-                <div>
-                    <h3>갭투자 모드</h3>
-                    <p>전세가 기준 갭 = 매매가-전세가. 종잣돈+대출로 감당 가능한 갭 범위 내 아파트 추천</p>
-                </div>
-            </div>
-            <div class="feature">
-                <div class="icon-circle">📅</div>
-                <div>
-                    <h3>연도별 로드맵</h3>
-                    <p>매년 저축하면 7년 후 매수 가능 금액은? 연도별 가능 지역 등급까지 표시</p>
-                </div>
-            </div>
-            <div class="feature">
-                <div class="icon-circle">🏦</div>
-                <div>
-                    <h3>대출 상환 시뮬레이션</h3>
-                    <p>30년/15년/거치 3년+27년 시나리오 비교. 월 상환액, 총 이자 한눈에</p>
-                </div>
-            </div>
-            <div class="feature">
-                <div class="icon-circle">📊</div>
-                <div>
-                    <h3>실거래 내역 테이블</h3>
-                    <p>같은 평형의 최근 15건 실거래가. 거래일, 가격, 층, 직거래 여부 표시</p>
-                </div>
+            <div class="card">
+                <div class="icon">🤖</div>
+                <h3>AI 비서</h3>
+                <p>데이터 기반 Q&A</p>
             </div>
         </div>
     </div>
 </section>
 
-<!-- 왜 집피티인가 -->
-<section style="background: var(--bg-card);">
+<!-- 차별점 -->
+<section>
     <div class="container">
-        <h2>검색 도구가 아닌, 나만의 부동산 에이전트</h2>
-        <p class="subtitle">기존 플랫폼은 데이터를 보여주고, 집피티는 판단을 도와줍니다.</p>
-        <div class="compare-grid">
-            <div class="compare-card ours">
+        <h2>왜 집피티인가요?</h2>
+        <div class="compare">
+            <div class="compare-box ours">
                 <h3 style="color: var(--primary);">집피티</h3>
                 <ul>
-                    <li>내 재무 입력 → 6가지 데이터 종합 <strong>스코어링 랭킹</strong> 추천</li>
-                    <li>22년 고점 대비 회복률 + 토허제 전후 변동 분석</li>
-                    <li>DSR/LTV/스트레스 금리 자동 계산 + 상환 시뮬레이션</li>
-                    <li>저평가 발굴 / 소액갭 / 급매 등 <strong>스킬 전략</strong> 원클릭 적용</li>
-                    <li>나만의 투자 기준을 스킬로 만들어 저장·재사용</li>
-                    <li><strong>커뮤니티 랭킹보드</strong> — 다른 투자자의 인기 전략 구경+복사</li>
-                    <li>100% 공공 API — 법적 리스크 없음</li>
+                    <li>내 재무 기반 맞춤 추천</li>
+                    <li>저평가·정책 영향 분석</li>
+                    <li>전략을 스킬로 저장·재사용</li>
+                    <li>100% 공공 API 기반</li>
                 </ul>
             </div>
-            <div class="compare-card others">
-                <h3>기존 부동산 플랫폼</h3>
+            <div class="compare-box others">
+                <h3>기존 플랫폼</h3>
                 <ul>
-                    <li>검색 → 매물 목록 → 직접 비교 (데이터 뷰어)</li>
-                    <li>전략 저장/재사용 불가, 모든 사용자에게 같은 결과</li>
-                    <li>다른 투자자의 전략을 볼 수 없음</li>
-                    <li>랭킹/점수 없음 — 스스로 판단해야 함</li>
-                    <li>시세는 보여주지만 "저평가"는 안 알려줌</li>
-                    <li>대출 한도 별도 계산 필요, 장기 플랜 없음</li>
-                    <li>크롤링 기반 — 법적 리스크 존재</li>
+                    <li>매물 검색 → 직접 비교</li>
+                    <li>시세만 보여줌</li>
+                    <li>매번 처음부터 필터링</li>
+                    <li>크롤링 기반 (법적 리스크)</li>
                 </ul>
             </div>
         </div>
-
         <div class="disclaimer">
-            ⚠️ 본 서비스는 참고용 정보 제공 도구입니다. 투자 판단은 본인 책임이며, 실거래가는 시점·층·조건에 따라 다를 수 있습니다. 대출 한도는 은행/신용등급/상품에 따라 달라지므로 반드시 은행 상담을 병행하세요.
-        </div>
-    </div>
-</section>
-
-<!-- 곧 출시 -->
-<section>
-    <div class="container">
-        <h2>🚀 곧 출시</h2>
-        <p class="subtitle">집피티가 더 똑똑해집니다.</p>
-        <div class="data-grid">
-            <div class="data-card" style="opacity:0.75;">
-                <div class="icon">📰</div>
-                <h3>부동산 뉴스 피드</h3>
-                <p>매일 부동산 뉴스를 자동 수집하고, 내 관심 지역과 연관된 소식을 요약해줍니다.</p>
-                <span class="tag" style="background:rgba(77,171,247,0.1);color:#4DABF7;">준비 중</span>
-            </div>
-            <div class="data-card" style="opacity:0.75;">
-                <div class="icon">🤖</div>
-                <h3>AI Q&A</h3>
-                <p>"지금 강남 사도 될까?" 같은 질문에 데이터 기반으로 답변하는 AI 에이전트.</p>
-                <span class="tag" style="background:rgba(77,171,247,0.1);color:#4DABF7;">준비 중</span>
-            </div>
-            <div class="data-card" style="opacity:0.75;">
-                <div class="icon">🔔</div>
-                <h3>가격 변동 알림</h3>
-                <p>관심 아파트의 시세 변동, 급매 출현 시 자동 알림을 받아보세요.</p>
-                <span class="tag" style="background:rgba(77,171,247,0.1);color:#4DABF7;">준비 중</span>
-            </div>
+            ⚠️ 참고용 정보 제공 도구입니다. 투자 판단은 본인 책임이며, 대출 한도는 반드시 은행 상담을 병행하세요.
         </div>
     </div>
 </section>
 
 <!-- CTA -->
-<section style="text-align: center; padding: 80px 0;">
+<section style="text-align: center; padding: 60px 0;">
     <div class="container">
         <h2>지금 바로 시작하세요</h2>
-        <p class="subtitle">내 조건 입력 30초, 맞춤 추천 즉시 확인.</p>
-        <a href="https://my-zpt.streamlit.app" class="cta-btn">앱 시작하기</a>
+        <p class="subtitle">30초면 충분해요.</p>
+        <a href="https://my-zpt.streamlit.app" class="cta-btn">무료로 시작하기</a>
     </div>
 </section>
 
 <footer>
     <div class="container">
-        <p>집피티 — 국토교통부 실거래가 API + 건축물대장 API 기반</p>
-        <p style="margin-top: 8px;">데이터: 2020년~2026년 3월 | 서울 + 경기 30개 시군구 | 4,429개 아파트 분석</p>
+        <p>집피티 — 국토교통부 실거래가 API 기반 | 서울 + 경기 30개 시군구</p>
     </div>
 </footer>
 
