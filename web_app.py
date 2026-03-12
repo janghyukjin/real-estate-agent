@@ -49,7 +49,7 @@ COMMUNITY_SKILLS = load_community_skills()
 # ─────────────────────────────────────
 st.set_page_config(
     page_title="집피티 — 내집마련 AI 비서",
-    page_icon="🏠",
+    page_icon="static/logo.svg",
     layout="centered",
     initial_sidebar_state="collapsed",
 )
