@@ -77,9 +77,9 @@ with col1:
         help="현금 + 예금 + 주식 등 총 동원 가능 금액"
     )
 with col2:
-    contract_salary = st.number_input(
-        "💵 계약연봉 (만원)", min_value=0, max_value=100000, value=0, step=100,
-        help="인센/상여 제외, 세전 기준"
+    annual_salary = st.number_input(
+        "💵 연봉 (만원)", min_value=0, max_value=200000, value=0, step=100,
+        help="원천징수 영수증 기준 총급여 (인센/상여 포함)"
     )
 
 seed_money = int(seed_money_억 * 10000)
@@ -104,17 +104,12 @@ with st.expander("⚙️ 상세 설정", expanded=False):
             "매수자 유형",
             options=[BuyerType.FIRST_TIME, BuyerType.NO_HOUSE, BuyerType.ONE_HOUSE],
             format_func=lambda x: x.value,
+            help="생애최초 LTV 70% / 무주택 40% / 1주택 대출불가",
         )
+    with adv_col2:
         desired_loan_억 = st.number_input(
             "희망 대출 (억원)", min_value=0.0, max_value=10.0, value=0.0, step=0.5,
             help="0이면 대출 없음. 한도 초과 시 자동 조정.",
-        )
-    with adv_col2:
-        bonus = st.number_input(
-            "인센티브/상여 (만원)", min_value=0, max_value=50000, value=0, step=100,
-        )
-        monthly_expense = st.number_input(
-            "월 지출 (만원)", min_value=0, max_value=5000, value=150, step=50,
         )
 
     will_reside = st.checkbox("실거주 예정", value=True)
@@ -205,8 +200,6 @@ with st.expander("⚙️ 상세 설정", expanded=False):
 
 # 상세 설정 기본값 — Streamlit expander는 항상 실행되므로 여기는 안전장치
 _d = ADVANCED_DEFAULTS
-bonus = locals().get("bonus", _d["bonus"])
-monthly_expense = locals().get("monthly_expense", _d["monthly_expense"])
 buyer_type = locals().get("buyer_type", BuyerType.FIRST_TIME)
 interest_rate = locals().get("interest_rate", 4.2)
 will_reside = locals().get("will_reside", _d["will_reside"])
@@ -252,14 +245,13 @@ max_policy_change = filter_params["max_policy_change"]
 # ─────────────────────────────────────
 # 자동 계산
 # ─────────────────────────────────────
-annual_income = contract_salary + bonus
-monthly_income = contract_salary // 12 if contract_salary > 0 else 0
-dsr_monthly_income = annual_income // 12 if annual_income > 0 else 0
+annual_income = annual_salary
+monthly_income = annual_salary // 12 if annual_salary > 0 else 0
 
 policy = LoanPolicy(base_interest_rate=interest_rate / 100)
 user = UserFinance(
-    seed_money=seed_money, monthly_income=dsr_monthly_income,
-    monthly_expense=monthly_expense, buyer_type=buyer_type,
+    seed_money=seed_money, monthly_income=monthly_income,
+    monthly_expense=0, buyer_type=buyer_type,
     will_reside=will_reside,
 )
 sys_result = calculate_affordability(user, policy)
