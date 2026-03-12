@@ -1,0 +1,106 @@
+# ============================================================
+# 부동산 실거래가 데이터 + 뉴스 자동 수집 워크플로우
+# ============================================================
+#
+# 매일 KST 06:00 (UTC 21:00)에 국토교통부 공공API로부터
+# 서울+경기 매매/전세 실거래가를 수집하고, 부동산 뉴스를
+# 수집·인덱싱한 뒤 자동 커밋합니다.
+#
+# === 필요한 GitHub Secrets ===
+#   DATA_GO_KR_API_KEY     : data.go.kr 공공데이터 API 인증키
+#   NAVER_CLIENT_ID        : 네이버 검색 API Client ID (선택)
+#   NAVER_CLIENT_SECRET    : 네이버 검색 API Client Secret (선택)
+#
+# === 수동 실행 ===
+#   Actions 탭 → "Data Refresh" → "Run workflow" 버튼
+#
+# === 생성/갱신 파일 ===
+#   data/raw_trades.json  - 매매 실거래 원본
+#   data/raw_rents.json   - 전월세 실거래 원본
+#   data/analysis.json    - 분석 결과 (300세대+ 아파트)
+#   data/meta.json        - 수집 메타정보 (시각, 건수 등)
+#   data/news.json        - 수집된 뉴스 기사
+#   data/chroma_*         - 뉴스 벡터 인덱스
+# ============================================================
+
+name: Data Refresh
+
+on:
+  schedule:
+    # KST 06:00 = UTC 21:00 (전일)
+    - cron: "0 21 * * *"
+
+  workflow_dispatch:
+    inputs:
+      months:
+        description: "수집 개월 수 (기본 3)"
+        required: false
+        default: "3"
+        type: string
+
+permissions:
+  contents: write
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: "pip"
+
+      - name: Install dependencies
+        run: |
+          pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Collect real estate data from public API
+        env:
+          DATA_GO_KR_API_KEY: ${{ secrets.DATA_GO_KR_API_KEY }}
+        run: |
+          MONTHS="${{ github.event.inputs.months || '3' }}"
+          echo "Collecting ${MONTHS} months of data (Seoul + Gyeonggi)..."
+          python3 collect_data.py --months "$MONTHS"
+
+      - name: Re-analyze with filters (직거래/1층 제외)
+        run: |
+          python3 reanalyze.py
+
+      - name: Collect news articles
+        env:
+          NAVER_CLIENT_ID: ${{ secrets.NAVER_CLIENT_ID }}
+          NAVER_CLIENT_SECRET: ${{ secrets.NAVER_CLIENT_SECRET }}
+        run: |
+          echo "Collecting real estate news..."
+          python3 -m src.news_collector || echo "News collection failed (non-fatal)"
+
+      - name: Index news for RAG
+        run: |
+          if [ -f data/news.json ]; then
+            echo "Indexing news articles..."
+            python3 -m src.news_indexer || echo "News indexing failed (non-fatal)"
+          else
+            echo "No news data found, skipping indexing"
+          fi
+
+      - name: Commit and push if data changed
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+          git add data/
+
+          if git diff --cached --quiet; then
+            echo "No data changes detected. Skipping commit."
+          else
+            TIMESTAMP=$(TZ=Asia/Seoul date '+%Y-%m-%d %H:%M KST')
+            git commit -m "chore: refresh data + news (${TIMESTAMP})"
+            git push
+          fi

@@ -1,6 +1,6 @@
 """
 데이터 수집 스크립트 — 하루 1번 실행
-서울 25개구 매매+전세 실거래가 수집 → data/analysis.json 저장
+서울 25개구 + 경기 주요 시군구 매매+전세 실거래가 수집 → data/analysis.json 저장
 """
 import asyncio
 import json
@@ -8,13 +8,14 @@ import os
 from datetime import datetime, timedelta
 
 from src.api_client import (
-    REGION_CODES, SEOUL_TIERS,
+    REGION_CODES, SEOUL_TIERS, HWASEONG_CODES,
     fetch_apt_trades, fetch_apt_rents,
 )
 from src.building_ledger import get_household_count
 from src.kb_client import calculate_jeonse_ratio
 
-SEOUL_GU_CODES = {k: v for k, v in REGION_CODES.items() if k in SEOUL_TIERS}
+# SEOUL_TIERS에 등록된 모든 지역 (서울 + 경기)
+ALL_GU_CODES = {k: v for k, v in REGION_CODES.items() if k in SEOUL_TIERS}
 DATA_DIR = os.path.join(os.path.dirname(__file__), "data")
 
 
@@ -59,11 +60,17 @@ async def collect_all(months: int = 3):
 
     # 병렬 수집
     tasks = []
-    for gu_name, code in SEOUL_GU_CODES.items():
-        for ymd in ymds:
-            tasks.append(fetch_one(gu_name, code, ymd))
+    for gu_name, code in ALL_GU_CODES.items():
+        if gu_name == "화성시":
+            # 화성시는 4개 API 코드로 분리 → 모두 gu="화성시"로 통일
+            for hcode in HWASEONG_CODES:
+                for ymd in ymds:
+                    tasks.append(fetch_one("화성시", hcode, ymd))
+        else:
+            for ymd in ymds:
+                tasks.append(fetch_one(gu_name, code, ymd))
 
-    print(f"수집 시작: {len(SEOUL_GU_CODES)}개구 × {months}개월 = {len(tasks)}건 (병렬 10개)")
+    print(f"수집 시작: {len(ALL_GU_CODES)}개 지역 × {months}개월 = {len(tasks)}건 (병렬 10개)")
     results = await asyncio.gather(*tasks)
 
     for t_list, r_list in results:
