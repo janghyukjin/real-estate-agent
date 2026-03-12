@@ -12,7 +12,7 @@ from src.calculator import (
     BuyerType, LoanPolicy, UserFinance, calculate_affordability,
 )
 from src.constants import (
-    TIER_DISPLAY, TIER_EMOJI, TIER_REVERSE, TIER_KEYS_ORDERED,
+    TIER_DISPLAY, TIER_EMOJI, TIER_REVERSE, TIER_KEYS_ORDERED, TIER_KEYS_ORDERED_UI,
     PRESETS, ADVANCED_DEFAULTS,
 )
 from src.scoring import apply_skill_overrides, filter_and_score
@@ -120,12 +120,15 @@ with st.expander("⚙️ 상세 설정", expanded=False):
     st.markdown("---")
     st.markdown("**필터**")
 
-    tier_display_options = ["전체"] + [TIER_DISPLAY[t] for t in TIER_KEYS_ORDERED]
+    tier_display_options = ["전체"] + [TIER_DISPLAY[t] for t in TIER_KEYS_ORDERED_UI]
     selected_tier_displays = st.multiselect("지역 등급", options=tier_display_options, default=["전체"])
     if "전체" in selected_tier_displays:
         selected_tiers = ["전체"]
     else:
-        selected_tiers = [TIER_REVERSE.get(d, d) for d in selected_tier_displays]
+        # "1티어" → ["상급지", "상급지(경기)"] 등 서울+경기 모두 포함
+        selected_tiers = []
+        for d in selected_tier_displays:
+            selected_tiers.extend(TIER_REVERSE.get(d, [d]))
 
     if region_choice == "서울":
         available_gus = _seoul_gus
@@ -163,9 +166,11 @@ with st.expander("⚙️ 상세 설정", expanded=False):
 
     top_n = st.number_input("상위 표시 개수", min_value=5, max_value=50, value=10, step=5)
 
-    # 전략 프리셋
+    # 전략 프리셋 + 내 스킬
     st.markdown("---")
-    st.markdown("**🎯 전략 프리셋** (원클릭 필터)")
+    st.markdown("**🎯 전략** (원클릭 필터)")
+
+    # 프리셋 버튼
     preset_keys = list(PRESETS.keys())
     row1 = preset_keys[:3]
     p_cols = st.columns(3)
@@ -176,6 +181,7 @@ with st.expander("⚙️ 상세 설정", expanded=False):
                     st.session_state.selected_preset = None
                 else:
                     st.session_state.selected_preset = key
+                    st.session_state.active_community_skill = None
     row2 = preset_keys[3:]
     if row2:
         p_cols2 = st.columns(3)
@@ -186,14 +192,40 @@ with st.expander("⚙️ 상세 설정", expanded=False):
                         st.session_state.selected_preset = None
                     else:
                         st.session_state.selected_preset = key
+                        st.session_state.active_community_skill = None
 
+    # 내 커스텀 스킬 버튼 (저장된 게 있으면 표시)
+    if "custom_skills" not in st.session_state:
+        st.session_state.custom_skills = []
+    my_skills = st.session_state.custom_skills
+    if my_skills:
+        st.caption("내 스킬")
+        my_rows = [my_skills[i:i+3] for i in range(0, len(my_skills), 3)]
+        for row_idx, row in enumerate(my_rows):
+            my_cols = st.columns(3)
+            for col_idx, skill in enumerate(row):
+                with my_cols[col_idx]:
+                    skill_label = f"⭐ {skill['name']}"
+                    if st.button(skill_label, key=f"my_preset_{row_idx}_{col_idx}", width="stretch"):
+                        # 커스텀 스킬을 community skill로 적용
+                        if st.session_state.get("active_community_skill", {}).get("name") == skill["name"]:
+                            st.session_state.active_community_skill = None
+                        else:
+                            st.session_state.active_community_skill = skill.get("config", skill)
+                            st.session_state.active_community_skill["name"] = skill["name"]
+                            st.session_state.active_community_skill["desc"] = skill.get("desc", skill["name"])
+                            st.session_state.selected_preset = None
+                        st.rerun()
+
+    # 상태 표시
     active_preset = st.session_state.get("selected_preset")
     if active_preset and active_preset in PRESETS:
         p_info = PRESETS[active_preset]
         st.success(f"🎯 **{active_preset}** — {p_info['desc']}")
     elif st.session_state.get("active_community_skill"):
-        cs_desc = st.session_state.active_community_skill.get("desc", "커뮤니티 스킬")
-        st.info(f"🎯 커스텀 스킬 적용 중 — {cs_desc}")
+        cs_name = st.session_state.active_community_skill.get("name", "커스텀")
+        cs_desc = st.session_state.active_community_skill.get("desc", "")
+        st.success(f"⭐ **{cs_name}** — {cs_desc}")
         if st.button("해제", key="clear_community_skill"):
             st.session_state.active_community_skill = None
             st.rerun()
