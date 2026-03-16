@@ -146,6 +146,14 @@ def filter_and_score(all_data, params, active_preset, active_community):
             "monthly_pay": mp, "drop_pct": drop_pct,
         })
 
+    # 같은 아파트 중복 제거: (gu, apt) 기준 점수 높은 면적 타입만 유지
+    deduped: dict[tuple, dict] = {}
+    for c in candidates:
+        key = (c["gu"], c["apt"])
+        if key not in deduped or c["score"] > deduped[key]["score"]:
+            deduped[key] = c
+    candidates = list(deduped.values())
+
     # 정렬
     sort_mode = effective_cfg.get("sort_by")
     if sort_mode == "gap_asc":
@@ -155,7 +163,25 @@ def filter_and_score(all_data, params, active_preset, active_community):
     else:
         candidates.sort(key=lambda x: -x["score"])
 
+    # 지역 다양성: 같은 구 최대 3개 (상위 결과가 한 지역에 몰리지 않도록)
+    candidates = _diversify(candidates, max_per_gu=3)
+
     return candidates
+
+
+def _diversify(candidates: list[dict], max_per_gu: int = 3) -> list[dict]:
+    """상위 결과에서 구별 최대 N개만 노출, 나머지는 뒤로 밀기."""
+    gu_count: dict[str, int] = {}
+    top: list[dict] = []
+    rest: list[dict] = []
+    for c in candidates:
+        gu = c["gu"]
+        if gu_count.get(gu, 0) < max_per_gu:
+            gu_count[gu] = gu_count.get(gu, 0) + 1
+            top.append(c)
+        else:
+            rest.append(c)
+    return top + rest
 
 
 def _calculate_score(r, rr):
