@@ -73,7 +73,7 @@ st.markdown('<div class="divider"></div>', unsafe_allow_html=True)
 col1, col2 = st.columns(2)
 with col1:
     seed_money_억 = st.number_input(
-        "💰 종잣돈 (억원)", min_value=0.0, max_value=50.0, value=0.0, step=0.5,
+        "💰 종잣돈 (억원)", min_value=0.0, value=0.0, step=0.5,
         help="현금 + 예금 + 주식 등 총 동원 가능 금액"
     )
 with col2:

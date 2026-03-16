@@ -162,6 +162,7 @@ def _calculate_score(r, rr):
     """단일 아파트의 종합 점수를 계산한다."""
     tier_score = TIER_SCORES.get(r["tier"], 0)
 
+    # 전세가율: 50~70% 구간이 이상적 (저평가 신호)
     ratio_val = r["ratio"]
     if 50 <= ratio_val <= 70:
         ratio_score = 30
@@ -170,15 +171,27 @@ def _calculate_score(r, rr):
     else:
         ratio_score = max(0, 30 - (ratio_val - 70) * 1.5)
 
-    hhld_score = min(r.get("hhld", 0) / 100, 20)
+    # 세대수: 300~5000+ 선형 스케일 (대단지일수록 유리)
+    hhld = r.get("hhld", 0)
+    hhld_score = min((hhld - 300) / 200, 20)  # 300세대=0점, 4300세대=20점
+
+    # 거래량: 최근 3개월 거래 건수 (유동성 지표)
     volume_score = min(r["count"] * 3, 15)
 
+    # 회복률: 낮을수록 아직 덜 오름 = 저평가 가능성
     if rr > 0:
-        recovery_score = (100 - rr) * 0.3
-        recovery_score = max(-30, min(30, recovery_score))
+        if rr < 50:
+            recovery_score = 30          # 회복률 50% 미만 = 적극 매수 기회
+        elif rr < 80:
+            recovery_score = 15          # 50~80% = 기회
+        elif rr < 100:
+            recovery_score = 0           # 80~100% = 중립
+        else:
+            recovery_score = -15         # 100% 초과 = 전고점 돌파, 단기 부담
     else:
         recovery_score = 0
 
+    # 정책 변동: 정책 시행 후 가격 변화 (토허제 등)
     pa = r.get("policy_avg", 0)
     if pa > 0:
         latest_p = r.get("latest_price", r["avg_price"])
