@@ -146,14 +146,6 @@ def filter_and_score(all_data, params, active_preset, active_community):
             "monthly_pay": mp, "drop_pct": drop_pct,
         })
 
-    # 같은 아파트 중복 제거: (gu, apt) 기준 점수 높은 면적 타입만 유지
-    deduped: dict[tuple, dict] = {}
-    for c in candidates:
-        key = (c["gu"], c["apt"])
-        if key not in deduped or c["score"] > deduped[key]["score"]:
-            deduped[key] = c
-    candidates = list(deduped.values())
-
     # 정렬
     sort_mode = effective_cfg.get("sort_by")
     if sort_mode == "gap_asc":
@@ -185,37 +177,43 @@ def _diversify(candidates: list[dict], max_per_gu: int = 3) -> list[dict]:
 
 
 def _calculate_score(r, rr):
-    """단일 아파트의 종합 점수를 계산한다."""
+    """단일 아파트의 종합 점수를 계산한다.
+
+    항목별 배점:
+      tier       0 ~ 40  (지역 등급)
+      ratio      0 ~ 30  (전세가율, 60% 피크 곡선)
+      hhld       0 ~ 20  (세대수, 선형)
+      volume     0 ~ 15  (거래량)
+      recovery -20 ~ 25  (회복률, 연속 선형 — 낮을수록 저평가)
+      policy   -15 ~ 15  (정책 변동)
+    """
     tier_score = TIER_SCORES.get(r["tier"], 0)
 
-    # 전세가율: 50~70% 구간이 이상적 (저평가 신호)
+    # 전세가율: 60% 피크, 양쪽으로 감소 (뭉침 방지)
     ratio_val = r["ratio"]
-    if 50 <= ratio_val <= 70:
-        ratio_score = 30
-    elif ratio_val < 50:
-        ratio_score = max(0, 30 - (50 - ratio_val) * 1.0)
+    if ratio_val <= 0:
+        ratio_score = 0.0
+    elif ratio_val <= 60:
+        # 0%→0점, 60%→30점 (볼록 곡선)
+        ratio_score = 30 * (ratio_val / 60) ** 0.6
     else:
-        ratio_score = max(0, 30 - (ratio_val - 70) * 1.5)
+        # 60%→30점, 80%→10점, 90%→0점
+        ratio_score = max(0.0, 30 - (ratio_val - 60) * 1.5)
 
-    # 세대수: 300~5000+ 선형 스케일 (대단지일수록 유리)
+    # 세대수: 300~4300세대 선형 (대단지 우대)
     hhld = r.get("hhld", 0)
-    hhld_score = min((hhld - 300) / 200, 20)  # 300세대=0점, 4300세대=20점
+    hhld_score = min((hhld - 300) / 200, 20)
 
-    # 거래량: 최근 3개월 거래 건수 (유동성 지표)
+    # 거래량: 유동성 (최근 3개월 실거래 건수)
     volume_score = min(r["count"] * 3, 15)
 
-    # 회복률: 낮을수록 아직 덜 오름 = 저평가 가능성
+    # 회복률: 연속 선형 (낮을수록 아직 저평가 여지)
+    # rr=20→+22, rr=50→+19, rr=80→+7, rr=100→-3, rr=120→-15
     if rr > 0:
-        if rr < 50:
-            recovery_score = 30          # 회복률 50% 미만 = 적극 매수 기회
-        elif rr < 80:
-            recovery_score = 15          # 50~80% = 기회
-        elif rr < 100:
-            recovery_score = 0           # 80~100% = 중립
-        else:
-            recovery_score = -15         # 100% 초과 = 전고점 돌파, 단기 부담
+        recovery_score = 25 - rr * 0.28
+        recovery_score = max(-20.0, min(25.0, recovery_score))
     else:
-        recovery_score = 0
+        recovery_score = 0.0
 
     # 정책 변동: 정책 시행 후 가격 변화 (토허제 등)
     pa = r.get("policy_avg", 0)
@@ -223,8 +221,8 @@ def _calculate_score(r, rr):
         latest_p = r.get("latest_price", r["avg_price"])
         policy_pct_val = (latest_p - pa) / pa * 100
         policy_score = -policy_pct_val * 0.5
-        policy_score = max(-15, min(15, policy_score))
+        policy_score = max(-15.0, min(15.0, policy_score))
     else:
-        policy_score = 0
+        policy_score = 0.0
 
     return round(tier_score + ratio_score + hhld_score + volume_score + recovery_score + policy_score, 1)
