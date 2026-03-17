@@ -140,15 +140,24 @@ def filter_by_households(
 import json as _json
 import os as _os
 
-def _load_cache() -> dict[str, int]:
-    """캐시 파일 있으면 로드, 없으면 기본값"""
+def _load_cache() -> dict[str, dict]:
+    """캐시 파일 로드. 구형(int) / 신형(dict) 모두 지원."""
     cache_path = _os.path.join(_os.path.dirname(__file__), "..", "data", "apt_cache.json")
-    if _os.path.exists(cache_path):
-        with open(cache_path) as f:
-            return _json.load(f)
-    return {}
+    if not _os.path.exists(cache_path):
+        return {}
+    with open(cache_path) as f:
+        raw = _json.load(f)
+    result: dict[str, dict] = {}
+    for k, v in raw.items():
+        if isinstance(v, int):
+            result[k] = {"hhld": v, "build_year": 0}
+        elif isinstance(v, dict):
+            result[k] = {"hhld": v.get("hhld", 0), "build_year": v.get("build_year", 0)}
+    return result
 
-APT_HOUSEHOLD_CACHE: dict[str, int] = _load_cache()
+APT_INFO_CACHE: dict[str, dict] = _load_cache()
+# 하위 호환: hhld만 필요한 기존 코드용
+APT_HOUSEHOLD_CACHE: dict[str, int] = {k: v["hhld"] for k, v in APT_INFO_CACHE.items()}
 
 
 def _normalize(name: str) -> str:
@@ -162,139 +171,132 @@ def _normalize(name: str) -> str:
 
 
 # 정규화된 캐시 + dong별 인덱스 (초기화 시 1회 생성)
-_NORMALIZED_CACHE: dict[str, int] | None = None
-_DONG_INDEX: dict[str, list[tuple[str, str, int]]] | None = None  # dong -> [(key, norm_apt_part, count)]
-_APT_ONLY_CACHE: dict[str, int] | None = None  # dong접두사 제거한 아파트명 캐시
+_NORMALIZED_CACHE: dict[str, dict] | None = None
+_DONG_INDEX: dict[str, list[tuple[str, dict]]] | None = None
+_APT_ONLY_CACHE: dict[str, dict] | None = None
 
 
-def _get_normalized_cache() -> dict[str, int]:
+def _get_normalized_cache() -> dict[str, dict]:
     global _NORMALIZED_CACHE
     if _NORMALIZED_CACHE is None:
         _NORMALIZED_CACHE = {}
-        for key, val in APT_HOUSEHOLD_CACHE.items():
+        for key, info in APT_INFO_CACHE.items():
             nk = _normalize(key)
             if nk not in _NORMALIZED_CACHE:
-                _NORMALIZED_CACHE[nk] = val
+                _NORMALIZED_CACHE[nk] = info
     return _NORMALIZED_CACHE
 
 
-def _get_apt_only_cache() -> dict[str, int]:
-    """캐시 키에서 동명 접두사를 제거한 인덱스 생성
-
-    예: "가락동헬리오시티" → "헬리오시티" (정규화)로 매칭 가능
-    """
+def _get_apt_only_cache() -> dict[str, dict]:
+    """캐시 키에서 동명 접두사를 제거한 인덱스 생성."""
     import re as _re
     global _APT_ONLY_CACHE
     if _APT_ONLY_CACHE is None:
         _APT_ONLY_CACHE = {}
-        for key, val in APT_HOUSEHOLD_CACHE.items():
-            # 동명 접두사 제거 (예: "가락동", "신갈동", "봉담읍" 등)
+        for key, info in APT_INFO_CACHE.items():
             m = _re.match(r'^(.+?(?:동\d*[가]?|읍|면|리))\s*(.+)$', key)
             if m:
                 apt_part = m.group(2).strip()
                 if apt_part:
                     napt = _normalize(apt_part)
                     # 더 큰 세대수를 우선 (동명이인 시 대단지가 주로 검색 대상)
-                    if napt not in _APT_ONLY_CACHE or val > _APT_ONLY_CACHE[napt]:
-                        _APT_ONLY_CACHE[napt] = val
+                    if napt not in _APT_ONLY_CACHE or info["hhld"] > _APT_ONLY_CACHE[napt]["hhld"]:
+                        _APT_ONLY_CACHE[napt] = info
     return _APT_ONLY_CACHE
 
 
-def _get_dong_index() -> dict[str, list[tuple[str, int]]]:
-    """dong별로 캐시를 사전 인덱싱"""
+def _get_dong_index() -> dict[str, list[tuple[str, dict]]]:
+    """dong별로 캐시를 사전 인덱싱."""
     global _DONG_INDEX
     if _DONG_INDEX is None:
         _DONG_INDEX = {}
-        for key, val in APT_HOUSEHOLD_CACHE.items():
-            # 키에서 동 이름 추출 (동으로 끝나는 부분)
+        for key, info in APT_INFO_CACHE.items():
             import re
             dong_match = re.match(r'^(.+?동\d*[가]?)\s*', key)
             if dong_match:
                 dong = dong_match.group(1)
                 apt_part = key[len(dong):].strip()
                 norm_apt = _normalize(apt_part) if apt_part else _normalize(key)
-                _DONG_INDEX.setdefault(dong, []).append((norm_apt, val))
+                _DONG_INDEX.setdefault(dong, []).append((norm_apt, info))
     return _DONG_INDEX
 
 
-def get_household_count(apt_name: str, dong: str = "") -> int | None:
-    """아파트명으로 세대수 조회 (정규화 매칭)
+def _find_info(apt_name: str, dong: str = "") -> dict | None:
+    """아파트명으로 캐시 정보 조회 (hhld + build_year).
 
     매칭 우선순위:
-    1. dong+apt 정확 매칭 ("역삼동경남아너스빌")
-    2. dong+apt 정규화 매칭 (공백·특수문자 제거 후 비교)
-    3. dong 범위 내 부분매칭 (dong별 인덱스)
-    4. apt 정확 매칭
-    5. apt 정규화 매칭
-    6. 동명 접두사 제거 후 매칭 ("가락동헬리오시티" → "헬리오시티")
-    7. apt-only 캐시 부분매칭
-    8. 매칭 실패 → None
+    1. dong+apt 정확 매칭  2. dong+apt 정규화 매칭  3. dong 범위 내 부분매칭
+    4. apt 정확 매칭  5. apt 정규화 매칭
+    6. 동명 접두사 제거 매칭  7. apt-only 부분매칭
     """
     norm_cache = _get_normalized_cache()
 
-    # 1) dong+apt 정확 매칭
     if dong:
+        # 1) dong+apt 정확 매칭
         dong_apt = dong + apt_name
-        if dong_apt in APT_HOUSEHOLD_CACHE:
-            return APT_HOUSEHOLD_CACHE[dong_apt]
+        if dong_apt in APT_INFO_CACHE:
+            return APT_INFO_CACHE[dong_apt]
         # 2) dong+apt 정규화 매칭
-        norm_dong_apt = _normalize(dong_apt)
-        if norm_dong_apt in norm_cache:
-            return norm_cache[norm_dong_apt]
-        # 3) dong 범위 내 부분매칭 (dong별 인덱스 사용, 빠름)
+        if _normalize(dong_apt) in norm_cache:
+            return norm_cache[_normalize(dong_apt)]
+        # 3) dong 범위 내 부분매칭
         norm_apt = _normalize(apt_name)
-        dong_idx = _get_dong_index()
-        dong_entries = dong_idx.get(dong, [])
-        best_match = None
-        best_len = 0
-        for cached_norm_apt, val in dong_entries:
+        best_match, best_len = None, 0
+        for cached_norm_apt, info in _get_dong_index().get(dong, []):
             if not cached_norm_apt or not norm_apt:
                 continue
             if norm_apt in cached_norm_apt or cached_norm_apt in norm_apt:
                 match_len = min(len(norm_apt), len(cached_norm_apt))
                 if match_len > best_len:
-                    best_match = val
-                    best_len = match_len
+                    best_match, best_len = info, match_len
         if best_match is not None:
             return best_match
 
-    # 4~7단계: 전역 매칭 (dong 없는 키에서 검색)
-    # dong이 주어졌고 이름이 짧으면(6자 이하) 전역 매칭 차단 → 오매칭 방지
-    # (예: "대림1", "현대", "경남" 같은 범용 이름이 다른 동에 매칭되는 것 방지)
+    # 4~7: 전역 매칭 (짧은 이름 + dong 있으면 오매칭 방지용 차단)
     norm_apt = _normalize(apt_name)
-    is_short_name = len(norm_apt) <= 6  # "대림1"=3자, "현대"=2자 등
-    skip_global = dong and is_short_name
+    if dong and len(norm_apt) <= 6:
+        return None
 
-    if not skip_global:
-        # 4) apt 정확 매칭
-        if apt_name in APT_HOUSEHOLD_CACHE:
-            return APT_HOUSEHOLD_CACHE[apt_name]
-
-        # 5) apt 정규화 매칭
-        if norm_apt in norm_cache:
-            return norm_cache[norm_apt]
-
-        # 6) 동명 접두사 제거 매칭 (예: "가락동헬리오시티" → "헬리오시티")
-        apt_only = _get_apt_only_cache()
-        if norm_apt in apt_only:
-            return apt_only[norm_apt]
-
-        # 7) 부분매칭
-        if len(norm_apt) >= 4:
-            best_match = None
-            best_len = 0
-            for cached_napt, val in apt_only.items():
-                if not cached_napt:
-                    continue
-                if norm_apt in cached_napt or cached_napt in norm_apt:
-                    match_len = min(len(norm_apt), len(cached_napt))
-                    if match_len > best_len and match_len >= 4:
-                        best_match = val
-                        best_len = match_len
-            if best_match is not None:
-                return best_match
+    # 4) apt 정확 매칭
+    if apt_name in APT_INFO_CACHE:
+        return APT_INFO_CACHE[apt_name]
+    # 5) apt 정규화 매칭
+    if norm_apt in norm_cache:
+        return norm_cache[norm_apt]
+    # 6) 동명 접두사 제거 매칭
+    apt_only = _get_apt_only_cache()
+    if norm_apt in apt_only:
+        return apt_only[norm_apt]
+    # 7) 부분매칭
+    if len(norm_apt) >= 4:
+        best_match, best_len = None, 0
+        for cached_napt, info in apt_only.items():
+            if cached_napt and (norm_apt in cached_napt or cached_napt in norm_apt):
+                match_len = min(len(norm_apt), len(cached_napt))
+                if match_len > best_len and match_len >= 4:
+                    best_match, best_len = info, match_len
+        if best_match is not None:
+            return best_match
 
     return None
+
+
+def get_household_count(apt_name: str, dong: str = "") -> int | None:
+    """아파트명으로 세대수 조회."""
+    info = _find_info(apt_name, dong)
+    if info is None:
+        return None
+    hhld = info.get("hhld", 0)
+    return hhld if hhld else None
+
+
+def get_build_year(apt_name: str, dong: str = "") -> int | None:
+    """아파트명으로 준공연도 조회."""
+    info = _find_info(apt_name, dong)
+    if info is None:
+        return None
+    by = info.get("build_year", 0)
+    return by if by else None
 
 
 def is_large_complex(apt_name: str, min_households: int = 300) -> bool | None:

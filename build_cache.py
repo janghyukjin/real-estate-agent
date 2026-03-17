@@ -65,8 +65,12 @@ async def fetch_building_recap(
         try:
             name = (item.findtext("bldNm") or "").strip()
             hhld = int(item.findtext("hhldCnt") or item.findtext("hoCnt") or "0")
-            if name and hhld > 0:
-                results.append({"bld_name": name, "household_count": hhld})
+            if not name or hhld <= 0:
+                continue
+            # 사용승인일 "20050315" → 준공연도 2005
+            use_apr = (item.findtext("useAprDay") or "").strip()
+            build_year = int(use_apr[:4]) if len(use_apr) >= 4 and use_apr[:4].isdigit() else 0
+            results.append({"bld_name": name, "household_count": hhld, "build_year": build_year})
         except (ValueError, TypeError):
             continue
     return results
@@ -81,10 +85,16 @@ async def build_full_cache(max_concurrent: int = 5):
     bjdong_map = load_bjdong_codes()
     gu_dongs = load_trade_gu_dongs()
 
-    # 기존 캐시 로드
+    # 기존 캐시 로드 (구형 int → 신형 dict 마이그레이션)
     if os.path.exists(CACHE_PATH):
         with open(CACHE_PATH) as f:
-            cache = json.load(f)
+            raw = json.load(f)
+        cache = {}
+        for k, v in raw.items():
+            if isinstance(v, int):
+                cache[k] = {"hhld": v, "build_year": 0}
+            elif isinstance(v, dict):
+                cache[k] = v
     else:
         cache = {}
 
@@ -106,14 +116,22 @@ async def build_full_cache(max_concurrent: int = 5):
             try:
                 results = await fetch_building_recap(sigungu_cd, bjdong_cd, api_key)
                 for r in results:
+                    info = {"hhld": r["household_count"], "build_year": r["build_year"]}
                     # "동+아파트명" 키로 저장
                     dong_apt_key = dong_name + r["bld_name"]
                     if dong_apt_key not in cache:
-                        cache[dong_apt_key] = r["household_count"]
+                        cache[dong_apt_key] = info
                         added += 1
-                    # 아파트명만으로도 저장 (동일 이름이 없는 경우 유용)
+                    else:
+                        # build_year 없으면 업데이트
+                        if r["build_year"] and not cache[dong_apt_key].get("build_year"):
+                            cache[dong_apt_key]["build_year"] = r["build_year"]
+                    # 아파트명만으로도 저장
                     if r["bld_name"] not in cache:
-                        cache[r["bld_name"]] = r["household_count"]
+                        cache[r["bld_name"]] = info
+                    else:
+                        if r["build_year"] and not cache[r["bld_name"]].get("build_year"):
+                            cache[r["bld_name"]]["build_year"] = r["build_year"]
                 processed += 1
                 if processed % 20 == 0:
                     print(f"  진행: {processed}/{len(gu_dongs)} ({added}개 추가)")

@@ -6,7 +6,7 @@ import os
 from datetime import datetime, timedelta
 
 from src.api_client import SEOUL_TIERS
-from src.building_ledger import get_household_count
+from src.building_ledger import get_household_count, get_build_year
 from src.kb_client import calculate_jeonse_ratio
 
 DATA_DIR = os.path.join(os.path.dirname(__file__), "data")
@@ -89,6 +89,7 @@ def reanalyze():
         hhld = get_household_count(apt, dong)
         if not hhld or hhld < 300:
             continue
+        build_year = get_build_year(apt, dong) or 0
 
         # 전세가율
         rent_prices = apt_rents.get((gu, apt, area_type), [])
@@ -162,7 +163,8 @@ def reanalyze():
         tier = SEOUL_TIERS.get(gu, "")
 
         analysis.append({
-            "apt": apt, "gu": gu, "dong": trades[0].get("dong", ""), "tier": tier, "hhld": hhld, "area_type": area_type,
+            "apt": apt, "gu": gu, "dong": trades[0].get("dong", ""), "tier": tier,
+            "hhld": hhld, "build_year": build_year, "area_type": area_type,
             "avg_price": avg_price, "recent_high": recent_high,
             "latest_price": latest_price, "latest_ym": latest_ym,
             "is_at_peak": is_at_peak,

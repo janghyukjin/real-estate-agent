@@ -180,12 +180,13 @@ def _calculate_score(r, rr):
     """단일 아파트의 종합 점수를 계산한다.
 
     항목별 배점:
-      tier       0 ~ 40  (지역 등급)
-      ratio      0 ~ 30  (전세가율, 60% 피크 곡선)
-      hhld       0 ~ 20  (세대수, 선형)
-      volume     0 ~ 15  (거래량)
-      recovery -20 ~ 25  (회복률, 연속 선형 — 낮을수록 저평가)
-      policy   -15 ~ 15  (정책 변동)
+      tier        0 ~ 40  (지역 등급)
+      ratio       0 ~ 30  (전세가율, 60% 피크 곡선)
+      hhld        0 ~ 20  (세대수, 선형)
+      volume      0 ~ 15  (거래량)
+      recovery  -20 ~ 25  (회복률, 연속 선형 — 낮을수록 저평가)
+      policy    -15 ~ 15  (정책 변동)
+      build_year  -5 ~ 10  (준공연도: 신축→+10, 노후→-5)
     """
     tier_score = TIER_SCORES.get(r["tier"], 0)
 
@@ -225,4 +226,19 @@ def _calculate_score(r, rr):
     else:
         policy_score = 0.0
 
-    return round(tier_score + ratio_score + hhld_score + volume_score + recovery_score + policy_score, 1)
+    # 준공연도: 신축일수록 가산 (실거주 품질 반영)
+    build_year = r.get("build_year", 0)
+    if build_year:
+        age = 2026 - build_year
+        if age <= 5:    build_year_score = 10.0   # 신축 (2021~)
+        elif age <= 10: build_year_score = 7.0    # 준신축 (2016~2020)
+        elif age <= 20: build_year_score = 3.0    # 중간 (2006~2015)
+        elif age <= 30: build_year_score = 0.0    # 구축 (1996~2005)
+        else:           build_year_score = -5.0   # 노후 (~1995)
+    else:
+        build_year_score = 0.0
+
+    return round(
+        tier_score + ratio_score + hhld_score + volume_score
+        + recovery_score + policy_score + build_year_score, 1
+    )
