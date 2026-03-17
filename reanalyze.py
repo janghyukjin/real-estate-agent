@@ -20,6 +20,14 @@ def get_area_type(area: float) -> str:
 def reanalyze():
     now = datetime.now()
 
+    # 과거 통계 캐시 (historical_stats.json) — raw 데이터에 충분한 과거 데이터가 없을 때 사용
+    hist_path = os.path.join(DATA_DIR, "historical_stats.json")
+    historical_stats = {}
+    if os.path.exists(hist_path):
+        with open(hist_path) as f:
+            historical_stats = json.load(f)
+        print(f"historical_stats 로드: {len(historical_stats):,}개")
+
     # raw 데이터 로드
     with open(os.path.join(DATA_DIR, "raw_trades.json")) as f:
         all_trades = json.load(f)
@@ -109,13 +117,21 @@ def reanalyze():
             ratio = 99.9  # 역전세(전세>매매) cap 처리
         gap = max(avg_price - avg_rent, 0)  # 역전세 시 갭 0으로
 
-        # 전고점/전저점 (전체 기간)
+        # 전고점/전저점 (전체 기간) — historical_stats와 raw 데이터 중 더 극단값 사용
         peak = max(all_prices)
         trough = min(all_prices)
         peak_trades = [t for t in trades if t["price"] == peak]
         trough_trades = [t for t in trades if t["price"] == trough]
         peak_ym = f"{peak_trades[0]['year']}-{peak_trades[0]['month']:02d}"
         trough_ym = f"{trough_trades[0]['year']}-{trough_trades[0]['month']:02d}"
+
+        # historical_stats 폴백으로 전고점/전저점 업데이트
+        if hist.get("peak", 0) > peak:
+            peak = hist["peak"]
+            peak_ym = hist.get("peak_ym", peak_ym)
+        if hist.get("trough", 0) > 0 and hist["trough"] < trough:
+            trough = hist["trough"]
+            trough_ym = hist.get("trough_ym", trough_ym)
 
         # 현재 최고점 판단: 최근 거래가 >= 전고점이면 "현재 최고점"
         is_at_peak = latest_price >= peak
@@ -124,6 +140,9 @@ def reanalyze():
         diff_trough = round((latest_price - trough) / trough * 100, 1) if trough > 0 else 0
 
         # 시기별 분석: 상승기(2020~2022) 고점 vs 하락기(2023~2024) 저점
+        hist_key = f"{gu}|{apt}|{area_type}"
+        hist = historical_stats.get(hist_key, {})
+
         pre_crash = [t for t in trades if t["year"] <= 2022]
         crash_period = [t for t in trades if 2023 <= t["year"] <= 2024]
 
@@ -133,15 +152,25 @@ def reanalyze():
             pt = [t for t in pre_crash if t["price"] == pre_crash_peak][0]
             pre_crash_ym = f"{pt['year']}-{pt['month']:02d}"
 
+        # historical_stats 폴백: raw 데이터에 과거 데이터가 없을 때
+        if pre_crash_peak == 0 and hist.get("pre_crash_peak", 0) > 0:
+            pre_crash_peak = hist["pre_crash_peak"]
+            pre_crash_ym = hist.get("pre_crash_ym", "")
+
         crash_trough = min([t["price"] for t in crash_period]) if crash_period else 0
         crash_trough_ym = ""
         if crash_period and crash_trough > 0:
             tt = [t for t in crash_period if t["price"] == crash_trough][0]
             crash_trough_ym = f"{tt['year']}-{tt['month']:02d}"
+        if crash_trough == 0 and hist.get("crash_trough", 0) > 0:
+            crash_trough = hist["crash_trough"]
+            crash_trough_ym = hist.get("crash_trough_ym", "")
 
         # 회복률: 최근 거래가 / 상승기고점(~2022) × 100%
-        # 2021~2022년 거래가 없으면 고점이 의미없음 (데이터 희소) → 0 처리
+        # 2021~2022년 거래가 없으면 historical_stats 참조
         has_peak_era = any(2021 <= t["year"] <= 2022 for t in trades)
+        if not has_peak_era and hist.get("pre_crash_peak", 0) > 0:
+            has_peak_era = True  # historical_stats에 데이터 있음
         if pre_crash_peak > 0 and has_peak_era:
             recovery_rate = round(latest_price / pre_crash_peak * 100, 1)
         else:
@@ -158,13 +187,22 @@ def reanalyze():
                 before_policy.sort(key=lambda t: (t["year"], t["month"], t.get("day", 0)), reverse=True)
                 pre_policy = [before_policy[0]]
         policy_avg = int(sum(t["price"] for t in pre_policy) / len(pre_policy)) if pre_policy else 0
+        # historical_stats 폴백
+        if policy_avg == 0 and hist.get("policy_avg", 0) > 0:
+            policy_avg = hist["policy_avg"]
 
-        # 월별 가격 추이 (그래프용)
+        # 월별 가격 추이 (그래프용) — historical_stats의 과거 데이터 + 현재 raw 데이터 병합
         monthly_prices = {}
         for t in trades:
             ym = f"{t['year']}-{t['month']:02d}"
             monthly_prices.setdefault(ym, []).append(t["price"])
-        price_history = {ym: int(sum(ps) / len(ps)) for ym, ps in sorted(monthly_prices.items())}
+        price_history_new = {ym: int(sum(ps) / len(ps)) for ym, ps in sorted(monthly_prices.items())}
+        # 과거 price_history를 historical_stats에서 가져와 병합
+        if hist.get("price_history"):
+            merged_history = {**hist["price_history"], **price_history_new}
+            price_history = {ym: merged_history[ym] for ym in sorted(merged_history)}
+        else:
+            price_history = price_history_new
 
         tier = SEOUL_TIERS.get(gu, "")
 

@@ -44,7 +44,7 @@ permissions:
 jobs:
   refresh:
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 60
 
     steps:
       - name: Checkout repository
@@ -79,6 +79,7 @@ jobs:
       - name: Re-analyze with filters (직거래/1층 제외)
         run: |
           python3 reanalyze.py
+          python3 extract_historical_stats.py
 
       - name: Collect news articles
         env:

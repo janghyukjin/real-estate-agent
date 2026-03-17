@@ -30,10 +30,13 @@ async def collect_all(months: int = 3):
     all_trades = []
     all_rents = []
 
-    sem = asyncio.Semaphore(10)
+    concurrency = 3 if months > 6 else 10
+    sem = asyncio.Semaphore(concurrency)
 
     async def fetch_one(gu_name, code, ymd):
         async with sem:
+            if months > 6:
+                await asyncio.sleep(0.3)
             t_list, r_list = [], []
             try:
                 trades = await fetch_apt_trades(code, ymd, api_key)
@@ -54,6 +57,7 @@ async def collect_all(months: int = 3):
                         r_list.append({
                             "apt": r.apt_name, "deposit": r.deposit,
                             "area": r.area, "gu": gu_name,
+                            "year": r.year, "month": r.month,
                         })
             except Exception as e:
                 print(f"  전세 실패: {gu_name} {ymd} - {e}")
@@ -71,7 +75,7 @@ async def collect_all(months: int = 3):
             for ymd in ymds:
                 tasks.append(fetch_one(gu_name, code, ymd))
 
-    print(f"수집 시작: {len(ALL_GU_CODES)}개 지역 × {months}개월 = {len(tasks)}건 (병렬 10개)")
+    print(f"수집 시작: {len(ALL_GU_CODES)}개 지역 × {months}개월 = {len(tasks)}건 (병렬 {concurrency}개)")
     results = await asyncio.gather(*tasks)
 
     for t_list, r_list in results:
@@ -154,13 +158,43 @@ async def collect_all(months: int = 3):
             "diff_peak": diff_peak, "diff_trough": diff_trough,
         })
 
-    # raw 데이터 저장 (재분석용)
+    # raw 데이터 저장 (기존 데이터와 병합 — 수집 월만 교체, 과거 데이터 보존)
     os.makedirs(DATA_DIR, exist_ok=True)
-    with open(os.path.join(DATA_DIR, "raw_trades.json"), "w") as f:
-        json.dump(all_trades, f, ensure_ascii=False)
-    with open(os.path.join(DATA_DIR, "raw_rents.json"), "w") as f:
-        json.dump(all_rents, f, ensure_ascii=False)
-    print(f"raw 데이터 저장 완료")
+    collected_ymds = set()
+    for ymd in ymds:
+        collected_ymds.add((int(ymd[:4]), int(ymd[4:])))
+
+    trades_path = os.path.join(DATA_DIR, "raw_trades.json")
+    rents_path = os.path.join(DATA_DIR, "raw_rents.json")
+
+    if os.path.exists(trades_path):
+        with open(trades_path) as f:
+            existing_trades = json.load(f)
+        existing_trades = [t for t in existing_trades if (t["year"], t["month"]) not in collected_ymds]
+    else:
+        existing_trades = []
+
+    if os.path.exists(rents_path):
+        with open(rents_path) as f:
+            existing_rents = json.load(f)
+        # 연월 정보가 없는 구버전 레코드는 교체 대상에서 제외 (보존)
+        existing_rents = [r for r in existing_rents if
+                          (r.get("year"), r.get("month")) not in collected_ymds
+                          or "year" not in r]
+    else:
+        existing_rents = []
+
+    # 59-112㎡ 범위만 저장 (파일 크기 제한, 분석에 필요한 범위)
+    all_trades_filtered = [t for t in all_trades if 59 <= t["area"] <= 112]
+    all_rents_filtered = [r for r in all_rents if 59 <= r["area"] <= 112]
+    merged_trades = existing_trades + all_trades_filtered
+    merged_rents = existing_rents + all_rents_filtered
+
+    with open(trades_path, "w") as f:
+        json.dump(merged_trades, f, ensure_ascii=False)
+    with open(rents_path, "w") as f:
+        json.dump(merged_rents, f, ensure_ascii=False)
+    print(f"raw 데이터 저장 완료 (기존+신규: 매매 {len(merged_trades):,}건 / 전세 {len(merged_rents):,}건)")
 
     # 분석 저장
     out_path = os.path.join(DATA_DIR, "analysis.json")
@@ -173,8 +207,8 @@ async def collect_all(months: int = 3):
     # 메타 정보 저장
     meta = {
         "collected_at": now.strftime("%Y-%m-%d %H:%M"),
-        "trade_count": len(all_trades),
-        "rent_count": len(all_rents),
+        "trade_count": len(merged_trades),
+        "rent_count": len(merged_rents),
         "apt_count": len(analysis),
         "months": months,
     }

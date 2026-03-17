@@ -62,6 +62,7 @@ async def collect_extra(months: int = 75):
                         r_list.append({
                             "apt": r.apt_name, "deposit": r.deposit,
                             "area": r.area, "gu": gu_name,
+                            "year": r.year, "month": r.month,
                         })
             except Exception as e:
                 print(f"  전세 실패: {gu_name} {ymd} - {e}")
