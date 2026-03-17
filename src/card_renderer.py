@@ -33,6 +33,8 @@ def render_apt_card(rank, r):
     pyeong = round(area_num * 0.3025) if area_num else ""
     dong = r.get("dong", "")
     loc = f"{r['gu']} {dong}" if dong else r['gu']
+    build_year = r.get("build_year", 0)
+    age_str = f"{2026 - build_year}년차({build_year})" if build_year else ""
     latest = r.get("latest_price", r["avg_price"])
     latest_ym = r.get("latest_ym", "")
     gap = r["gap"]
@@ -49,7 +51,7 @@ def render_apt_card(rank, r):
 
     return f"""<div class="apt-card">
 <div><span class="apt-rank">{rank}</span><span class="apt-name">{r['apt']}</span></div>
-<div class="apt-meta">{tier_emoji} {loc} &middot; {tier_display} &middot; {area_type}({pyeong}평) &middot; {r.get('hhld',0):,}세대</div>
+<div class="apt-meta">{tier_emoji} {loc} &middot; {tier_display} &middot; {area_type}({pyeong}평) &middot; {r.get('hhld',0):,}세대{f" &middot; {age_str}" if age_str else ""}</div>
 <div style="margin-top:8px">{tags}</div>
 <div class="metric-grid">
 <div class="metric-item"><span class="metric-label">최근 거래가</span><span class="metric-value">{latest/10000:.1f}억 <span style="font-size:0.7rem;color:#888">{latest_ym}</span></span></div>
@@ -138,6 +140,13 @@ def _build_tags(r, rr):
         tags += '<span class="tag tag-green">소액갭</span>'
     if r["tier"] in ("상급지", "상급지(경기)"):
         tags += '<span class="tag tag-gray">프리미엄</span>'
+    by = r.get("build_year", 0)
+    if by:
+        age = 2026 - by
+        if age <= 5:
+            tags += '<span class="tag tag-red">신축</span>'
+        elif age <= 10:
+            tags += '<span class="tag tag-blue">준신축</span>'
     return tags
 
 

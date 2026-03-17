@@ -51,6 +51,7 @@ async def collect_extra(months: int = 75):
                         "area": t.area, "gu": gu_name, "dong": t.dong,
                         "year": t.year, "month": t.month, "day": t.day,
                         "floor": t.floor, "deal_type": t.deal_type,
+                        "build_year": t.build_year,
                     })
             except Exception as e:
                 print(f"  매매 실패: {gu_name} {ymd} - {e}")
