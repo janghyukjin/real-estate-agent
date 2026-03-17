@@ -69,6 +69,13 @@ jobs:
           echo "Collecting ${MONTHS} months of data (Seoul + Gyeonggi)..."
           python3 collect_data.py --months "$MONTHS"
 
+      - name: Update building cache (준공연도 + 세대수)
+        env:
+          DATA_GO_KR_API_KEY: ${{ secrets.DATA_GO_KR_API_KEY }}
+        run: |
+          echo "Updating apt cache (build_year + household count)..."
+          python3 build_cache.py --concurrent 2 || echo "Cache update failed (non-fatal)"
+
       - name: Re-analyze with filters (직거래/1층 제외)
         run: |
           python3 reanalyze.py
