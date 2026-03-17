@@ -89,7 +89,13 @@ def reanalyze():
         hhld = get_household_count(apt, dong)
         if not hhld or hhld < 300:
             continue
-        build_year = get_build_year(apt, dong) or 0
+
+        # 준공연도: 실거래 API 데이터 우선, 없으면 건축물대장 캐시 fallback
+        trade_build_years = [t["build_year"] for t in trades if t.get("build_year", 0) > 0]
+        if trade_build_years:
+            build_year = max(set(trade_build_years), key=trade_build_years.count)  # 최빈값
+        else:
+            build_year = get_build_year(apt, dong) or 0
 
         # 전세가율
         rent_prices = apt_rents.get((gu, apt, area_type), [])
