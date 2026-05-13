@@ -291,7 +291,11 @@
             </div>
             <div class="data-card" style="background: var(--bg);">
                 <h3>스트레스 금리</h3>
-                <p>실제 금리 + 3%p 가산하여 DSR 심사. 금리 4% → 심사 시 7% 적용. 2024년 10.15 대책으로 3단계 시행.</p>
+                <p>실제 금리 + 3%p 가산하여 DSR 심사. 금리 4% → 심사 시 7% 적용. 2025-10-15 대책으로 1.5% → 3.0% 상향.</p>
+            </div>
+            <div class="data-card" style="background: var(--bg);">
+                <h3>7월 3단계 (2025-07)</h3>
+                <p>주담대 + 신용 + 기타 + <strong>1주택자 전세대출</strong> 모두 DSR 합산. 한도 약 10~15% 축소.</p>
             </div>
         </div>
 
@@ -313,55 +317,132 @@
     </div>
 </section>
 
-<!-- LTV -->
+<!-- LTV (10.15 + 6.27 대책 반영) -->
 <section>
     <div class="container">
         <h2>LTV (담보인정비율)</h2>
-        <p class="subtitle">집값 대비 대출 가능 비율. 매수자 유형과 가격 구간에 따라 달라집니다.</p>
+        <p class="subtitle">10.15 대책 (2025-10-15) 반영. 매수자 유형 × 시가별 한도 둘 다 적용.</p>
         <table class="calc-table">
             <thead>
                 <tr>
                     <th>매수자 유형</th>
-                    <th>9억 이하</th>
-                    <th>9~15억</th>
-                    <th>15억 초과</th>
+                    <th>LTV %</th>
+                    <th>15억 이하 cap</th>
+                    <th>15~25억 cap</th>
+                    <th>25억 초과 cap</th>
                 </tr>
             </thead>
             <tbody>
                 <tr>
                     <td class="highlight">생애최초</td>
                     <td class="green">70%</td>
-                    <td>9억×70% + 초과분×50%</td>
-                    <td>대출 불가</td>
+                    <td>6억</td>
+                    <td>4억</td>
+                    <td>2억</td>
                 </tr>
                 <tr>
                     <td>무주택</td>
-                    <td class="green">50%</td>
-                    <td>9억×50% + 초과분×30%</td>
-                    <td>대출 불가</td>
+                    <td>40%</td>
+                    <td>6억</td>
+                    <td>4억</td>
+                    <td>2억</td>
                 </tr>
                 <tr>
-                    <td>1주택 이하</td>
-                    <td>50%</td>
-                    <td>9억×50% + 초과분×30%</td>
-                    <td>대출 불가</td>
+                    <td>처분조건부 1주택 (6.27)</td>
+                    <td>40%</td>
+                    <td>6억</td>
+                    <td>4억</td>
+                    <td>2억</td>
+                </tr>
+                <tr>
+                    <td>1주택 (유지)</td>
+                    <td>0%</td>
+                    <td colspan="3" style="text-align:center">대출 불가</td>
+                </tr>
+                <tr>
+                    <td>다주택</td>
+                    <td>0%</td>
+                    <td colspan="3" style="text-align:center">대출 불가</td>
                 </tr>
             </tbody>
         </table>
 
         <div class="example-box">
-            <h3>예시: 생애최초 / 12억 아파트</h3>
+            <h3>예시: 생애최초 / 18억 아파트</h3>
             <div class="example-row">
-                <span class="label">9억 이하 구간</span>
-                <span class="value">9억 × 70% = 6.3억</span>
+                <span class="label">LTV 70%</span>
+                <span class="value">18억 × 70% = 12.6억</span>
             </div>
             <div class="example-row">
-                <span class="label">9~12억 초과 구간</span>
-                <span class="value">3억 × 50% = 1.5억</span>
+                <span class="label">15~25억 cap</span>
+                <span class="value">4억 (binding)</span>
             </div>
             <div class="example-row">
-                <span class="label">LTV 한도 합계</span>
-                <span class="value primary">6.3 + 1.5 = 7.8억</span>
+                <span class="label">최종 대출</span>
+                <span class="value primary">4억 (cap 적용)</span>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- 2026-05-12 토허 실거주 유예 (갭매수) -->
+<section style="background: var(--bg-card);">
+    <div class="container">
+        <h2>토허제 갭매수 (2026-05-12 신규)</h2>
+        <p class="subtitle">세 낀 매물 매수 시 입주 유예 + 주담대 가능. 단 전세가율 40% 룰 적용.</p>
+
+        <div class="data-grid">
+            <div class="data-card" style="background: var(--bg);">
+                <h3>실거주 유예</h3>
+                <p>임대차계약 종료까지, 최대 <strong>2028-05-11</strong>까지 입주 유예. 잔금일 후 6개월 또는 임대종료+1개월 중 늦은 시점까지 전입신고 의무 면제.</p>
+            </div>
+            <div class="data-card" style="background: var(--bg);">
+                <h3>매수자 자격</h3>
+                <p>발표일(2026-05-12)부터 계속 <strong>무주택 유지</strong>. 발표 이후 처분으로 무주택된 자는 제외. 토허 신청 마감 <strong>2026-12-31</strong>.</p>
+            </div>
+            <div class="data-card" style="background: var(--bg);">
+                <h3>전세가율 40% 룰</h3>
+                <p>인수 임차보증금이 <strong>매수가의 40% 초과 시 대출 불가</strong>. 무주택자 LTV 40% (최대 6억) 기준 적용. 자기자본으로 충당해야.</p>
+            </div>
+            <div class="data-card" style="background: var(--bg);">
+                <h3>의무거주 2년</h3>
+                <p>본인 입주 후 <strong>2년 의무거주</strong>. 예: 2028-05 입주 → 2030-05까지 거주. 위반 시 토허법 처벌 (3년 이하 징역 or 3,000만원 벌금).</p>
+            </div>
+        </div>
+
+        <div class="example-box">
+            <h3>예시: 생애최초 / 매수 18억 + 인수 전세 7억</h3>
+            <div class="example-row">
+                <span class="label">전세가율</span>
+                <span class="value">7억 / 18억 = 38.9% ✓ (40% 이하)</span>
+            </div>
+            <div class="example-row">
+                <span class="label">LTV 한도</span>
+                <span class="value">18억 × 40% (정책 적용) = 7.2억</span>
+            </div>
+            <div class="example-row">
+                <span class="label">대출 가능</span>
+                <span class="value">min(7.2억, cap 4억) = 4억</span>
+            </div>
+            <div class="example-row">
+                <span class="label">자기자본 필요</span>
+                <span class="value primary">18 - 7 - 4 = 7억</span>
+            </div>
+        </div>
+
+        <div class="example-box">
+            <h3>예시 (룰 위반): 매수 19.5억 + 인수 전세 8.6억</h3>
+            <div class="example-row">
+                <span class="label">전세가율</span>
+                <span class="value" style="color:#FF6B6B">8.6 / 19.5 = 44.1% ✗ (40% 초과)</span>
+            </div>
+            <div class="example-row">
+                <span class="label">대출 가능</span>
+                <span class="value" style="color:#FF6B6B">0 (대출 불가)</span>
+            </div>
+            <div class="example-row">
+                <span class="label">자기자본 필요</span>
+                <span class="value primary">19.5 - 8.6 = 10.9억 (전액)</span>
             </div>
         </div>
     </div>
