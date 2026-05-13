@@ -117,6 +117,10 @@ def reanalyze():
             ratio = 99.9  # 역전세(전세>매매) cap 처리
         gap = max(avg_price - avg_rent, 0)  # 역전세 시 갭 0으로
 
+        # historical_stats 폴백 데이터 (early lookup to avoid UnboundLocalError)
+        hist_key = f"{gu}|{apt}|{area_type}"
+        hist = historical_stats.get(hist_key, {})
+
         # 전고점/전저점 (전체 기간) — historical_stats와 raw 데이터 중 더 극단값 사용
         peak = max(all_prices)
         trough = min(all_prices)
@@ -140,8 +144,7 @@ def reanalyze():
         diff_trough = round((latest_price - trough) / trough * 100, 1) if trough > 0 else 0
 
         # 시기별 분석: 상승기(2020~2022) 고점 vs 하락기(2023~2024) 저점
-        hist_key = f"{gu}|{apt}|{area_type}"
-        hist = historical_stats.get(hist_key, {})
+        # (hist는 위에서 이미 로드됨)
 
         pre_crash = [t for t in trades if t["year"] <= 2022]
         crash_period = [t for t in trades if 2023 <= t["year"] <= 2024]

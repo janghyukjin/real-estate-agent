@@ -8,6 +8,8 @@ API 키: data.go.kr에서 '건축물대장정보 서비스' 활용신청 (즉시
 환경변수 DATA_GO_KR_API_KEY 공유 사용.
 """
 
+from __future__ import annotations
+
 import os
 from dataclasses import dataclass
 

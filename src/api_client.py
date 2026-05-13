@@ -9,6 +9,8 @@ API 출처: data.go.kr (공공데이터포털)
 환경변수 DATA_GO_KR_API_KEY 에 설정하세요.
 """
 
+from __future__ import annotations
+
 import os
 from datetime import datetime, timedelta
 from dataclasses import dataclass
