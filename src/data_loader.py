@@ -12,14 +12,19 @@ DATA_DIR = os.path.join(os.path.dirname(os.path.dirname(__file__)), "data")
 @st.cache_data
 def load_data():
     analysis, meta = [], {}
-    path = os.path.join(DATA_DIR, "analysis.json")
-    if os.path.exists(path):
-        with open(path) as f:
-            analysis = json.load(f)
+    # 분당 보강 + 버그픽스 반영본(analysis_v10.json) 우선, 없으면 기본 분석본
+    for fname in ("analysis_v10.json", "analysis.json"):
+        path = os.path.join(DATA_DIR, fname)
+        if os.path.exists(path):
+            with open(path) as f:
+                analysis = json.load(f)
+            break
     meta_path = os.path.join(DATA_DIR, "meta.json")
     if os.path.exists(meta_path):
         with open(meta_path) as f:
             meta = json.load(f)
+    if analysis:
+        meta["apt_count"] = len(analysis)  # 실제 로드 건수로 갱신 (v10 = base + 분당 보강)
     return analysis, meta
 
 

@@ -17,6 +17,167 @@ def get_area_type(area: float) -> str:
     return f"{int(area)}㎡"
 
 
+def analyze_apt(gu, apt, dong, area_type, trades, rent_prices, historical_stats, now, require_hhld=True):
+    """단지 1개((gu,apt,dong,area_type)) → analysis 레코드 1건 생성. 조건 미달 시 None.
+
+    expand_bundang.py가 분당 보강 시 동일 로직으로 호출 (require_hhld=False → 세대수 미확인도 허용).
+    reanalyze()와 expand_bundang이 같은 필드 정의를 공유하도록 단일 진실원 역할.
+    """
+    all_prices = [t["price"] for t in trades]
+    if len(all_prices) < 2:
+        return None
+
+    # 최근 3개월 (현재가 계산용)
+    recent_ymds = set()
+    for i in range(3):
+        dt = now - timedelta(days=30 * i)
+        recent_ymds.add((dt.year, dt.month))
+
+    # 최근 3개월 거래 (없으면 stale → 제외)
+    recent_trades = [t for t in trades if (t["year"], t["month"]) in recent_ymds]
+    if not recent_trades:
+        return None
+    recent_prices = [t["price"] for t in recent_trades]
+    avg_price = int(sum(recent_prices) / len(recent_prices))
+    recent_high = max(recent_prices)
+
+    # 가장 최근 거래가 (날짜순 정렬)
+    recent_trades_sorted = sorted(
+        recent_trades,
+        key=lambda t: (t["year"], t["month"], t.get("day", 0)),
+        reverse=True,
+    )
+    latest_price = recent_trades_sorted[0]["price"]
+    latest_ym = f"{recent_trades_sorted[0]['year']}-{recent_trades_sorted[0]['month']:02d}"
+
+    hhld = get_household_count(apt, dong)
+    if require_hhld:
+        if not hhld or hhld < 300:
+            return None
+    else:
+        hhld = hhld or 0
+
+    # 준공연도: 실거래 API 데이터 우선, 없으면 건축물대장 캐시 fallback
+    trade_build_years = [t["build_year"] for t in trades if t.get("build_year", 0) > 0]
+    if trade_build_years:
+        build_year = max(set(trade_build_years), key=trade_build_years.count)  # 최빈값
+    else:
+        build_year = get_build_year(apt, dong) or 0
+
+    # 전세가율
+    if not rent_prices:
+        return None
+    avg_rent = int(sum(rent_prices) / len(rent_prices))
+    if avg_rent <= 0:
+        return None
+    ratio = calculate_jeonse_ratio(avg_price, avg_rent)
+    if ratio >= 100:
+        ratio = 99.9  # 역전세(전세>매매) cap 처리
+    gap = max(avg_price - avg_rent, 0)  # 역전세 시 갭 0으로
+
+    # historical_stats 폴백 데이터
+    hist_key = f"{gu}|{apt}|{area_type}"
+    hist = historical_stats.get(hist_key, {})
+
+    # 전고점/전저점 (전체 기간) — historical_stats와 raw 데이터 중 더 극단값 사용
+    peak = max(all_prices)
+    trough = min(all_prices)
+    peak_trades = [t for t in trades if t["price"] == peak]
+    trough_trades = [t for t in trades if t["price"] == trough]
+    peak_ym = f"{peak_trades[0]['year']}-{peak_trades[0]['month']:02d}"
+    trough_ym = f"{trough_trades[0]['year']}-{trough_trades[0]['month']:02d}"
+
+    if hist.get("peak", 0) > peak:
+        peak = hist["peak"]
+        peak_ym = hist.get("peak_ym", peak_ym)
+    if hist.get("trough", 0) > 0 and hist["trough"] < trough:
+        trough = hist["trough"]
+        trough_ym = hist.get("trough_ym", trough_ym)
+
+    # 현재 최고점 판단: 최근 거래가 >= 전고점이면 "현재 최고점"
+    is_at_peak = latest_price >= peak
+
+    diff_peak = round((latest_price - peak) / peak * 100, 1) if peak > 0 else 0
+    diff_trough = round((latest_price - trough) / trough * 100, 1) if trough > 0 else 0
+
+    # 시기별 분석: 상승기(~2022) 고점 vs 하락기(2023~2024) 저점
+    pre_crash = [t for t in trades if t["year"] <= 2022]
+    crash_period = [t for t in trades if 2023 <= t["year"] <= 2024]
+
+    pre_crash_peak = max([t["price"] for t in pre_crash]) if pre_crash else 0
+    pre_crash_ym = ""
+    if pre_crash and pre_crash_peak > 0:
+        pt = [t for t in pre_crash if t["price"] == pre_crash_peak][0]
+        pre_crash_ym = f"{pt['year']}-{pt['month']:02d}"
+    if pre_crash_peak == 0 and hist.get("pre_crash_peak", 0) > 0:
+        pre_crash_peak = hist["pre_crash_peak"]
+        pre_crash_ym = hist.get("pre_crash_ym", "")
+
+    crash_trough = min([t["price"] for t in crash_period]) if crash_period else 0
+    crash_trough_ym = ""
+    if crash_period and crash_trough > 0:
+        tt = [t for t in crash_period if t["price"] == crash_trough][0]
+        crash_trough_ym = f"{tt['year']}-{tt['month']:02d}"
+    if crash_trough == 0 and hist.get("crash_trough", 0) > 0:
+        crash_trough = hist["crash_trough"]
+        crash_trough_ym = hist.get("crash_trough_ym", "")
+
+    # 회복률: 최근 거래가 / 상승기고점(~2022) × 100%
+    has_peak_era = any(2021 <= t["year"] <= 2022 for t in trades)
+    if not has_peak_era and hist.get("pre_crash_peak", 0) > 0:
+        has_peak_era = True
+    if pre_crash_peak > 0 and has_peak_era:
+        recovery_rate = round(latest_price / pre_crash_peak * 100, 1)
+    else:
+        recovery_rate = 0
+
+    # 10.15 토허제 직전 가격
+    pre_policy = [t for t in trades if t["year"] == 2024 and 7 <= t["month"] <= 9]
+    if not pre_policy:
+        pre_policy = [t for t in trades if t["year"] == 2024 and 4 <= t["month"] <= 9]
+    if not pre_policy:
+        before_policy = [t for t in trades if (t["year"], t["month"]) < (2024, 10)]
+        if before_policy:
+            before_policy.sort(key=lambda t: (t["year"], t["month"], t.get("day", 0)), reverse=True)
+            pre_policy = [before_policy[0]]
+    policy_avg = int(sum(t["price"] for t in pre_policy) / len(pre_policy)) if pre_policy else 0
+    if policy_avg == 0 and hist.get("policy_avg", 0) > 0:
+        policy_avg = hist["policy_avg"]
+
+    # 월별 가격 추이 (그래프용) — historical_stats 과거 데이터 + 현재 raw 병합
+    monthly_prices = {}
+    for t in trades:
+        ym = f"{t['year']}-{t['month']:02d}"
+        monthly_prices.setdefault(ym, []).append(t["price"])
+    price_history_new = {ym: int(sum(ps) / len(ps)) for ym, ps in sorted(monthly_prices.items())}
+    if hist.get("price_history"):
+        merged_history = {**hist["price_history"], **price_history_new}
+        price_history = {ym: merged_history[ym] for ym in sorted(merged_history)}
+    else:
+        price_history = price_history_new
+
+    tier = SEOUL_TIERS.get(gu, "")
+
+    return {
+        "apt": apt, "gu": gu, "dong": trades[0].get("dong", ""), "tier": tier,
+        "hhld": hhld, "build_year": build_year, "area_type": area_type,
+        "avg_price": avg_price, "recent_high": recent_high,
+        "latest_price": latest_price, "latest_ym": latest_ym,
+        "is_at_peak": is_at_peak,
+        "count": len(recent_prices),
+        "count_total": len(all_prices),
+        "avg_rent": avg_rent, "ratio": ratio, "gap": gap,
+        "policy_avg": policy_avg,
+        "peak": peak, "peak_ym": peak_ym,
+        "pre_crash_peak": pre_crash_peak, "pre_crash_ym": pre_crash_ym,
+        "crash_trough": crash_trough, "crash_trough_ym": crash_trough_ym,
+        "recovery_rate": recovery_rate,
+        "trough": trough, "trough_ym": trough_ym,
+        "diff_peak": diff_peak, "diff_trough": diff_trough,
+        "price_history": price_history,
+    }
+
+
 def reanalyze():
     now = datetime.now()
 
@@ -65,168 +226,15 @@ def reanalyze():
             key = (r["gu"], r["apt"], area_type)
             apt_rents.setdefault(key, []).append(r["deposit"])
 
-    # 최근 3개월 (현재가 계산용)
-    recent_ymds = set()
-    for i in range(3):
-        dt = now - timedelta(days=30 * i)
-        recent_ymds.add((dt.year, dt.month))
-
     analysis = []
     for (gu, apt, dong, area_type), trades in apt_trades.items():
-        all_prices = [t["price"] for t in trades]
-        if len(all_prices) < 2:
-            continue
-
-        # 최근 3개월 거래
-        recent_trades = [t for t in trades if (t["year"], t["month"]) in recent_ymds]
-        if not recent_trades:
-            continue
-        recent_prices = [t["price"] for t in recent_trades]
-        avg_price = int(sum(recent_prices) / len(recent_prices))
-        recent_high = max(recent_prices)
-
-        # 가장 최근 거래가 (날짜순 정렬)
-        recent_trades_sorted = sorted(
-            recent_trades,
-            key=lambda t: (t["year"], t["month"], t.get("day", 0)),
-            reverse=True,
+        rec = analyze_apt(
+            gu, apt, dong, area_type, trades,
+            apt_rents.get((gu, apt, area_type), []),
+            historical_stats, now, require_hhld=True,
         )
-        latest_price = recent_trades_sorted[0]["price"]
-        latest_ym = f"{recent_trades_sorted[0]['year']}-{recent_trades_sorted[0]['month']:02d}"
-
-        hhld = get_household_count(apt, dong)
-        if not hhld or hhld < 300:
-            continue
-
-        # 준공연도: 실거래 API 데이터 우선, 없으면 건축물대장 캐시 fallback
-        trade_build_years = [t["build_year"] for t in trades if t.get("build_year", 0) > 0]
-        if trade_build_years:
-            build_year = max(set(trade_build_years), key=trade_build_years.count)  # 최빈값
-        else:
-            build_year = get_build_year(apt, dong) or 0
-
-        # 전세가율
-        rent_prices = apt_rents.get((gu, apt, area_type), [])
-        if not rent_prices:
-            continue
-        avg_rent = int(sum(rent_prices) / len(rent_prices))
-        if avg_rent <= 0:
-            continue
-        ratio = calculate_jeonse_ratio(avg_price, avg_rent)
-        if ratio >= 100:
-            ratio = 99.9  # 역전세(전세>매매) cap 처리
-        gap = max(avg_price - avg_rent, 0)  # 역전세 시 갭 0으로
-
-        # historical_stats 폴백 데이터 (early lookup to avoid UnboundLocalError)
-        hist_key = f"{gu}|{apt}|{area_type}"
-        hist = historical_stats.get(hist_key, {})
-
-        # 전고점/전저점 (전체 기간) — historical_stats와 raw 데이터 중 더 극단값 사용
-        peak = max(all_prices)
-        trough = min(all_prices)
-        peak_trades = [t for t in trades if t["price"] == peak]
-        trough_trades = [t for t in trades if t["price"] == trough]
-        peak_ym = f"{peak_trades[0]['year']}-{peak_trades[0]['month']:02d}"
-        trough_ym = f"{trough_trades[0]['year']}-{trough_trades[0]['month']:02d}"
-
-        # historical_stats 폴백으로 전고점/전저점 업데이트
-        if hist.get("peak", 0) > peak:
-            peak = hist["peak"]
-            peak_ym = hist.get("peak_ym", peak_ym)
-        if hist.get("trough", 0) > 0 and hist["trough"] < trough:
-            trough = hist["trough"]
-            trough_ym = hist.get("trough_ym", trough_ym)
-
-        # 현재 최고점 판단: 최근 거래가 >= 전고점이면 "현재 최고점"
-        is_at_peak = latest_price >= peak
-
-        diff_peak = round((latest_price - peak) / peak * 100, 1) if peak > 0 else 0
-        diff_trough = round((latest_price - trough) / trough * 100, 1) if trough > 0 else 0
-
-        # 시기별 분석: 상승기(2020~2022) 고점 vs 하락기(2023~2024) 저점
-        # (hist는 위에서 이미 로드됨)
-
-        pre_crash = [t for t in trades if t["year"] <= 2022]
-        crash_period = [t for t in trades if 2023 <= t["year"] <= 2024]
-
-        pre_crash_peak = max([t["price"] for t in pre_crash]) if pre_crash else 0
-        pre_crash_ym = ""
-        if pre_crash and pre_crash_peak > 0:
-            pt = [t for t in pre_crash if t["price"] == pre_crash_peak][0]
-            pre_crash_ym = f"{pt['year']}-{pt['month']:02d}"
-
-        # historical_stats 폴백: raw 데이터에 과거 데이터가 없을 때
-        if pre_crash_peak == 0 and hist.get("pre_crash_peak", 0) > 0:
-            pre_crash_peak = hist["pre_crash_peak"]
-            pre_crash_ym = hist.get("pre_crash_ym", "")
-
-        crash_trough = min([t["price"] for t in crash_period]) if crash_period else 0
-        crash_trough_ym = ""
-        if crash_period and crash_trough > 0:
-            tt = [t for t in crash_period if t["price"] == crash_trough][0]
-            crash_trough_ym = f"{tt['year']}-{tt['month']:02d}"
-        if crash_trough == 0 and hist.get("crash_trough", 0) > 0:
-            crash_trough = hist["crash_trough"]
-            crash_trough_ym = hist.get("crash_trough_ym", "")
-
-        # 회복률: 최근 거래가 / 상승기고점(~2022) × 100%
-        # 2021~2022년 거래가 없으면 historical_stats 참조
-        has_peak_era = any(2021 <= t["year"] <= 2022 for t in trades)
-        if not has_peak_era and hist.get("pre_crash_peak", 0) > 0:
-            has_peak_era = True  # historical_stats에 데이터 있음
-        if pre_crash_peak > 0 and has_peak_era:
-            recovery_rate = round(latest_price / pre_crash_peak * 100, 1)
-        else:
-            recovery_rate = 0
-
-        # 10.15 토허제 직전 가격 (2024년 7~9월 우선 → 4~9월 → 토허제 전 마지막 거래)
-        pre_policy = [t for t in trades if t["year"] == 2024 and 7 <= t["month"] <= 9]
-        if not pre_policy:
-            pre_policy = [t for t in trades if t["year"] == 2024 and 4 <= t["month"] <= 9]
-        if not pre_policy:
-            # 토허제(2024.10.15) 이전 마지막 거래
-            before_policy = [t for t in trades if (t["year"], t["month"]) < (2024, 10)]
-            if before_policy:
-                before_policy.sort(key=lambda t: (t["year"], t["month"], t.get("day", 0)), reverse=True)
-                pre_policy = [before_policy[0]]
-        policy_avg = int(sum(t["price"] for t in pre_policy) / len(pre_policy)) if pre_policy else 0
-        # historical_stats 폴백
-        if policy_avg == 0 and hist.get("policy_avg", 0) > 0:
-            policy_avg = hist["policy_avg"]
-
-        # 월별 가격 추이 (그래프용) — historical_stats의 과거 데이터 + 현재 raw 데이터 병합
-        monthly_prices = {}
-        for t in trades:
-            ym = f"{t['year']}-{t['month']:02d}"
-            monthly_prices.setdefault(ym, []).append(t["price"])
-        price_history_new = {ym: int(sum(ps) / len(ps)) for ym, ps in sorted(monthly_prices.items())}
-        # 과거 price_history를 historical_stats에서 가져와 병합
-        if hist.get("price_history"):
-            merged_history = {**hist["price_history"], **price_history_new}
-            price_history = {ym: merged_history[ym] for ym in sorted(merged_history)}
-        else:
-            price_history = price_history_new
-
-        tier = SEOUL_TIERS.get(gu, "")
-
-        analysis.append({
-            "apt": apt, "gu": gu, "dong": trades[0].get("dong", ""), "tier": tier,
-            "hhld": hhld, "build_year": build_year, "area_type": area_type,
-            "avg_price": avg_price, "recent_high": recent_high,
-            "latest_price": latest_price, "latest_ym": latest_ym,
-            "is_at_peak": is_at_peak,
-            "count": len(recent_prices),
-            "count_total": len(all_prices),
-            "avg_rent": avg_rent, "ratio": ratio, "gap": gap,
-            "policy_avg": policy_avg,
-            "peak": peak, "peak_ym": peak_ym,
-            "pre_crash_peak": pre_crash_peak, "pre_crash_ym": pre_crash_ym,
-            "crash_trough": crash_trough, "crash_trough_ym": crash_trough_ym,
-            "recovery_rate": recovery_rate,
-            "trough": trough, "trough_ym": trough_ym,
-            "diff_peak": diff_peak, "diff_trough": diff_trough,
-            "price_history": price_history,
-        })
+        if rec:
+            analysis.append(rec)
 
     # 동명이인 해소: 같은 (gu, apt, area_type)인데 dong이 다른 경우 이름에 동 표기
     from collections import defaultdict

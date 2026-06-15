@@ -76,10 +76,11 @@ jobs:
           echo "Updating apt cache (build_year + household count)..."
           python3 build_cache.py --concurrent 2 || echo "Cache update failed (non-fatal)"
 
-      - name: Re-analyze with filters (직거래/1층 제외)
+      - name: Re-analyze with filters (직거래/1층 제외) + 분당 보강
         run: |
           python3 reanalyze.py
           python3 extract_historical_stats.py
+          python3 expand_bundang.py   # 분당(판교/정자/수내 등) 보강 → analysis_v10.json
 
       - name: Collect news articles
         env:

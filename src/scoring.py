@@ -79,8 +79,8 @@ def filter_and_score(all_data, params, active_preset, active_community):
 
     if gap_invest_mode:
         gap_budget = seed_money + loan_amount
-        gap_max = int(gap_budget * 1.10)
-        gap_min = int(gap_budget * 0.90)
+        gap_max = int(gap_budget * 1.05)  # 갭 예산 이내(약간의 여유)
+        gap_min = 0                        # 갭은 작을수록 유리 → 하한 없음(예산 이내 전부 표시)
     else:
         budget_max = int(budget * 1.10)
         budget_min = int(budget * 0.80)

@@ -114,8 +114,13 @@ with st.expander("⚙️ 상세 설정", expanded=False):
 
     will_reside = st.checkbox("실거주 예정", value=True)
     gap_invest_mode = st.checkbox("갭투자 모드 (전세끼고 매수)", value=False)
+    exclude_toheo = False
     if gap_invest_mode:
         will_reside = False
+        exclude_toheo = st.checkbox(
+            "토허구역(강남3구·용산) 제외", value=True,
+            help="토지거래허가구역은 실거주 의무라 전세 끼고 갭투자가 불가능해요",
+        )
 
     st.markdown("---")
     st.markdown("**필터**")
@@ -162,7 +167,10 @@ with st.expander("⚙️ 상세 설정", expanded=False):
     with f_col1:
         max_policy_change = st.slider("토허제 후 최대 변동률 (%)", -100, 100, 100, 5)
     with f_col2:
-        min_hhld = st.number_input("최소 세대수", min_value=300, max_value=5000, value=300, step=100)
+        min_hhld = st.number_input(
+            "최소 세대수", min_value=0, max_value=5000, value=300, step=100,
+            help="0으로 낮추면 세대수 미확인 단지(분당 구단지 등 보강분)도 포함돼요",
+        )
 
     top_n = st.number_input("상위 표시 개수", min_value=5, max_value=50, value=10, step=5)
 
@@ -245,6 +253,7 @@ buyer_type = locals().get("buyer_type", BuyerType.FIRST_TIME)
 interest_rate = locals().get("interest_rate", 4.2)
 will_reside = locals().get("will_reside", _d["will_reside"])
 gap_invest_mode = locals().get("gap_invest_mode", _d["gap_invest_mode"])
+exclude_toheo = locals().get("exclude_toheo", False)
 selected_tiers = locals().get("selected_tiers", _d["selected_tiers"])
 filter_all_gus = locals().get("filter_all_gus", _d["filter_all_gus"])
 effective_gus = locals().get("effective_gus", set(_seoul_gus + _gyeonggi_gus))
@@ -282,6 +291,15 @@ filter_all_gus = filter_params["filter_all_gus"]
 selected_tiers = filter_params["selected_tiers"]
 min_recovery = filter_params.get("min_recovery", 0)
 max_policy_change = filter_params["max_policy_change"]
+
+# 갭투자 모드: 토허구역(실거주 의무 → 전세 끼고 매수 불가) 제외
+_TOHEO_GUS = {"강남구", "서초구", "송파구", "용산구"}
+if gap_invest_mode and exclude_toheo:
+    if filter_all_gus:
+        effective_gus = set(_seoul_gus + _gyeonggi_gus) - _TOHEO_GUS
+        filter_all_gus = False
+    else:
+        effective_gus = set(effective_gus) - _TOHEO_GUS
 
 # ─────────────────────────────────────
 # 자동 계산
