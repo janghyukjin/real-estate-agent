@@ -78,9 +78,12 @@ def filter_and_score(all_data, params, active_preset, active_community):
     n = 360
 
     if gap_invest_mode:
+        # 갭(=매매가-전세금)을 내 현금으로 메우는 구조. 예산을 충분히 투입하는 단지만 노출
+        # → 전세 레버리지로 매매가 ≈ (예산 + 전세금)까지 올라감 (예: 6억 + 전세6억 = 12억대).
+        # 갭이 예산보다 한참 작은 저가 단지는 현금을 못 살리므로 제외.
         gap_budget = seed_money + loan_amount
-        gap_max = int(gap_budget * 1.05)  # 갭 예산 이내(약간의 여유)
-        gap_min = 0                        # 갭은 작을수록 유리 → 하한 없음(예산 이내 전부 표시)
+        gap_max = int(gap_budget * 1.10)  # 예산 +10% 슬랙까지 (감당 한계)
+        gap_min = int(gap_budget * 0.70)  # 예산의 70%+ 투입 → 소액갭 저가단지 배제
     else:
         budget_max = int(budget * 1.10)
         budget_min = int(budget * 0.80)
