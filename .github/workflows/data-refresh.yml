@@ -82,6 +82,15 @@ jobs:
           python3 extract_historical_stats.py
           python3 expand_bundang.py   # 분당(판교/정자/수내 등) 보강 → analysis_v10.json
 
+      - name: Sanity check — 수집 실패 시 빈 데이터 커밋 방지
+        run: |
+          COUNT=$(python3 -c "import json;print(json.load(open('data/meta.json')).get('apt_count',0))")
+          echo "Analyzed apartments: $COUNT (expected ~4000+)"
+          if [ "$COUNT" -lt 500 ]; then
+            echo "::error::수집 결과 아파트 ${COUNT}개뿐 — data.go.kr API 실패로 추정. 좋은 데이터 덮어쓰기 방지를 위해 커밋 전 중단합니다."
+            exit 1
+          fi
+
       - name: Collect news articles
         env:
           NAVER_CLIENT_ID: ${{ secrets.NAVER_CLIENT_ID }}
