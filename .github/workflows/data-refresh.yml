@@ -14,9 +14,16 @@
 # === 수동 실행 ===
 #   Actions 탭 → "Data Refresh" → "Run workflow" 버튼
 #
+# === raw 데이터 누적 방식 ===
+#   raw_*.json은 gitignore 대상이라 커밋되지 않는다. 매 실행마다 fresh
+#   collect만 하면 committed analysis가 3~4개월치로 쪼그라들므로
+#   (로컬 14개월 4,300단지 → CI 2,800단지), actions/cache로 raw를 넘겨받아
+#   refresh_recent.py로 최근 N개월만 증분 갱신한다. 캐시 miss 시에만
+#   seed_months 만큼 전체 수집.
+#
 # === 생성/갱신 파일 ===
-#   data/raw_trades.json  - 매매 실거래 원본
-#   data/raw_rents.json   - 전월세 실거래 원본
+#   data/raw_trades.json  - 매매 실거래 원본 (캐시 경유, 미커밋)
+#   data/raw_rents.json   - 전월세 실거래 원본 (캐시 경유, 미커밋)
 #   data/analysis.json    - 분석 결과 (300세대+ 아파트)
 #   data/meta.json        - 수집 메타정보 (시각, 건수 등)
 #   data/news.json        - 수집된 뉴스 기사
@@ -33,9 +40,14 @@ on:
   workflow_dispatch:
     inputs:
       months:
-        description: "수집 개월 수 (기본 3)"
+        description: "증분 갱신 개월 수 (기본 4 — 신고 30일 지연분 반영)"
         required: false
-        default: "3"
+        default: "4"
+        type: string
+      seed_months:
+        description: "캐시 miss 시 전체 수집 개월 수 (기본 14)"
+        required: false
+        default: "14"
         type: string
 
 permissions:
@@ -44,7 +56,7 @@ permissions:
 jobs:
   refresh:
     runs-on: ubuntu-latest
-    timeout-minutes: 60
+    timeout-minutes: 90
 
     steps:
       - name: Checkout repository
@@ -61,13 +73,31 @@ jobs:
           pip install --upgrade pip
           pip install -r requirements.txt
 
+      - name: Restore raw data cache
+        uses: actions/cache/restore@v4
+        with:
+          path: |
+            data/raw_trades.json
+            data/raw_rents.json
+          key: raw-data-${{ github.run_id }}
+          restore-keys: |
+            raw-data-
+
       - name: Collect real estate data from public API
         env:
           DATA_GO_KR_API_KEY: ${{ secrets.DATA_GO_KR_API_KEY }}
         run: |
-          MONTHS="${{ github.event.inputs.months || '3' }}"
-          echo "Collecting ${MONTHS} months of data (Seoul + Gyeonggi)..."
-          python3 collect_data.py --months "$MONTHS"
+          MONTHS="${{ github.event.inputs.months || '4' }}"
+          SEED_MONTHS="${{ github.event.inputs.seed_months || '14' }}"
+          if [ -s data/raw_trades.json ] && [ -s data/raw_rents.json ]; then
+            echo "캐시된 raw 확보 — 최근 ${MONTHS}개월 증분 갱신"
+            python3 -c "import json;t=json.load(open('data/raw_trades.json'));r=json.load(open('data/raw_rents.json'));print(f'복원: 매매 {len(t):,}건 / 전세 {len(r):,}건')"
+            # refresh_recent는 수집 실패율·급감 감지 시 exit 1 (raw 보존)
+            python3 refresh_recent.py --months "$MONTHS"
+          else
+            echo "캐시 miss — ${SEED_MONTHS}개월 전체 수집으로 시드"
+            python3 collect_data.py --months "$SEED_MONTHS"
+          fi
 
       - name: Update building cache (준공연도 + 세대수)
         env:
@@ -82,14 +112,37 @@ jobs:
           python3 extract_historical_stats.py
           python3 expand_bundang.py   # 분당(판교/정자/수내 등) 보강 → analysis_v10.json
 
-      - name: Sanity check — 수집 실패 시 빈 데이터 커밋 방지
+      - name: Sanity check — 빈/축소 데이터 커밋 방지
         run: |
           COUNT=$(python3 -c "import json;print(json.load(open('data/meta.json')).get('apt_count',0))")
-          echo "Analyzed apartments: $COUNT (expected ~4000+)"
+          # 아직 커밋 전이므로 HEAD의 meta.json이 직전 정상값
+          PREV=$(git show HEAD:data/meta.json 2>/dev/null | python3 -c "import json,sys;print(json.load(sys.stdin).get('apt_count',0))" 2>/dev/null || echo 0)
+          echo "Analyzed apartments: $COUNT (직전 커밋: $PREV)"
+
+          # 1) 절대 하한 — API 전면 실패
           if [ "$COUNT" -lt 500 ]; then
-            echo "::error::수집 결과 아파트 ${COUNT}개뿐 — data.go.kr API 실패로 추정. 좋은 데이터 덮어쓰기 방지를 위해 커밋 전 중단합니다."
+            echo "::error::수집 결과 아파트 ${COUNT}개뿐 — data.go.kr API 실패로 추정. 커밋 전 중단합니다."
             exit 1
           fi
+
+          # 2) 회귀 감지 — 직전 대비 20% 이상 축소되면 중단.
+          #    raw 캐시 유실이나 부분 실패로 커버리지가 줄어든 analysis가
+          #    좋은 데이터를 덮어쓰는 것을 막는다 (2026-06-16 사고 유형).
+          if [ "$PREV" -gt 0 ]; then
+            FLOOR=$((PREV * 8 / 10))
+            if [ "$COUNT" -lt "$FLOOR" ]; then
+              echo "::error::단지 수 ${PREV} → ${COUNT} (하한 ${FLOOR}). 커버리지 축소로 판단해 커밋 전 중단합니다."
+              exit 1
+            fi
+          fi
+
+      - name: Save raw data cache
+        uses: actions/cache/save@v4
+        with:
+          path: |
+            data/raw_trades.json
+            data/raw_rents.json
+          key: raw-data-${{ github.run_id }}
 
       - name: Collect news articles
         env:
