@@ -3,9 +3,9 @@
 """
 import json
 import os
-from datetime import datetime, timedelta
+from datetime import datetime
 
-from src.api_client import SEOUL_TIERS
+from src.api_client import SEOUL_TIERS, recent_months
 from src.building_ledger import get_household_count, get_build_year
 from src.kb_client import calculate_jeonse_ratio
 
@@ -28,10 +28,7 @@ def analyze_apt(gu, apt, dong, area_type, trades, rent_prices, historical_stats,
         return None
 
     # 최근 3개월 (현재가 계산용)
-    recent_ymds = set()
-    for i in range(3):
-        dt = now - timedelta(days=30 * i)
-        recent_ymds.add((dt.year, dt.month))
+    recent_ymds = set(recent_months(3, now))
 
     # 최근 3개월 거래 (없으면 stale → 제외)
     recent_trades = [t for t in trades if (t["year"], t["month"]) in recent_ymds]

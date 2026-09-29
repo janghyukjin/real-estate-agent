@@ -11,9 +11,8 @@ import asyncio
 import json
 import os
 import sys
-from datetime import datetime, timedelta
 
-from src.api_client import REGION_CODES, fetch_apt_trades, fetch_apt_rents
+from src.api_client import REGION_CODES, fetch_apt_trades, fetch_apt_rents, recent_months
 
 DATA_DIR = os.path.join(os.path.dirname(__file__), "data")
 HWASEONG_CODES = ["41591", "41593", "41595", "41597"]
@@ -41,8 +40,7 @@ async def refresh(months: int = 3):
         else:
             print(f"  ⚠️ REGION_CODES에 없는 지역 스킵: {gu}")
 
-    now = datetime.now()
-    ymds = [(now - timedelta(days=30 * i)).strftime("%Y%m") for i in range(months)]
+    ymds = [f"{y}{m:02d}" for y, m in recent_months(months)]
     refresh_ym = {(int(y[:4]), int(y[4:])) for y in ymds}
 
     sem = asyncio.Semaphore(10)

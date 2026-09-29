@@ -12,7 +12,7 @@ API 출처: data.go.kr (공공데이터포털)
 from __future__ import annotations
 
 import os
-from datetime import datetime, timedelta
+from datetime import datetime
 from dataclasses import dataclass
 
 import httpx
@@ -167,6 +167,21 @@ class AptTrade:
     deal_type: str = ""   # 거래유형 (중개거래/직거래)
 
 
+def recent_months(months: int, now: datetime | None = None) -> list[tuple[int, int]]:
+    """이번 달부터 거꾸로 N개 달력월 (year, month). 최신이 앞.
+
+    `now - timedelta(days=30*i)`는 월말에 같은 달을 두 번 내고(9/29 → 7월 2회)
+    월초엔 달을 건너뛴다(3/31 → 2월 누락). 월 산술로만 계산한다.
+    """
+    now = now or datetime.now()
+    y, m = now.year, now.month
+    out = []
+    for _ in range(months):
+        out.append((y, m))
+        y, m = (y, m - 1) if m > 1 else (y - 1, 12)
+    return out
+
+
 def get_api_key() -> str:
     key = os.environ.get("DATA_GO_KR_API_KEY", "")
     if not key:
@@ -257,9 +272,8 @@ async def fetch_recent_trades(
     all_trades: list[AptTrade] = []
     now = datetime.now()
 
-    for i in range(months):
-        dt = now - timedelta(days=30 * i)
-        ymd = dt.strftime("%Y%m")
+    for y, m in recent_months(months, now):
+        ymd = f"{y}{m:02d}"
         trades = await fetch_apt_trades(region_code, ymd, api_key)
         all_trades.extend(trades)
 
@@ -385,9 +399,8 @@ async def fetch_recent_rents(
     all_rents: list[AptRent] = []
     now = datetime.now()
 
-    for i in range(months):
-        dt = now - timedelta(days=30 * i)
-        ymd = dt.strftime("%Y%m")
+    for y, m in recent_months(months, now):
+        ymd = f"{y}{m:02d}"
         rents = await fetch_apt_rents(region_code, ymd, api_key)
         all_rents.extend(rents)
 

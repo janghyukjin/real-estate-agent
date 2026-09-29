@@ -5,11 +5,11 @@
 import asyncio
 import json
 import os
-from datetime import datetime, timedelta
+from datetime import datetime
 
 from src.api_client import (
     REGION_CODES, SEOUL_TIERS, HWASEONG_CODES,
-    fetch_apt_trades, fetch_apt_rents,
+    fetch_apt_trades, fetch_apt_rents, recent_months,
 )
 from src.building_ledger import get_household_count
 from src.kb_client import calculate_jeonse_ratio
@@ -26,7 +26,7 @@ async def collect_all(months: int = 3):
         return
 
     now = datetime.now()
-    ymds = [(now - timedelta(days=30 * i)).strftime("%Y%m") for i in range(months)]
+    ymds = [f"{y}{m:02d}" for y, m in recent_months(months, now)]
     all_trades = []
     all_rents = []
 
@@ -98,16 +98,10 @@ async def collect_all(months: int = 3):
             apt_rents.setdefault(key, []).append(r["deposit"])
 
     # 최근 3개월 기준 연월 (현재가 계산용)
-    recent_ymds = set()
-    for i in range(3):
-        dt = now - timedelta(days=30 * i)
-        recent_ymds.add((dt.year, dt.month))
+    recent_ymds = set(recent_months(3, now))
 
     # 최근 6개월 전세 기준
-    recent_rent_ymds = set()
-    for i in range(6):
-        dt = now - timedelta(days=30 * i)
-        recent_rent_ymds.add((dt.year, dt.month))
+    recent_rent_ymds = set(recent_months(6, now))
 
     analysis = []
     for (gu, apt), trades in apt_trades.items():
