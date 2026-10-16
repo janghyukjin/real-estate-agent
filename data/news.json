@@ -1,6 +1,6 @@
 {
-  "updated_at": "2026-10-15T23:36:41.088227+00:00",
-  "total_count": 19596,
+  "updated_at": "2026-10-16T23:25:08.205800+00:00",
+  "total_count": 19698,
   "articles": [
     {
       "title": "분리과세로 세금 깎아준다더니 … 건보료가 개인 투자 발목잡나",
@@ -156767,6 +156767,822 @@
       "description": "‘정부기관 오면 집값 상승 기대’ 세종시 주택매매심리 두달연속 급등&nbsp;&nbsp;헤럴드경제 미주판",
       "link": "https://news.google.com/rss/articles/CBMiYEFVX3lxTE5CWTc5R3lEdWgwbGVvUkhtVEpCaWJ1cGE2b2hHVzR4T1h2YnFWSkE5OU4zNFJ1VDJ2OElzRXZucFdJZ2Z0RDNWNDdrNXFkTXQxMmlHV2NkSE1qMi1HRFlBTg?oc=5",
       "pubDate": "Wed, 14 Oct 2026 11:00:00 GMT",
+      "source": "google",
+      "query": "전세 시장"
+    },
+    {
+      "title": "10주째 하락한 강남 아파트…뜨거운 경기 남부",
+      "description": "남혁우 우리은행 부동산연구원은 \"강남3구는 세제개편안 정책의 불확실성과 국제유가, 미국 국채 금리 상승 등 고금리 장기화 우려 등으로 위축되는 모습을 보이고 있다\"며 \"특히 강남구는 시세 40억원 초과의 고가...",
+      "link": "https://news.bizwatch.co.kr/article/real_estate/2026/10/16/0035",
+      "pubDate": "Sat, 17 Oct 2026 08:00:00 +0900",
+      "source": "naver",
+      "query": "부동산 시세"
+    },
+    {
+      "title": "“집 안 사도 손해 없다”는 LH 사장…집이 투자상품인가[부동산 취재로...",
+      "description": "집은 시세차익을 얻기 위해 사고파는 투자상품만은 아니기 때문입니다. 이 사장의 발언은 생애최초... 이들에게 내 집 마련은 단순히 시세차익을 얻기 위한 선택일까요. 집값이 하락한다면 매수를 미루는 것이 합리적인...",
+      "link": "https://www.edaily.co.kr/News/Read?newsId=01662966645613904&mediaCodeNo=257&utm_source=naver&utm_medium=referral&utm_campaign=news_syndication&utm_content=original_article",
+      "pubDate": "Sat, 17 Oct 2026 07:02:00 +0900",
+      "source": "naver",
+      "query": "부동산 시세"
+    },
+    {
+      "title": "[강남 아파트] \"양도세·종부세 오르기 전에 팔자\"…강남 초고가 아파트...",
+      "description": "고가주택을 중심으로 종합부동산세 인상과 양도소득세 장기보유특별공제 축소 등이 예고되자, 강남 일대 초고가 단지에서 급매물이 늘어나 시세가 하락했다. 실제로 강남구 대치동 은마아파트 전용 76.79㎡는 8월에...",
+      "link": "https://www.cbci.co.kr/news/articleView.html?idxno=616372",
+      "pubDate": "Sat, 17 Oct 2026 06:06:00 +0900",
+      "source": "naver",
+      "query": "부동산 시세"
+    },
+    {
+      "title": "\"재건축, 서울보다 분당이 유리\"..분담금 10억시대 유망 투자처는?",
+      "description": "김제경 투미 부동산 컨설팅 소장은 8·3 세제개편안 이후 재개발 물건이 주목받는 이유와 관련 \"재개발은... 반포 시세가 60억~80억원인 만큼 '나도 한강변 신축이 되면 그 정도는 되지 않겠느냐'고 판단하는 것\"이라고...",
+      "link": "https://realty.chosun.com/site/data/html_dir/2026/10/16/2026101600923.html",
+      "pubDate": "Sat, 17 Oct 2026 06:02:00 +0900",
+      "source": "naver",
+      "query": "부동산 시세"
+    },
+    {
+      "title": "“은마 4억 낼 때, 잠실5 8억 환급”…50년 전 광고는 알고 있었다 [안장...",
+      "description": "한국부동산원 주택가격통계에 따르면 8월 기준으로 전용면적 ㎡당 아파트값이 강남구 3033만원, 송파구... 현재 시점 기준으로 은마와 잠실5단지 재건축 전용 84㎡의 시세를 50억원대로 업계는 본다. 서초구 반포동...",
+      "link": "https://www.joongang.co.kr/article/25470500",
+      "pubDate": "Sat, 17 Oct 2026 06:01:00 +0900",
+      "source": "naver",
+      "query": "부동산 시세"
+    },
+    {
+      "title": "“마피 쏟아지더니 국평 20억”…광명 ‘대반전’에 복잡해진 셈법 [안...",
+      "description": "1건이 시세를 주도하다 보니 가격은 꾸준히 오르고 있다”고 설명했다. 철산동 G공인 관계자는 “전용 84... 한국부동산원에 따르면 광명 아파트값의 올해 누적 상승률은 16.70%로 화성 동탄구 다음으로 경기도에서 가장...",
+      "link": "https://www.dt.co.kr/article/12089350?ref=naver",
+      "pubDate": "Sat, 17 Oct 2026 05:40:00 +0900",
+      "source": "naver",
+      "query": "부동산 시세"
+    },
+    {
+      "title": "[분양캘린더] 인천 역세권부터 청주 대단지까지···10월 넷째주 가을 ...",
+      "description": "17일 부동산 전문 리서치업체 리얼투데이에 따르면 10월 넷째 주에는 전국 13곳에서 총 6734가구가 청약... 주변 시세, 교통 여건, 직장과의 거리 등에 따라 달라질 수 있다. 같은 주에 공급되는 단지라도 수도권 역세권과...",
+      "link": "https://www.smartbizn.com/news/articleView.html?idxno=156705",
+      "pubDate": "Sat, 17 Oct 2026 05:10:00 +0900",
+      "source": "naver",
+      "query": "부동산 시세"
+    },
+    {
+      "title": "'서울 집값 88주 연속 상승' 주간 통계 손질론 부상",
+      "description": "서울 아파트값이 88주 연속 상승세를 이어가는 가운데 한국부동산원이 매주 발표하는 주간 아파트 가격... 실거래 사례가 부족할 경우 동일 단지나 인근 유사 주택의 시세 및 매물 가격 등을 참고해 가격을 추정하게 된다....",
+      "link": "https://www.nocutnews.co.kr/news/6592750?utm_source=naver&utm_medium=article&utm_campaign=20261017050019",
+      "pubDate": "Sat, 17 Oct 2026 05:01:00 +0900",
+      "source": "naver",
+      "query": "부동산 시세"
+    },
+    {
+      "title": "한국부동산원 이헌욱 원장이 밝힌 '통계 유효성'과 '중립성'",
+      "description": "외부 검증 강화, 인공지능(AI) 시세 비교, 통계 기법 고도화 등 정확성을 높이기 위한 작업을 진행 중인 사실을 밝히며 격주·월간 전환 가능성에 대한 과거 발언은 의견수렴 차원이었다고 해명했다. 한국부동산원은...",
+      "link": "https://www.ntoday.co.kr/news/articleView.html?idxno=130092",
+      "pubDate": "Fri, 16 Oct 2026 19:36:00 +0900",
+      "source": "naver",
+      "query": "부동산 시세"
+    },
+    {
+      "title": "AI가 시세 자동 산정…부동산원, '국제 표준 경영 시스템' 인증",
+      "description": "부동산원은 AI를 통해 전국 부동산 시세를 산정하는 기술을 도입한 점과 대량의 부동산 정보를 처리하는 과정에서 발생할 수 있는 알고리즘 왜곡 차단 절차를 도입한 성과를 토대로 AI 국제 표준 경영 시스템 인증을...",
+      "link": "https://www.shinailbo.co.kr/news/articleView.html?idxno=5072632",
+      "pubDate": "Fri, 16 Oct 2026 19:00:00 +0900",
+      "source": "naver",
+      "query": "부동산 시세"
+    },
+    {
+      "title": "한국부동산원, 인공지능 경영시스템 국제표준 인증 획득 - 연합뉴스",
+      "description": "한국부동산원, 인공지능 경영시스템 국제표준 인증 획득&nbsp;&nbsp;연합뉴스",
+      "link": "https://news.google.com/rss/articles/CBMiYEFVX3lxTE1fZzZfTnhUUUN1Zk9tT2xjaUl2Z3dmVGJkSUxHS0lPbk9TcmFYZ3M5V2s4VDhqWVU5R1pJZ19oMV9pTV9aR1BUa0tjampuQy1WTFJHMDJldFUzVEV2RVU1TNIBYEFVX3lxTE1fZzZfTnhUUUN1Zk9tT2xjaUl2Z3dmVGJkSUxHS0lPbk9TcmFYZ3M5V2s4VDhqWVU5R1pJZ19oMV9pTV9aR1BUa0tjampuQy1WTFJHMDJldFUzVEV2RVU1TA?oc=5",
+      "pubDate": "Fri, 16 Oct 2026 01:43:15 GMT",
+      "source": "google",
+      "query": "부동산 시세"
+    },
+    {
+      "title": "\"시세 산정 AI도 믿을 수 있게\"…한국부동산원, 국제표준 인증 - 한국경제",
+      "description": "\"시세 산정 AI도 믿을 수 있게\"…한국부동산원, 국제표준 인증&nbsp;&nbsp;한국경제",
+      "link": "https://news.google.com/rss/articles/CBMiWkFVX3lxTE1zWktwVkhhU2hHcGJETk9sY0FPdm9YWkZqRnY3VW1EdngxTWN3YmNLdFpMZDNaenhvXzZxR0NVeWhHaDhJMmZZSm1maTl3U0JLTEtPSnJkR2hPQQ?oc=5",
+      "pubDate": "Fri, 16 Oct 2026 02:26:45 GMT",
+      "source": "google",
+      "query": "부동산 시세"
+    },
+    {
+      "title": "한국부동산원, 국토부 산하기관 최초 AI 국제표준 인증 - 뉴스핌",
+      "description": "한국부동산원, 국토부 산하기관 최초 AI 국제표준 인증&nbsp;&nbsp;뉴스핌",
+      "link": "https://news.google.com/rss/articles/CBMiXEFVX3lxTE84MkVha1RjTlA0TW0tZF94X0R3T1hKOVBmekI5YXo3ZERYZFNEWGQ3RkE2anRfdnBVaUpHTGdNREFfOVNtbHVEVzY3cGdtbmRiRzZjN2xQZDBaaXNw?oc=5",
+      "pubDate": "Fri, 16 Oct 2026 07:35:00 GMT",
+      "source": "google",
+      "query": "부동산 시세"
+    },
+    {
+      "title": "부동산원, 국토부 산하기관 최초 ‘AI 국제표준’ 인증 - 아시아투데이",
+      "description": "부동산원, 국토부 산하기관 최초 ‘AI 국제표준’ 인증&nbsp;&nbsp;아시아투데이",
+      "link": "https://news.google.com/rss/articles/CBMibkFVX3lxTE15V2hDRjF6U1FCYUJIellZRFF6bjdLOHc2Z3hRaE40aGlSb2pkWF9xcklfSTBIS3JBY3paSlI2cFdKd0lHaEl3SXN4c3RXWXExZ1o4V3E5NTBNeTRUS1JSWkRmcGFFZEoyNGhIQVVR?oc=5",
+      "pubDate": "Fri, 16 Oct 2026 07:07:55 GMT",
+      "source": "google",
+      "query": "부동산 시세"
+    },
+    {
+      "title": "전세사기 예방에 쓰이는 AI 시세···한국부동산원, 국제표준 인증 - 스마트비즈",
+      "description": "전세사기 예방에 쓰이는 AI 시세···한국부동산원, 국제표준 인증&nbsp;&nbsp;스마트비즈",
+      "link": "https://news.google.com/rss/articles/CBMibEFVX3lxTE9kYVBuZmY5bERSeXBPMThjSFY0cjdfTUtXUm5rTFg4OEdiTVhpZmo0eGc2U2ZrWFV4Mko0VDVXNG1FelpUV0trM1pvbUpLYXBjLVg5dWtiZWZfa2N2MDRnVmVnMjN2WUFzN09iRw?oc=5",
+      "pubDate": "Fri, 16 Oct 2026 05:27:16 GMT",
+      "source": "google",
+      "query": "부동산 시세"
+    },
+    {
+      "title": "한국부동산원, 인공지능(AI) 국제표준 인증 획득 - 한국주택경제신문",
+      "description": "한국부동산원, 인공지능(AI) 국제표준 인증 획득&nbsp;&nbsp;한국주택경제신문",
+      "link": "https://news.google.com/rss/articles/CBMiaEFVX3lxTE5Zcy1tSXNTWGpRckVMcEhUX2hiTnMwZE8xUUhEbjVyWlh0NWprSGgxZHp3S3lSVjBub21ic2xob2tBUGp0MW1jU0tSYVRGaGJEbjk5OXZRdmxuWml0Z0drX0ZhalM2RERZ?oc=5",
+      "pubDate": "Fri, 16 Oct 2026 04:02:51 GMT",
+      "source": "google",
+      "query": "부동산 시세"
+    },
+    {
+      "title": "전국 1,720만 호 주택 시세 잡는 AI의 저력… 한국부동산원, 글로벌 표준 검증 통과 - 청년투데이",
+      "description": "전국 1,720만 호 주택 시세 잡는 AI의 저력… 한국부동산원, 글로벌 표준 검증 통과&nbsp;&nbsp;청년투데이",
+      "link": "https://news.google.com/rss/articles/CBMiakFVX3lxTE9mbXVzejdqWkxqcjZkV2NrZGVjMWg0TVQwcUhwLWIyTGJKdzJ6NkgtUnNpTXZFRHdiTmhWZmVNdFdEWE9GdTBWRExpVEZEb2xXVE8xdVI3Wkh5VWVjaElPOHd5bW0wVjZKS3c?oc=5",
+      "pubDate": "Fri, 16 Oct 2026 02:32:34 GMT",
+      "source": "google",
+      "query": "부동산 시세"
+    },
+    {
+      "title": "한국부동산원, 국토부 산하기관 첫 'AI 규제표준' 인증 - 뉴데일리",
+      "description": "한국부동산원, 국토부 산하기관 첫 'AI 규제표준' 인증&nbsp;&nbsp;뉴데일리",
+      "link": "https://news.google.com/rss/articles/CBMie0FVX3lxTFBVaG9mVGQ3S084N1pZZWx2bVNTYVVoNGg0TWh5Y1kzdXQ4VkVnQkJnQi1MU2JvT2I5MGtfZUZ6Z1RtOWxOazM3Z1M2SzBEU0ZNaGxIZUlTME96a1I0MkN5UnozU0daREsxa0MxT1JUem4xVktrWWw3bDFPRdIBgAFBVV95cUxPWGlaSm01VjJvN3p1Y1Z2NlpudGdua3BybGx3TlJFTjZwd0k0MTQ5bnR0ak5tU2hYOVdaTUFFRlVqMmFGZm15UHQ0RXQxMFBBcXpEXzVVbnNBYVZfeVhPcGhvQ1BmdnN5VVB4QXljamloeEtIdUtXblUyQmRhTEFVbg?oc=5",
+      "pubDate": "Fri, 16 Oct 2026 02:37:43 GMT",
+      "source": "google",
+      "query": "부동산 시세"
+    },
+    {
+      "title": "부동산원, 국토부 산하기관 첫 'AI 국제표준' 인증 획득 - 뉴스1",
+      "description": "부동산원, 국토부 산하기관 첫 'AI 국제표준' 인증 획득&nbsp;&nbsp;뉴스1",
+      "link": "https://news.google.com/rss/articles/CBMiW0FVX3lxTFBXRmEzRVdPZjY3c2M0c2ZlVzl4b1FGajN4MEdXa2g2WV9vSVFXeDJwdl9kNGxGTGxsZ2tJYk54UGRJLXctYW11TC1wMC1hVkNyWUdGZklFTk5Tazg?oc=5",
+      "pubDate": "Fri, 16 Oct 2026 02:10:02 GMT",
+      "source": "google",
+      "query": "부동산 시세"
+    },
+    {
+      "title": "한국부동산원, 국토부 산하기관 최초 ‘AI 국제표준’ 인증 획득” - 건설이코노미뉴스",
+      "description": "한국부동산원, 국토부 산하기관 최초 ‘AI 국제표준’ 인증 획득”&nbsp;&nbsp;건설이코노미뉴스",
+      "link": "https://news.google.com/rss/articles/CBMiZkFVX3lxTE9UaXNxWGxocmZDdERZWlZfTEFmRjA5aEU5cHRNOE5IZkJXMnNvOG1mcTNtTnhLdjduVHRDZV9ROG9mOUpRMHJLU3gyUDlEMHFBeTFFRnlyTXdhMF9xejVXc0FYeXZ2dw?oc=5",
+      "pubDate": "Fri, 16 Oct 2026 01:42:34 GMT",
+      "source": "google",
+      "query": "부동산 시세"
+    },
+    {
+      "title": "한국부동산원, AI 국제표준 인증 획득…국토부 산하기관 최초 - 뉴시스",
+      "description": "한국부동산원, AI 국제표준 인증 획득…국토부 산하기관 최초&nbsp;&nbsp;뉴시스",
+      "link": "https://news.google.com/rss/articles/CBMiYEFVX3lxTE0zUUZETzZ0eVRGTEdmdzVKRjNGY21uanZ6MHR6bG0zS3RQdjlseG5KNUZIUHJra1JGYi00dW1iT2NHdUhhbXNvcElyY1VEc19NVmE0ZlpyVVhfTXlkSXhtSNIBeEFVX3lxTE13a2tpRDd6TTZBT3JiaDM2b2RkRkVRM2pOZU5JR0JMSWFWclpDQkxjOTNiWFN0b0w1WWJXWlhHOFlOSW9salM5bTdRUWdYcHE3alB6akIzcG5lMmNkWlpKQVhJd2w0V3BSaHhreW02bk5QYU1XS2R0ZQ?oc=5",
+      "pubDate": "Fri, 16 Oct 2026 01:33:39 GMT",
+      "source": "google",
+      "query": "부동산 시세"
+    },
+    {
+      "title": "[부동산 짚어보기] 동탄 국평 22억 갈 때 지제역 9억…‘경기 남부’ 양극화 심화 - 뉴시안",
+      "description": "[부동산 짚어보기] 동탄 국평 22억 갈 때 지제역 9억…‘경기 남부’ 양극화 심화&nbsp;&nbsp;뉴시안",
+      "link": "https://news.google.com/rss/articles/CBMia0FVX3lxTE9odmZkSGpLR0FZbG1rYU40M255blRaYzZUTkl1TGFucllzdVlGV01WU3MyMkxWa01JeWpEcFRxX1lDM1BIc0dsenhGbXRwaFBCcndHVmdGRTRRQ0tkakZlYlFJWDduWFlJdF9r?oc=5",
+      "pubDate": "Fri, 16 Oct 2026 00:12:55 GMT",
+      "source": "google",
+      "query": "부동산 시세"
+    },
+    {
+      "title": "한국부동산원, 국토부 산하기관 최초 AI 경영시스템 국제표준 인증 획득 - 파이낸셜리뷰",
+      "description": "한국부동산원, 국토부 산하기관 최초 AI 경영시스템 국제표준 인증 획득&nbsp;&nbsp;파이낸셜리뷰",
+      "link": "https://news.google.com/rss/articles/CBMidEFVX3lxTE8xVkM3SWwwYlVLOTc3ajB2Zk5ZRDNXdjZDTnMxSHhuUmoyUW9yN2ppNHFpYjR1OTYzTjNab010T0dLOUtEV005NDFNNkJNYTlXWXJNWVp1T0RsVmUxenE5TFlYcTNFZFVfbXZxNGUxTHNzbUYy?oc=5",
+      "pubDate": "Fri, 16 Oct 2026 05:17:57 GMT",
+      "source": "google",
+      "query": "부동산 시세"
+    },
+    {
+      "title": "“4년 11개월 만에 기준선 돌파”…경기 남부 아파트 매수심리 급등, 전국 지수 100.3 - 뉴스토피아",
+      "description": "“4년 11개월 만에 기준선 돌파”…경기 남부 아파트 매수심리 급등, 전국 지수 100.3&nbsp;&nbsp;뉴스토피아",
+      "link": "https://news.google.com/rss/articles/CBMibEFVX3lxTE9RaDhfem9ENXRKUW5RUzcwWGpzVndDeG5OOWVRR2p2ZmN3YkhGWkVBSDctRVdzMC05MUF1cklnT2dJT1RfYU93bHpJQnctR3ZfcWMwRWNRQXl1TzN0eWJ1QjZBbktkTGF2VUJiRg?oc=5",
+      "pubDate": "Fri, 16 Oct 2026 03:23:36 GMT",
+      "source": "google",
+      "query": "부동산 시세"
+    },
+    {
+      "title": "반도체 벨트 불장에…전국 아파트 매수심리 5년만에 '100선' 돌파 - 뉴시스",
+      "description": "반도체 벨트 불장에…전국 아파트 매수심리 5년만에 '100선' 돌파&nbsp;&nbsp;뉴시스",
+      "link": "https://news.google.com/rss/articles/CBMiYEFVX3lxTE01N19XeUlvc0Jwa2RWWlJuZjFuTEFZOUZudHVkTHZZRnotd3gySElXYVRDZUtvMkJDaDI2QkNXV2pSMDRSbzAwVl91cWdUdnBDYUlwNnFyWTlxNkRHb0p1R9IBeEFVX3lxTE1GTFZpMURsQWZXTjdZLTc3bU1hRk5ZcmJLc2VkekRRdThPNFNuNGJWelBxbVROOGVaREl5cm84VmlxM3BnR1J1ZTJoeGwxeFplMWVWUXU5VmVfRDBhTEZHeDZ6QUxneGpZai1NQjF2UWJtQ0lsNnBhYQ?oc=5",
+      "pubDate": "Fri, 16 Oct 2026 02:11:02 GMT",
+      "source": "google",
+      "query": "부동산 시세"
+    },
+    {
+      "title": "전국 아파트 매수심리 4년 11개월 만에 반등…수도권 뜨겁고 지방은 여전히 냉랭 - 코리아이글뉴스",
+      "description": "전국 아파트 매수심리 4년 11개월 만에 반등…수도권 뜨겁고 지방은 여전히 냉랭&nbsp;&nbsp;코리아이글뉴스",
+      "link": "https://news.google.com/rss/articles/CBMic0FVX3lxTE1BdmlueVFUcWJIakFRdWtxUF9TSGFBcF9kSkxWbENGVF9JYkM2XzFQb0Z1X3g2SEI3TDRzLUVnSUVkX0JUUkZGTkYwaHhENHJNdUp2Uy1UZXJYLXItaFJEdGRDS3NtUmw0WTNORFk5a19zM2c?oc=5",
+      "pubDate": "Fri, 16 Oct 2026 04:05:00 GMT",
+      "source": "google",
+      "query": "부동산 시세"
+    },
+    {
+      "title": "\"집값 떨어진다?\"…부동산 판 뒤집은 4가지 변화 [심형석의 부동산정석] - 한국경제",
+      "description": "\"집값 떨어진다?\"…부동산 판 뒤집은 4가지 변화 [심형석의 부동산정석]&nbsp;&nbsp;한국경제",
+      "link": "https://news.google.com/rss/articles/CBMiWkFVX3lxTE1sdGE2bEU2ZU8xaklCNUtIdGNhc2haTjJVR2hjRk12TFZabndEeTk2THNDaHNGMlZsWTZ3bHgxUlhqS3RKTzMybENJSm9NYzJoQkxJbEtkVFExZw?oc=5",
+      "pubDate": "Wed, 14 Oct 2026 21:30:01 GMT",
+      "source": "google",
+      "query": "부동산 시세"
+    },
+    {
+      "title": "10월 16일 KB Pay·스타퀴즈·한국사 퀴즈 정답은? - 위키트리",
+      "description": "10월 16일 KB Pay·스타퀴즈·한국사 퀴즈 정답은?&nbsp;&nbsp;위키트리",
+      "link": "https://news.google.com/rss/articles/CBMiVkFVX3lxTE1rTWU1UXMzanM0MGp3Z0V4OUlodmVOOEtjQ0ZoRWFhUUxaTFlfbHFicS03aUpSb204TERuN3dxQ19VekY1dmhmT0ltNXdkbUc4cldPcVVn?oc=5",
+      "pubDate": "Fri, 16 Oct 2026 01:12:00 GMT",
+      "source": "google",
+      "query": "부동산 시세"
+    },
+    {
+      "title": "부동산원, 국토부 산하 첫 'AI 국제표준' 인증 - 파이낸셜뉴스",
+      "description": "부동산원, 국토부 산하 첫 'AI 국제표준' 인증&nbsp;&nbsp;파이낸셜뉴스",
+      "link": "https://news.google.com/rss/articles/CBMiWkFVX3lxTE42WVVIaWk1bklGMGhIZGpnVF8xZ1hQTWxOSmdGTV96MlZBX0FxSXplNmlVSEVreTE3TGUtbzNFcWJhdVBfRWE2Z3JWQVAtTWtnM3o2Zk9aVldvUQ?oc=5",
+      "pubDate": "Fri, 16 Oct 2026 01:20:35 GMT",
+      "source": "google",
+      "query": "부동산 시세"
+    },
+    {
+      "title": "“AI로 매매·전세가격 통계 낸다” 한국부동산원, 국토부 산하기관 최초 ‘AI 국제표준’ 인증 획득 - 헤럴드경제",
+      "description": "“AI로 매매·전세가격 통계 낸다” 한국부동산원, 국토부 산하기관 최초 ‘AI 국제표준’ 인증 획득&nbsp;&nbsp;헤럴드경제",
+      "link": "https://news.google.com/rss/articles/CBMiVkFVX3lxTE5CdzFqLUtYWEhYd2hQZkpKdDhmUmNLdUxILW9jcktNaktnOVJMR1pKeUN3aG9tTTNDOXV5UHI1Q3lhOHp0NklKOV8yWU5Rb2FqdlFHNkRR?oc=5",
+      "pubDate": "Fri, 16 Oct 2026 04:36:40 GMT",
+      "source": "google",
+      "query": "부동산 시세"
+    },
+    {
+      "title": "[오늘 부동산] 부동산원장 “집값 주간 통계 검증 강화할 것” - 데일리안",
+      "description": "[오늘 부동산] 부동산원장 “집값 주간 통계 검증 강화할 것”&nbsp;&nbsp;데일리안",
+      "link": "https://news.google.com/rss/articles/CBMilwJBVV95cUxOcjFHbktzWUZlVjI0aXR4RS0tNmNWSDRPanQ4clJ6UEJidDlhRV9nMXJvbG0yWDFObjQySHhOSFYxekJwWFVNaVNvWWRHd0pfNjI0RkNtcnZUSzc1V2tkME1ETmJ0SG5sOVlkRng0MXl4YnM4MXlQNGZWWFk5QU5KNTE4NU1zb2pqZFBqTXRoWVNlX0ZydlBxRWg1YUhvQ09pM2Q2OHNkZDU4S0xoalk1LUlyUzJ0VFprbWx3ZHhGLS1YZVpqdEdEVUxLM1FrczBsS3lKdXd1WUI4Z3owUHJSQlQxQjhXTGFKUkpsUjBpSm5XczgyeUl2NzFqNUFFeFMyZ19KYVpvUXFMNVJiZjZkcFNwQmZmMk0?oc=5",
+      "pubDate": "Thu, 15 Oct 2026 21:10:00 GMT",
+      "source": "google",
+      "query": "부동산 시세"
+    },
+    {
+      "title": "전국 아파트 4채 중 1채는 30년 이상…원도심 신축 아파트 ‘주목’",
+      "description": "한국부동산원 연령별 매매가격지수 통계에 따르면 준공 5년 이하 아파트의 가격 상승률은 4.88%로, 10년 초과~15년 이하 3.59%, 15년 초과~20년 이하 3.48%, 20년 초과 3.52%보다 높았다. 노후 아파트 비중이 높아질수록...",
+      "link": "https://www.dailian.co.kr/news/view/1702418/?sc=Naver",
+      "pubDate": "Sat, 17 Oct 2026 08:02:00 +0900",
+      "source": "naver",
+      "query": "아파트 매매"
+    },
+    {
+      "title": "3040이 움직이는 주택시장…'학세권·역세권'에 실수요 집중",
+      "description": "17일 한국부동산원에 따르면 올해 1~5월 수도권 아파트 매매 거래 12만7588건 가운데 30·40대가 매입한 거래는 7만6602건으로 전체의 60.0%를 차지했다. 지난해 같은 기간 57.9%에서 2.1%포인트 상승한 수치다. 수도권에서...",
+      "link": "https://www.newsway.co.kr/news/view?ud=2026101511453251130",
+      "pubDate": "Sat, 17 Oct 2026 08:02:00 +0900",
+      "source": "naver",
+      "query": "아파트 매매"
+    },
+    {
+      "title": "[통계로 보는 부동산] 서울보다 더 오른 경기 아파트값… 분당·영통·동...",
+      "description": "한국부동산원이 지난 15일 발표한 ‘2026년 10월 둘째 주(12일 기준) 주간 아파트가격 동향’에 따르면 경기 아파트 매매가격은 0.26% 상승하며 전주(0.18%)보다 상승폭을 0.08%포인트 키웠다. 서울 상승률은 0.16%로 전주...",
+      "link": "https://www.ajunews.com/view/20261016085147875",
+      "pubDate": "Sat, 17 Oct 2026 08:02:00 +0900",
+      "source": "naver",
+      "query": "아파트 매매"
+    },
+    {
+      "title": "동탄·영통 넘어 분당까지…'북진'하는 반도체 머니",
+      "description": "경기 성남시 분당구가 최근 1년간 전국 시군구 가운데 가장 높은 아파트값 상승률을 기록했다. 분당구... 법원 등기정보광장의 소유권이전등기(매매) 신청 매수인 현황을 분석한 결과, 올해 1~9월 분당구 집합건물...",
+      "link": "https://www.newsis.com/view/NISX20261016_0003829629",
+      "pubDate": "Sat, 17 Oct 2026 08:00:00 +0900",
+      "source": "naver",
+      "query": "아파트 매매"
+    },
+    {
+      "title": "‘부동산 성적표’ 45점…“향후 1년 서울 집값 오를 것” 94%",
+      "description": "KB부동산에 따르면 이재명 정부 출범 이후 1년 4개월간(2025년 6월~2026년 9월) 서울 아파트 매매가격은 18.17% 상승했다. 취임 후 같은 기간을 기준으로 문재인 정부(11.91%)보다 6.26%포인트 높다. 박근혜 정부 초기에는 0.61...",
+      "link": "https://www.joongang.co.kr/article/25470508",
+      "pubDate": "Sat, 17 Oct 2026 08:00:00 +0900",
+      "source": "naver",
+      "query": "아파트 매매"
+    },
+    {
+      "title": "경기 남부 집값 강세…분당 0.79%·동탄 누적 20% 돌파",
+      "description": "한국부동산원이 지난 15일 발표한 10월 둘째 주(10월 12일 기준) 주간 아파트 가격 동향에 따르면 경기 아파트 매매가격은 전주보다 0.08%포인트 오른 0.26% 상승했다. 전주 상승률은 0.18%였다. 지역별로는 성남...",
+      "link": "https://www.cstimes.com/news/articleView.html?idxno=724252",
+      "pubDate": "Sat, 17 Oct 2026 07:24:00 +0900",
+      "source": "naver",
+      "query": "아파트 매매"
+    },
+    {
+      "title": "“구리가 4천만원?”…‘또 역대 최고’ 찍은 경기도 아파트 분양가",
+      "description": "신축 아파트 가격이 빠르게 오르는 가운데 기존 아파트 매매시장에서도 상승 흐름이 나타났다. 지난달 기준 경기도 아파트의 3.3㎡당 평균 매매가격은 2천33만원으로 지난해 말보다 7.3% 오른 것으로 집계됐다....",
+      "link": "https://www.kyeonggi.com/article/20261017580003",
+      "pubDate": "Sat, 17 Oct 2026 07:10:00 +0900",
+      "source": "naver",
+      "query": "아파트 매매"
+    },
+    {
+      "title": "강남보다 더 오른 강북·서남권...주목해야 할 곳은?[손바닥부동산]",
+      "description": "지난 14일 서울 아파트들이 보이고 있다.(사진=이데일리 이영훈 기자) 한국부동산원 실거래가격지수에 따르면 2026년 7월 서울 아파트 매매가격은 전년 동월 대비 14.56% 상승했다. 동북권은 15.91%, 서남권은 16.06%로 서울...",
+      "link": "https://www.edaily.co.kr/News/Read?newsId=01672806645613904&mediaCodeNo=257&utm_source=naver&utm_medium=referral&utm_campaign=news_syndication&utm_content=original_article",
+      "pubDate": "Sat, 17 Oct 2026 07:02:00 +0900",
+      "source": "naver",
+      "query": "아파트 매매"
+    },
+    {
+      "title": "3분기 동대문구에서 거래된 아파트 82%가 ‘최고가’… “규제 풍선효과...",
+      "description": "서울 아파트 거래는 줄었는데 가격은 상승세 부동산 플랫폼 직방이 국토교통부 아파트 매매 실거래가 데이터를 분석한 결과 3분기 서울 아파트 1만930건 중 5977건(54.7%)이 기존 최고가와 같거나 그 이상 가격에...",
+      "link": "https://weekly.donga.com/3/all/11/6420361/1",
+      "pubDate": "Sat, 17 Oct 2026 07:02:00 +0900",
+      "source": "naver",
+      "query": "아파트 매매"
+    },
+    {
+      "title": "전국서 제주만 주택 매매·전세·월세 '3중 하락'… 서울과 아파트 격차 10%p - 파이낸셜뉴스",
+      "description": "전국서 제주만 주택 매매·전세·월세 '3중 하락'… 서울과 아파트 격차 10%p&nbsp;&nbsp;파이낸셜뉴스",
+      "link": "https://news.google.com/rss/articles/CBMiWkFVX3lxTE52RkVKV1NxSThMbUtwOVVOOENHaGx5bkNhRWxhNTN1dllKejVmakNRS3AycGF3b3Rnd3AwM3hNeGI1SzZPbWxuUjNxeG1fdEwyMHQ2Zk5fbG54Zw?oc=5",
+      "pubDate": "Fri, 16 Oct 2026 03:08:39 GMT",
+      "source": "google",
+      "query": "아파트 매매"
+    },
+    {
+      "title": "대전·세종·충북 아파트 매매가 상승… 충남은 하락 - 중도일보",
+      "description": "대전·세종·충북 아파트 매매가 상승… 충남은 하락&nbsp;&nbsp;중도일보",
+      "link": "https://news.google.com/rss/articles/CBMiZEFVX3lxTE50Q0R2cTM2TDRyd1RDU01vOWRCZjFyV0ZCU1E1bFo1WWZaSnhURy1FTnRkeVRtWXBiY3VhWDB4OTlvYllrd3hUb1Fldy1vaVkzd3ZmYl9ab3JoOEREVWI2aml3Nks?oc=5",
+      "pubDate": "Fri, 16 Oct 2026 06:01:31 GMT",
+      "source": "google",
+      "query": "아파트 매매"
+    },
+    {
+      "title": "경기도 아파트값 ‘급상승’···내집마련 수요자 ‘고뇌’ - 이뉴스투데이",
+      "description": "경기도 아파트값 ‘급상승’···내집마련 수요자 ‘고뇌’&nbsp;&nbsp;이뉴스투데이",
+      "link": "https://news.google.com/rss/articles/CBMicEFVX3lxTFAtRnk3a2V1ZFhwek9TOXRQUmRjczBxRUg0eDZMLTJHUWt3MUtTSGIyX1hoTl9lVnQtUllPZ1N6Rjl6aWJrNEZKQUtodDdSVFlUY20tSnduWlpUc0lkdllYc1RWWTNVNElNSkN6Z1VPLWzSAXRBVV95cUxNcU5EVUlZVk51Nll3SlNxb3k5UEVZd1NhU3U1TlRJS0dST3FZRG9tTUVaNTBVWFJjdlpuNVRHOWdXSjdrUjA3VWxoNkcySmN6dXczQ1VEQVZHUlEzdzNpRFZHZDk4cmNUOGk0aktSdFl4cy1YWg?oc=5",
+      "pubDate": "Fri, 16 Oct 2026 08:40:34 GMT",
+      "source": "google",
+      "query": "아파트 매매"
+    },
+    {
+      "title": "서울 아파트값 격차 줄어…중간 가격 11억 넘고 고가는 하락 - 시사저널",
+      "description": "서울 아파트값 격차 줄어…중간 가격 11억 넘고 고가는 하락&nbsp;&nbsp;시사저널",
+      "link": "https://news.google.com/rss/articles/CBMib0FVX3lxTE5sV2hTVUhzUC1IN3BIUzZ5bzJMT2RKRkVhNldjSDdjeTFVTmpxNmVoR3NCdjRicERZUGNKcl93b3dsXzhTa2NPdWZIaThRdWhsR0NEdXgyY1Bud1pobWZwQzdLbnpWRGJUU1lHSTFDTdIBc0FVX3lxTE12YVJXZFduZmxRZjNzYklhbEdRbFMySTdtYVVtQWd2QjJsOWZWajZZWVhyZE5WUTZCc0VuN0RhRkpBR0J0SkNRSUxPR1ZCU2JEbUh5a25PU0p1VE45UEF4UThEZEN4bGdZbloyQnRvTC0yTms?oc=5",
+      "pubDate": "Fri, 16 Oct 2026 02:06:11 GMT",
+      "source": "google",
+      "query": "아파트 매매"
+    },
+    {
+      "title": "대구 아파트 매매 가격, 35개월 만에 상승 전환 - Tbc.co.kr",
+      "description": "대구 아파트 매매 가격, 35개월 만에 상승 전환&nbsp;&nbsp;Tbc.co.kr",
+      "link": "https://news.google.com/rss/articles/CBMihgFBVV95cUxOSjh1T1JOVnREVkd3VHVzUWZqcWM1b1NEUmpPcktBU1VtMWxLd1lyenJNRE1SSnk0NVQ0cThSQkt4bk9rQzA5QnNRNXZULTBWakdSNlVUNHprbFhpejR4amJMUUZtamZPd2p3bEQ3TkQtU2llQUhaejFGd2k1YWJ2QVZsbXc2Zw?oc=5",
+      "pubDate": "Fri, 16 Oct 2026 13:20:38 GMT",
+      "source": "google",
+      "query": "아파트 매매"
+    },
+    {
+      "title": "서울 아파트값 상승폭 2주 연속 확대…강남 약세 속 강북·외곽 오름세 - 더구루",
+      "description": "서울 아파트값 상승폭 2주 연속 확대…강남 약세 속 강북·외곽 오름세&nbsp;&nbsp;더구루",
+      "link": "https://news.google.com/rss/articles/CBMiY0FVX3lxTE9MMTY1Z2V4T0tRYVVvbnF0d055Q2ltaGVYYzg3NlRVV3ZYaElWaXFTSWg0dlZqbGpXaWZPa0pjZlBuVkMwem5UWFJGRTh6Sm1HS2pBZGdwTWN0YWo0TktiQ04tVQ?oc=5",
+      "pubDate": "Fri, 16 Oct 2026 15:00:54 GMT",
+      "source": "google",
+      "query": "아파트 매매"
+    },
+    {
+      "title": "[N2 포커스] 거래량 3분의 1 토막인데 '88주 상승'…기형적 장세 언제까지 - 뉴스투데이",
+      "description": "[N2 포커스] 거래량 3분의 1 토막인데 '88주 상승'…기형적 장세 언제까지&nbsp;&nbsp;뉴스투데이",
+      "link": "https://news.google.com/rss/articles/CBMiXkFVX3lxTE9ZTG13NmRuNFd4djdkMEVFNW9ILWpwb01vVS1udzdOSnZLRU8wMmxJdFhRMFZCQ3NCNVZScVZqejZCdmpReFJIZlg0M1kwR3hfWWl0dXdjeE03ZEJqQ1E?oc=5",
+      "pubDate": "Fri, 16 Oct 2026 21:08:43 GMT",
+      "source": "google",
+      "query": "아파트 매매"
+    },
+    {
+      "title": "[부동산라운지-10월 2주] 서울 아파트 매매·전세 동반 상승… 강북 강세 속 강남 주요 단지는 하락 - 비즈트리뷴",
+      "description": "[부동산라운지-10월 2주] 서울 아파트 매매·전세 동반 상승… 강북 강세 속 강남 주요 단지는 하락&nbsp;&nbsp;비즈트리뷴",
+      "link": "https://news.google.com/rss/articles/CBMicEFVX3lxTFBFM2p2ZEZkQUVlNWpscVlkQ0oySVA4YW42Nmk1aVpyQzMtTHMybWZwX1o5UTFHS19jTWV5WHBqTUVRczVObFJTSUM2ZUdjbldVU2U1M1Q2a0hDNlI2aVpVT2VEZ29iai1TYkdtWEdDWXU?oc=5",
+      "pubDate": "Fri, 16 Oct 2026 10:35:00 GMT",
+      "source": "google",
+      "query": "아파트 매매"
+    },
+    {
+      "title": "아파트 매매 수요, 평택지제역 ’시선‘...과열 집값 대안 주목 - 팝콘뉴스",
+      "description": "아파트 매매 수요, 평택지제역 ’시선‘...과열 집값 대안 주목&nbsp;&nbsp;팝콘뉴스",
+      "link": "https://news.google.com/rss/articles/CBMibkFVX3lxTE05Ylk2Z1BTWFhDU05WOGJkN1JUOHFkZ0VRcEFtOGd3SFkwOF9mX0VHSERwbU1Jam1HOWZ2ZGZ1d1M3YnJhdG9FR3ZVRHg5QTJ1c3Npa2ZmRVNXYV8wZGFoQW9XMUNjMkFDbndiYmtR0gFyQVVfeXFMUFhxWTJ2dURJMDI3dHo4WXhmMWg3cGd6RzFJaFRmSDloZ3ZTQ1FZZUlsNTZma3p1ZTIxbXZsbnZTb3lxaXpfUUZwOE1YcVFaYmJOUVFtUlBYdDAzMmc0akxZbjJRQmxJbmZNNWpXRnk0UnVB?oc=5",
+      "pubDate": "Fri, 16 Oct 2026 06:43:35 GMT",
+      "source": "google",
+      "query": "아파트 매매"
+    },
+    {
+      "title": "​집 사려는 사람이 더 많아졌다 … 전국 아파트 매수심리 5년 만 100선 돌파 - 뉴데일리",
+      "description": "​집 사려는 사람이 더 많아졌다 … 전국 아파트 매수심리 5년 만 100선 돌파&nbsp;&nbsp;뉴데일리",
+      "link": "https://news.google.com/rss/articles/CBMigAFBVV95cUxOMmJzLU9WUHJKNngtQm5oSmhuOXp3YmtSOGtqVVFjbFVwWkZ0OWZxVVBXT2xWdURBWW5WdldMekVYbmY2V1ZPelNWQ3l1eUp3Y2hKeWhENDYwNE5MTlItalprbGN3b1pjNUFaeFEyTndrcU5LemVsc3YxUXo5REtVZdIBgAFBVV95cUxOMmJzLU9WUHJKNngtQm5oSmhuOXp3YmtSOGtqVVFjbFVwWkZ0OWZxVVBXT2xWdURBWW5WdldMekVYbmY2V1ZPelNWQ3l1eUp3Y2hKeWhENDYwNE5MTlItalprbGN3b1pjNUFaeFEyTndrcU5LemVsc3YxUXo5REtVZQ?oc=5",
+      "pubDate": "Fri, 16 Oct 2026 05:33:18 GMT",
+      "source": "google",
+      "query": "아파트 매매"
+    },
+    {
+      "title": "\"세 부담 피하자\" 서울 강남권 아파트 실거래가 4개월 만에 하락 - 더구루",
+      "description": "\"세 부담 피하자\" 서울 강남권 아파트 실거래가 4개월 만에 하락&nbsp;&nbsp;더구루",
+      "link": "https://news.google.com/rss/articles/CBMiY0FVX3lxTFB3bFZzYkM2aDQ1dVhDU2xEZnJoQ2tJck9WWHZ6ZW5jdlpJZk9WNm5ZRnBXV3dlajk0ZW85eWlFMU9QR0ZNZml0YUhfOTAwbGFQaUZlZk5QZkNWSWZ3a1MxUmNXVQ?oc=5",
+      "pubDate": "Fri, 16 Oct 2026 06:10:16 GMT",
+      "source": "google",
+      "query": "아파트 매매"
+    },
+    {
+      "title": "10·15 대책 1년, 서울 아파트값 88주 연속 상승… 중저가 지역이 견인 - 디지털데일리",
+      "description": "10·15 대책 1년, 서울 아파트값 88주 연속 상승… 중저가 지역이 견인&nbsp;&nbsp;디지털데일리",
+      "link": "https://news.google.com/rss/articles/CBMiZEFVX3lxTFBmYVdlZVNrdjFLU1NoZmtPdUU1cW5wVExaU2U1aVozYU9wekQyVGpILWFTOWVsZE1PWmIxeWIxOHRyTU45UDNHUHdUVTZDNHJnZHJLZFVhc3B1N085S0tJVnI5V2U?oc=5",
+      "pubDate": "Fri, 16 Oct 2026 05:25:47 GMT",
+      "source": "google",
+      "query": "아파트 매매"
+    },
+    {
+      "title": "강남·서초 아파트 실거래가지수 넉 달만에 하락…세제개편 여파 - 서울신문",
+      "description": "강남·서초 아파트 실거래가지수 넉 달만에 하락…세제개편 여파&nbsp;&nbsp;서울신문",
+      "link": "https://news.google.com/rss/articles/CBMieEFVX3lxTFBPdEtZbjg2ZXl4MkNXcWdpTVluS2xqR3Bua0RPc3BvVXdWOV9VVVdfMVZtZUlMVVdYVUU2VkI2TGFGblZoZUViOFN1dVpibG5qWUhkc2w5eVVzWG1RVGJacmJTbGpNX1dWRGJublFwMkY4WjlmaEpjbA?oc=5",
+      "pubDate": "Fri, 16 Oct 2026 05:33:05 GMT",
+      "source": "google",
+      "query": "아파트 매매"
+    },
+    {
+      "title": "강남권 아파트 실거래가 4개월 만에 하락..동북권 상승률 높아 - 메디컬투데이",
+      "description": "강남권 아파트 실거래가 4개월 만에 하락..동북권 상승률 높아&nbsp;&nbsp;메디컬투데이",
+      "link": "https://news.google.com/rss/articles/CBMibEFVX3lxTE1mT0QtUklpblJiMVNWOUZOeU5qRUY5WDNJcDF6VkFLNmloOGhMeGg5U1dFZjNlRFBKZ3Q2OXkwczJwcnVMa1U2eVRmMl9Rb0VIUXpiRFZtVEJ2OGVMUXdUWmxGaTZWZG51N0pIQw?oc=5",
+      "pubDate": "Fri, 16 Oct 2026 09:25:42 GMT",
+      "source": "google",
+      "query": "아파트 매매"
+    },
+    {
+      "title": "“대출은 힘들고 아파트는 비싸졌네요”…다시 불붙기 시작한 빌라의 반전 - 매일경제",
+      "description": "“대출은 힘들고 아파트는 비싸졌네요”…다시 불붙기 시작한 빌라의 반전&nbsp;&nbsp;매일경제",
+      "link": "https://news.google.com/rss/articles/CBMiWEFVX3lxTE5TdnV3T3NfSmVteDM5TXhhVmNVdmZsUzBRemtFSlRIZTl2SmV1SXotcmZpSnZHdDdrNkxZTE1VSlMtaVpiaDZpVGJESnlfSG1aZ3gyZkZHYkk?oc=5",
+      "pubDate": "Fri, 16 Oct 2026 04:39:23 GMT",
+      "source": "google",
+      "query": "아파트 매매"
+    },
+    {
+      "title": "‘10·15 대책’ 1년 서울 주택시장 보니…강남 외면, 수요 중저가 지역에 몰렸다 - 매일경제",
+      "description": "‘10·15 대책’ 1년 서울 주택시장 보니…강남 외면, 수요 중저가 지역에 몰렸다&nbsp;&nbsp;매일경제",
+      "link": "https://news.google.com/rss/articles/CBMiVEFVX3lxTE9JRnVnc3QxX3ljd05oa2gyYmZPam9hNkFOeU5STDQxVmdMUXk1cW9OajY0TGtoeDdsQzJqZnF2OTF3TWpNTU5fVzFjUVY3Vk1MZHR3cQ?oc=5",
+      "pubDate": "Fri, 16 Oct 2026 01:08:41 GMT",
+      "source": "google",
+      "query": "아파트 매매"
+    },
+    {
+      "title": "주진우, 2005년 은평구 신축 아파트 무상 취득 의혹 - 평화나무",
+      "description": "주진우, 2005년 은평구 신축 아파트 무상 취득 의혹&nbsp;&nbsp;평화나무",
+      "link": "https://news.google.com/rss/articles/CBMiakFVX3lxTFBkNTlUanVWUmNyX19BUkt3cVFSdkhmSGFaYU56X2dmZGxUVTY2NWxiVnJybjJsRlZ6UzFoZ0YwXy1MZDQ3QXluU2xibHE0dkJhUXl4Rm9GWjBpMUNSZjc3dmFCbXJtVWt4TGc?oc=5",
+      "pubDate": "Fri, 16 Oct 2026 05:52:19 GMT",
+      "source": "google",
+      "query": "아파트 매매"
+    },
+    {
+      "title": "매물 줄고 이주 수요 몰리고···서울 전셋값 불안 커졌다 - 서울파이낸스",
+      "description": "매물 줄고 이주 수요 몰리고···서울 전셋값 불안 커졌다&nbsp;&nbsp;서울파이낸스",
+      "link": "https://news.google.com/rss/articles/CBMiakFVX3lxTE1CSlhCam4yOFhqUkxreHRDVEFkWU9WQWRmQmMwYW8zMkl1MjFtVi01Zk5uRU1Edl94V0FIUndXSjh1NTExeFdDUUVxbURRZ1Zad1lBaUNNX0hlUURCa1V3Y296U045N0dUeFE?oc=5",
+      "pubDate": "Fri, 16 Oct 2026 08:05:06 GMT",
+      "source": "google",
+      "query": "아파트 매매"
+    },
+    {
+      "title": "서울 강남권 아파트 실거래가지수 4개월 만에 ‘하락 전환’…세제 개편 여파 - 경기일보",
+      "description": "서울 강남권 아파트 실거래가지수 4개월 만에 ‘하락 전환’…세제 개편 여파&nbsp;&nbsp;경기일보",
+      "link": "https://news.google.com/rss/articles/CBMiW0FVX3lxTE8yYVljdFUwc0VPNjM2RU9YSzhUT1BVVW1OdXhlUEowbzJ4cXNTcC1YcHpxWGw4Uk1WZzNyZGoyb21mV1lBOXE3ZU95cV8tem05QnVSbjNOWjJ6Tlk?oc=5",
+      "pubDate": "Fri, 16 Oct 2026 02:06:20 GMT",
+      "source": "google",
+      "query": "아파트 매매"
+    },
+    {
+      "title": "서울 아파트값 88주 연속 상승…강북권 오름폭 확대·강남3구 하락 - 한국부동산뉴스",
+      "description": "서울 아파트값 88주 연속 상승…강북권 오름폭 확대·강남3구 하락&nbsp;&nbsp;한국부동산뉴스",
+      "link": "https://news.google.com/rss/articles/CBMia0FVX3lxTE4xRko3UUJNckJ4dmIyQlI5TFdkemtwUFdPQUFNblBtRTNCVm5yVERoeWF5LWIwZDZtMDNKaXJPdmZWOU10UExoTnFvaEJLelBpZmliS3RJQmhKTjlMVHN0ZURjc3BNbXBUSldN?oc=5",
+      "pubDate": "Thu, 15 Oct 2026 08:43:44 GMT",
+      "source": "google",
+      "query": "아파트 매매"
+    },
+    {
+      "title": "서울 강서구(江西區) · '26년 10월 부동산 흐름 (강남이 내릴 때 강서는 올랐다 — 올해 +12.5%, 가양·염창 1년 새 +24~28%) - 네이버 프리미엄콘텐츠",
+      "description": "서울 강서구(江西區) · '26년 10월 부동산 흐름 (강남이 내릴 때 강서는 올랐다 — 올해 +12.5%, 가양·염창 1년 새 +24~28%)&nbsp;&nbsp;네이버 프리미엄콘텐츠",
+      "link": "https://news.google.com/rss/articles/CBMifEFVX3lxTE8yckJBSHNoU21MTmVUXzlocVlERHVxUklCWW5qUGNyRzZNS1Ewelp4eTZySk5ieHk5c20yaGh1V3VxTGNTMkw1WXhCRGczcHBuQlUzZzVTXzBVbnhoZkFmaGp1VGNjUmh0a21rUFQxSHZRMUZNN1otWmh6Y2w?oc=5",
+      "pubDate": "Fri, 16 Oct 2026 00:32:00 GMT",
+      "source": "google",
+      "query": "아파트 매매"
+    },
+    {
+      "title": "전국 아파트 매수세 5년 만에 우위 전환…경기 남부 집값 상승이 견인 - 서울뉴스통신",
+      "description": "전국 아파트 매수세 5년 만에 우위 전환…경기 남부 집값 상승이 견인&nbsp;&nbsp;서울뉴스통신",
+      "link": "https://news.google.com/rss/articles/CBMia0FVX3lxTE5wWUpvcnc1bUN4VHNaakUxaFF1NHEwUWhERjlSb2hSZjAwWTF4QVBfdVd4aV9QV3Z4T3d2eGRzWk1TVk5ZakR4ODJ0bld2Y1J0ZUZSS0RobWRDZ05iTVB2c3Q0VWVoWXI0U0VF?oc=5",
+      "pubDate": "Fri, 16 Oct 2026 04:35:00 GMT",
+      "source": "google",
+      "query": "아파트 매매"
+    },
+    {
+      "title": "서울 아파트 매매가 88주 연속 상승세 - 뉴시스",
+      "description": "서울 아파트 매매가 88주 연속 상승세&nbsp;&nbsp;뉴시스",
+      "link": "https://news.google.com/rss/articles/CBMieEFVX3lxTFAxY1VwTk9KajFWOXlWa1VkaXVVZUJjWDMxQzBSdDNZcTBDVUFOUnc2eFZCN3FfVWlQR3ZfaEJzcDBwMmpkRGtvSE84Q2NOWUk5VEw5aUpNVU9LYy0zQUIzaDU1TXF1NkRMUzJmb053d2VWRmVzd2J3UdIBeEFVX3lxTFAxY1VwTk9KajFWOXlWa1VkaXVVZUJjWDMxQzBSdDNZcTBDVUFOUnc2eFZCN3FfVWlQR3ZfaEJzcDBwMmpkRGtvSE84Q2NOWUk5VEw5aUpNVU9LYy0zQUIzaDU1TXF1NkRMUzJmb053d2VWRmVzd2J3UQ?oc=5",
+      "pubDate": "Thu, 15 Oct 2026 05:22:00 GMT",
+      "source": "google",
+      "query": "아파트 매매"
+    },
+    {
+      "title": "강남 아파트 매매 실거래가 하락, 세제 개편이 부동산 시장에 미친 영향은? - 공감신문",
+      "description": "강남 아파트 매매 실거래가 하락, 세제 개편이 부동산 시장에 미친 영향은?&nbsp;&nbsp;공감신문",
+      "link": "https://news.google.com/rss/articles/CBMiaEFVX3lxTE10d24tMEpfWEZlWnNaSnRjUkllN0s1Vm5UUlF0bld4M1hEZHhjZWwxQ2RFajJpWWM2MkNrZmE2ZWZOblIzUGV0QUFvTzdDRkJPbGx2ZFdnOHZ4bjlBdjZUYnlpb3RnUm0w?oc=5",
+      "pubDate": "Fri, 16 Oct 2026 04:03:09 GMT",
+      "source": "google",
+      "query": "아파트 매매"
+    },
+    {
+      "title": "집값 잡겠다던 10·15 대책 1년…서울 아파트 10% 상승, 누가 웃고 누가 울었나 - https://www.ppss.kr/",
+      "description": "집값 잡겠다던 10·15 대책 1년…서울 아파트 10% 상승, 누가 웃고 누가 울었나&nbsp;&nbsp;https://www.ppss.kr/",
+      "link": "https://news.google.com/rss/articles/CBMiZEFVX3lxTE9YeDRhcXZ0bnBTdk1Eb1F2Y1EyQzU0WGprZm1HQklrWWEtMUlqcXQxeUlSaU92TGtCNC0teUVac0ZGRFhuVGVaLVhlNXgzTFV3SDQtM0V6WmRfQWxjTlcyVE82Qlk?oc=5",
+      "pubDate": "Fri, 16 Oct 2026 07:41:59 GMT",
+      "source": "google",
+      "query": "아파트 매매"
+    },
+    {
+      "title": "세종 아파트값 하락 멈추고 상승 전환 - 뉴스엔톡",
+      "description": "세종 아파트값 하락 멈추고 상승 전환&nbsp;&nbsp;뉴스엔톡",
+      "link": "https://news.google.com/rss/articles/CBMibEFVX3lxTFBzcHIzX3hVeS1kYXBNOEVXaTBRRU5uRmNZU21mbk5zYUZnWlpnbHlUVXVqSEltall2bE1GWWNlU0lDTzUyWnUtS1Q1VmswUWN4TnhSQUw4VHo0bXIzMU9VNTBmUFA1bHlOOEdxRQ?oc=5",
+      "pubDate": "Thu, 15 Oct 2026 23:31:36 GMT",
+      "source": "google",
+      "query": "아파트 매매"
+    },
+    {
+      "title": "서울 아파트 토허신청 5개월만에 반등…강북·서남권 상승폭 확대 - 한국부동산뉴스",
+      "description": "서울 아파트 토허신청 5개월만에 반등…강북·서남권 상승폭 확대&nbsp;&nbsp;한국부동산뉴스",
+      "link": "https://news.google.com/rss/articles/CBMia0FVX3lxTFB2QlBBcjZXb2lTSjBzeTFXSkJObUxNd0t1NE5WeTgtcElNZEtKMnROMjdyTk5nVTNvREp0VVRFUl9KZjdrRmx1SWF2MTVld2RmZG9ldTRTQ2ZITXFpSW5zQnBCLXVPMFV2eVZj?oc=5",
+      "pubDate": "Thu, 15 Oct 2026 08:14:06 GMT",
+      "source": "google",
+      "query": "아파트 매매"
+    },
+    {
+      "title": "경기도 아파트 56주 연속 상승… 규제지역 상승폭 서울 웃돌아 - 아시아경제",
+      "description": "경기도 아파트 56주 연속 상승… 규제지역 상승폭 서울 웃돌아&nbsp;&nbsp;아시아경제",
+      "link": "https://news.google.com/rss/articles/CBMiYEFVX3lxTE9oUmNuX3BlaTlGaU80NW01bTVISmZSRkc0UVdGa0RhM05aWC1sa3V2YnFEYWRwXzRuak1TQTF2YURnT09YWkZ0Q3hVSE1abEY3OGp4bGdGNXFxQWhyWWJYbg?oc=5",
+      "pubDate": "Fri, 16 Oct 2026 02:04:38 GMT",
+      "source": "google",
+      "query": "아파트 매매"
+    },
+    {
+      "title": "전국 아파트 매수심리 5년 만에 기준선 돌파 - SK브로드밴드 회사소개",
+      "description": "전국 아파트 매수심리 5년 만에 기준선 돌파&nbsp;&nbsp;SK브로드밴드 회사소개",
+      "link": "https://news.google.com/rss/articles/CBMicEFVX3lxTE1nbVRzOFVNZHdpcUF3WlFCcTZUNUE5MW11cFVHUk50cm9oa0hxSUhKdnhoS1VCVnVYcVUyMzEwUUw4T3d1XzNPSExBemdLemluc2J4T1pCUF96NmxybnlMM19kUlI5bS13SHJVOC1TeGU?oc=5",
+      "pubDate": "Fri, 16 Oct 2026 04:43:13 GMT",
+      "source": "google",
+      "query": "아파트 매매"
+    },
+    {
+      "title": "\"강남만 학군 프리미엄?\"…지방서도 학군지 먹힌다 - 한국경제",
+      "description": "\"강남만 학군 프리미엄?\"…지방서도 학군지 먹힌다&nbsp;&nbsp;한국경제",
+      "link": "https://news.google.com/rss/articles/CBMiWkFVX3lxTE0wVVEwSG5CWlh2dFB1d21OV2hlQXlqSGl6RXI4ZGdkaWtsWWVxTk1HcjFoQW5BX3BhN0pKSWdSd2ZlZ051TzY0RlI1WUg5cTRENmtEQi15RzJtUQ?oc=5",
+      "pubDate": "Wed, 14 Oct 2026 23:50:32 GMT",
+      "source": "google",
+      "query": "아파트 매매"
+    },
+    {
+      "title": "[정치라떼] 이재명 정부 2기 비서실장에 임광현 발탁…“당내 갈등 해소...",
+      "description": "같은 당 홍일표 전 의원은 “민생과 관련해서 가장 큰 정책 중 하나가 부동산 정책”이라며 “세금 전문가로서 세금 인상이 부동산 시장에 미치는 영향을 살펴보고, 정책이 올바른 방향으로 전환될 수 있도록 조언해야...",
+      "link": "https://www.viva100.com/article/20261017500013",
+      "pubDate": "Sat, 17 Oct 2026 07:18:00 +0900",
+      "source": "naver",
+      "query": "부동산 정책"
+    },
+    {
+      "title": "최저치 벗어난 李지지율…부동산 불만에 수도권 민심 회복은 숙제",
+      "description": "부동산 정책이 부정평가의 가장 큰 이유로 꼽히는 가운데 이 대통령은 주택 공급 정상화를 예고하고 정부는 공급 확대와 전월세 안정 대책 추진에 나섰다. 17일 한국갤럽에 따르면 지난 13~15일 전국 만 18세 이상...",
+      "link": "https://www.news1.kr/politics/president/6322963",
+      "pubDate": "Sat, 17 Oct 2026 07:10:00 +0900",
+      "source": "naver",
+      "query": "부동산 정책"
+    },
+    {
+      "title": "[부동산사용설명서] 공급 속도 높인다지만…실제 입주는 언제?",
+      "description": "부동산은 집값만으로 설명할 수 없다. 정책과 공급, 금융과 세금, 도시와 개발, 주거문화까지 다양한 요소가 시장을 움직인다. 뉴스1은 설명형 기획 '부동산 사용설명서'를 통해 부동산 시장을 움직이는 원리와 제도...",
+      "link": "https://www.news1.kr/realestate/general/6322968",
+      "pubDate": "Sat, 17 Oct 2026 07:05:00 +0900",
+      "source": "naver",
+      "query": "부동산 정책"
+    },
+    {
+      "title": "李 대통령 ‘지지율 필연적 하락 법칙’ 작동됐다",
+      "description": "부동산·안보 민심 이반, 정책 성과 미흡, 여권 갈등… ● 추미애·김용민·유시민 검찰개혁 후퇴 반발…지지율 하락 부추겨 ● ‘좌아하게’ “모두가 친노·친문”…‘진영 언어’로 멀어진 중도층 ● 즉각 대응할 사안엔...",
+      "link": "https://shindonga.donga.com/3/all/13/6421435/1",
+      "pubDate": "Sat, 17 Oct 2026 07:01:00 +0900",
+      "source": "naver",
+      "query": "부동산 정책"
+    },
+    {
+      "title": "[韓경제 아킬레스건](24) 지방 중소건설사의 연쇄 부도 : 지역 금융권 위...",
+      "description": "절멸이 부동산 시장과 결합하면서, 지방 건설 생태계는 사상 유례없는 폭풍우를 맞이하고 있다. 수도권 일부... 교육 정책 전문가 미국 워싱턴대학교와 조지아공과대학교 방문학자로 활동 전북대학교 교수로 30년간 재직....",
+      "link": "http://www.newsfc.co.kr/news/articleView.html?idxno=81710",
+      "pubDate": "Sat, 17 Oct 2026 07:00:00 +0900",
+      "source": "naver",
+      "query": "부동산 정책"
+    },
+    {
+      "title": "“PF 사업장 300여곳 밀착관리”…정부, 금융·인허가 지원 강화",
+      "description": "쿠키뉴스=임성영 기자 | 정부가 주택공급 확대를 위해 부동산 프로젝트파이낸싱(PF) 사업장에 대한... 전요섭 금융위원회 금융정책국장은 “현재는 각 센터가 별도로 운영되고 있지만 통합센터는 민관 합동조직으로...",
+      "link": "https://www.kukinews.com/article/view/kuk202610160175",
+      "pubDate": "Sat, 17 Oct 2026 06:22:00 +0900",
+      "source": "naver",
+      "query": "부동산 정책"
+    },
+    {
+      "title": "[라이브 인 서울] 서울시 국정감사...한강버스와 부동산 정책 공방 - BBS불교방송",
+      "description": "[라이브 인 서울] 서울시 국정감사...한강버스와 부동산 정책 공방&nbsp;&nbsp;BBS불교방송",
+      "link": "https://news.google.com/rss/articles/CBMia0FVX3lxTE1DUl9VRVBHV3VwYVdBLUU4QS1xa0k2QlQtWmV1TmhZcU40enUzSEhWUTFPOVN5TUxYOEsxdzBoeDIwd0Q4VG9iSkNTWkEta2lQenVyVVhsZ2NPNndSVmpiTWhRb21JQTFpMXh3?oc=5",
+      "pubDate": "Fri, 16 Oct 2026 09:25:00 GMT",
+      "source": "google",
+      "query": "부동산 정책"
+    },
+    {
+      "title": "부동산 정책 시행 1년…\"부산 빈집 넘치고 전세난 심화\" - LG헬로비전",
+      "description": "부동산 정책 시행 1년…\"부산 빈집 넘치고 전세난 심화\"&nbsp;&nbsp;LG헬로비전",
+      "link": "https://news.google.com/rss/articles/CBMickFVX3lxTE8yaUdncWtybzhjREJ0ZFRvYTJqQXpIX0hJdi0waFBhQkFRRWd3ajVPTHg4NjRVYUhkbFNTVHA5QXkxbkZUWUVrMXFLU3BXVk84ZmNmR18zUXNsZ3FfTWFTN0t0cU9HS3ZRLXQzOTYwNURfdw?oc=5",
+      "pubDate": "Fri, 16 Oct 2026 04:36:06 GMT",
+      "source": "google",
+      "query": "부동산 정책"
+    },
+    {
+      "title": "국감 앞두고 주택정책 백서...\"공급절벽은 박원순 시정 탓\" - YTN",
+      "description": "국감 앞두고 주택정책 백서...\"공급절벽은 박원순 시정 탓\"&nbsp;&nbsp;YTN",
+      "link": "https://news.google.com/rss/articles/CBMiXkFVX3lxTE9qZ0I1aDFRUHl6Rl81cGxCMDNvMDNNSFJNZjVDMjFldHAyMkwybkp4QTNfNDlaTzdRTG53YlpmcF9NMXZNMkR0am0yU1F1N0tZek9MYmVranlHM2RieGc?oc=5",
+      "pubDate": "Fri, 16 Oct 2026 16:29:00 GMT",
+      "source": "google",
+      "query": "부동산 정책"
+    },
+    {
+      "title": "[국토위 국감 지상중계 ⑥ 한국부동산원편] 사찰 의혹·통계 신뢰·공사비 검증 - 국토교통신문",
+      "description": "[국토위 국감 지상중계 ⑥ 한국부동산원편] 사찰 의혹·통계 신뢰·공사비 검증&nbsp;&nbsp;국토교통신문",
+      "link": "https://news.google.com/rss/articles/CBMiZ0FVX3lxTFA5TWZXWHY0UmZqMllqd19ITGxFbWxtNTlyRVdrMVBUdGZjWGMzRGk1cmR3U1FOS2VMdTZXUHotdy16UnZoMVdsNVhUdFowdzJyZDhTRkxPd2w5VnVhbGhybWlvcnZkaVk?oc=5",
+      "pubDate": "Fri, 16 Oct 2026 10:37:33 GMT",
+      "source": "google",
+      "query": "부동산 정책"
+    },
+    {
+      "title": "이 대통령 지지율 39%로 반등…부동산·경제 대응은 부정 평가 요인 - 일간투데이",
+      "description": "이 대통령 지지율 39%로 반등…부동산·경제 대응은 부정 평가 요인&nbsp;&nbsp;일간투데이",
+      "link": "https://news.google.com/rss/articles/CBMia0FVX3lxTE1aZGJLYXVlNjlMWHZEemdIUVRJblJfb3FTb0hCUHJDVGVWZF9UWFRLb2RvZ3BqeFVsY2JNNmRBVnlvS3p3TkxKLTQ4VlRWaV8xZWtFRHVRbWVUZHBDV0xRSTJGbHBYVU9wbHow?oc=5",
+      "pubDate": "Fri, 16 Oct 2026 05:34:26 GMT",
+      "source": "google",
+      "query": "부동산 정책"
+    },
+    {
+      "title": "‘내 집 어디에, 언제 공급되나’…정부, 주택공급 실적 월 2회 공개 - 조선일보",
+      "description": "‘내 집 어디에, 언제 공급되나’…정부, 주택공급 실적 월 2회 공개&nbsp;&nbsp;조선일보",
+      "link": "https://news.google.com/rss/articles/CBMiiAFBVV95cUxPM0xEWG1fX0tJelpMcTRTaDg4LVltZkg4TjVFR2NxVXgwelZRR0Vza2R2QWN6cERXZFdSSXNaZEhBNU9Tczl5eEVMUkdILUR4LWNZZ2drZnNSamR2MS1VVUgwNTEzakZIWVlqZXVxU21qUVI2QjZiLTBlV3NiSVVYSG9ocW9XUnZ0?oc=5",
+      "pubDate": "Fri, 16 Oct 2026 07:18:11 GMT",
+      "source": "google",
+      "query": "부동산 정책"
+    },
+    {
+      "title": "세종대 산업대학원 부동산AI융합학과·공공정책대학원 부동산학과, 구의동 도시재생 현장 답사 진행 - 조선일보",
+      "description": "세종대 산업대학원 부동산AI융합학과·공공정책대학원 부동산학과, 구의동 도시재생 현장 답사 진행&nbsp;&nbsp;조선일보",
+      "link": "https://news.google.com/rss/articles/CBMijgFBVV95cUxQMjhENmI5RFd6d0h6SFoyMmVocTNGNGJTdDc3VzJnOWFfbnFkWTY5dV80RHZxelZ1ZE5Wczl3WDJrMVIyTDgxV0w3YTg3TFU1RU9kS0I0aUl1a19DbG1hOUdQck5KNGlPSXU0UDl1N004a0FoNURvSDM0UHFMQTFpbUxqaWlvZEZ0bEhBWjVR?oc=5",
+      "pubDate": "Fri, 16 Oct 2026 07:05:13 GMT",
+      "source": "google",
+      "query": "부동산 정책"
+    },
+    {
+      "title": "[한국갤럽] 李 지지율 39%로 소폭 반등…부동산·경제 여전히 '아킬레스건' - 매일일보",
+      "description": "[한국갤럽] 李 지지율 39%로 소폭 반등…부동산·경제 여전히 '아킬레스건'&nbsp;&nbsp;매일일보",
+      "link": "https://news.google.com/rss/articles/CBMiZEFVX3lxTE91WTZ0Qm5YWVhEMU8zdUpuRFBRak1aV1pjUHBEWHppVE9QYnhfcXJ5Q1BPQzU1OTVsVWZRWUhXbkFYVWhJc005SVVpdHcwQzhoZGVwUmZ5ZW5JVjhKQlNxS2E0NzU?oc=5",
+      "pubDate": "Fri, 16 Oct 2026 02:12:36 GMT",
+      "source": "google",
+      "query": "부동산 정책"
+    },
+    {
+      "title": "[언주로 칼럼] 민주당 재집권 전략보고서 - 대한경제",
+      "description": "[언주로 칼럼] 민주당 재집권 전략보고서&nbsp;&nbsp;대한경제",
+      "link": "https://news.google.com/rss/articles/CBMihgFBVV95cUxQTjhoNm5wVFlzcG1lNGlRVl9NU001bWZCVzYtNGk0RzBvUjVoQnlEWGQ2VS1QWFJoZmxkOU5wWU1NWUFOVm9KVnlhdXJZZUNoMzR3SlRhanJUeEdjR2dkMkViOElpaGc0dmlKZUlSTTBfSmpldFpfSFlPR194ZjcyaFFGaHRtUQ?oc=5",
+      "pubDate": "Wed, 14 Oct 2026 20:00:13 GMT",
+      "source": "google",
+      "query": "부동산 정책"
+    },
+    {
+      "title": "\"현장에 답이 있다\"… 세종대 산업대학원 부동산AI융합학과·공공정책대학원 부동산학과, 구의동 정비사업 답사 진행 - 열린뉴스통신",
+      "description": "\"현장에 답이 있다\"… 세종대 산업대학원 부동산AI융합학과·공공정책대학원 부동산학과, 구의동 정비사업 답사 진행&nbsp;&nbsp;열린뉴스통신",
+      "link": "https://news.google.com/rss/articles/CBMiZkFVX3lxTFBfc3hfdGpNWlJ6MFQ3VzdBZXZ1NGhjY2k1ZWRYNUplZkJxbEVKMlBwYXNCYTktSk1ZV0I3a0U2SjBRYlE4djkwQWVfTXVKREpLUU11cmZJWkJ2clFLWHJPUXdNakJmdw?oc=5",
+      "pubDate": "Fri, 16 Oct 2026 07:26:16 GMT",
+      "source": "google",
+      "query": "부동산 정책"
+    },
+    {
+      "title": "국토위 국감서 '부동산 사찰' 공방…野 \"김현미 불러야\" 與 \"김건희 부를 것\" - 뉴시스",
+      "description": "국토위 국감서 '부동산 사찰' 공방…野 \"김현미 불러야\" 與 \"김건희 부를 것\"&nbsp;&nbsp;뉴시스",
+      "link": "https://news.google.com/rss/articles/CBMiYEFVX3lxTE40aFFwSHNvSlV2clRxQjdFbVZDTVhJRWg1Mm5SSzJwNUMzZkM0MHpGb1ZsQVAtczRpSlpnN0hDbS1CZEU5SGMxQm9ONDVsY0EzZDlvSmtLVFpkVDFyYUt5MNIBeEFVX3lxTE1Rcm41R1F2c1Z5OHBBZmFPRjBOc2FJM2NmaW5lajlwWVNIMnBYSU5yRTV3bUl0bS1FYkgwRWp1VTd6cXpjT0dSQ1BRY0Z6QkNoSnFieUxvb1YwRTNiRU1uZGFiVkJBbVFwakZwdXBpTnBCT0VBRkhrQQ?oc=5",
+      "pubDate": "Thu, 15 Oct 2026 03:54:41 GMT",
+      "source": "google",
+      "query": "부동산 정책"
+    },
+    {
+      "title": "[Le view ]-이재명정부 국민 신뢰 회복 방안 20대 지지율 10% 쇼크 뒤엔 ‘휴거’ ‘엘사’ 직접 겪은 공공임대 거부감 - 르데스크",
+      "description": "[Le view ]-이재명정부 국민 신뢰 회복 방안 20대 지지율 10% 쇼크 뒤엔 ‘휴거’ ‘엘사’ 직접 겪은 공공임대 거부감&nbsp;&nbsp;르데스크",
+      "link": "https://news.google.com/rss/articles/CBMiVkFVX3lxTE85MW84SHQwWENoZXEwaU1uWFJHV3RfMjN4Vmh3TlI3LVRuRTJaQURqRG1xWWFBcGVkdWVtRmRnTXhRSUZfcHNLOUk4T2FaSUxZbVVMSWN3?oc=5",
+      "pubDate": "Fri, 16 Oct 2026 07:58:00 GMT",
+      "source": "google",
+      "query": "부동산 정책"
+    },
+    {
+      "title": "[국감 지상중계] 주택·교통·공공조달 쟁점화…국감장 달군 민생 현안 - 애드뉴스인천",
+      "description": "[국감 지상중계] 주택·교통·공공조달 쟁점화…국감장 달군 민생 현안&nbsp;&nbsp;애드뉴스인천",
+      "link": "https://news.google.com/rss/articles/CBMia0FVX3lxTE9xdkJkdUtWblBDSF9oUm5jTmxxXzZVNlV2RDdjUW1mWXFUaElOUnQzeEFjMEtoaDZxQk9BZGt1RXp1OF9aQWZiUW1hcWppTHVaSllXaGV4NVlnMUpNclMzdDN3bWpnZ3ZnQ240?oc=5",
+      "pubDate": "Fri, 16 Oct 2026 00:12:00 GMT",
+      "source": "google",
+      "query": "부동산 정책"
+    },
+    {
+      "title": "\"전세난 대책으로 입주 빠른 공공임대\"...실효성 있을까",
+      "description": "먼저, 물량이 가장 많이 계획된 전세임대는 LH가 집주인과 전세계약을 맺고 싸게 임대하는 방식인데 지금처럼 전세 물건이 귀한 시장에서 집주인들이 까다로운 LH 절차를 꺼리면서 계약 자체도 쉽지 않은 것으로...",
+      "link": "https://www.ytn.co.kr/_ln/0102_202610162249168982",
+      "pubDate": "Fri, 16 Oct 2026 22:49:00 +0900",
+      "source": "naver",
+      "query": "전세 시장"
+    },
+    {
+      "title": "내 노후를 지켜줄 아파트는 어디에?…미리 보는 ‘서울 아파트 미래지도...",
+      "description": "2부는 미분양과 입주물량, 정책, 금리와 유동성, 전세 수요, 시장 사이클과 심리 등 집값을 움직이는 변수를 하나씩 살펴본다. 어느 하나만 봐서는 방향을 판단하기 어려운 만큼, 지표들이 서로 어떻게 맞물리는지 읽는 데...",
+      "link": "https://www.hani.co.kr/arti/economy/property/1282819.html",
+      "pubDate": "Fri, 16 Oct 2026 20:56:00 +0900",
+      "source": "naver",
+      "query": "전세 시장"
+    },
+    {
+      "title": "[부동산라운지-10월 2주] 서울 아파트 매매·전세 동반 상승… 강북 강세...",
+      "description": "전세시장 역시 교통 여건이 양호하고 생활 편의성이 높은 단지를 중심으로 상승 흐름을 이어갔다. 수도권과 서울뿐 아니라 지방 아파트 매매·전세가격도 상승세를 기록하면서 전국적으로 주택가격이 오름세를...",
+      "link": "http://www.biztribune.co.kr/news/articleView.html?idxno=360821",
+      "pubDate": "Fri, 16 Oct 2026 19:38:00 +0900",
+      "source": "naver",
+      "query": "전세 시장"
+    },
+    {
+      "title": "\"반도체 팹세권이 끌어올렸다\"…전남광주 전셋값 한 달 만에 상승 반전",
+      "description": "전남광주지역의 부동산 전세시장이 '반도체 클러스터' 조성 등 굵직한 첨단산업 호재를 등에 업고 한 달 만에 다시 상승세로 돌아섰다. 특히 나주시와 광주 서구 등 이른바 '팹세권(반도체 공장+역세권)'으로 불리는...",
+      "link": "https://www.jnilbo.com/news/articleView.html?idxno=90000074124",
+      "pubDate": "Fri, 16 Oct 2026 18:42:00 +0900",
+      "source": "naver",
+      "query": "전세 시장"
+    },
+    {
+      "title": "정광현 순천시의원, '전세사기 사전 차단'... 임대차 정보 연계 촉구",
+      "description": "더욱이 전세사기 피해 사실이 지역사회에 공론화된 이후에도 해당 가해 임대인 명의로 등록된 주택들이 버젓이 전세 시장에 신규 매물로 다시 등록되는 비정상적인 유통 정황까지 확인되면서 제도적 허점이 도마 위에...",
+      "link": "https://www.newsworker.co.kr/news/articleView.html?idxno=509065",
+      "pubDate": "Fri, 16 Oct 2026 17:36:00 +0900",
+      "source": "naver",
+      "query": "전세 시장"
+    },
+    {
+      "title": "4분기 새 아파트 어디에 몰리나? 입주 물량으로 본 전세시장 - KB Think",
+      "description": "4분기 새 아파트 어디에 몰리나? 입주 물량으로 본 전세시장&nbsp;&nbsp;KB Think",
+      "link": "https://news.google.com/rss/articles/CBMiZkFVX3lxTE9XN0V3UFdMRXJ3N24yNFB1Y0FyVlRLMDU5N2lmTlZReFdhdWRHR3V3azd0NDkzcE9BZUY4UURlWURYcXppYWt5R1cxQndrb3RxUmZpc1ZpdmR0djNLRFRGeC1vdlpvUQ?oc=5",
+      "pubDate": "Wed, 14 Oct 2026 00:31:08 GMT",
+      "source": "google",
+      "query": "전세 시장"
+    },
+    {
+      "title": "[10·15 대책 1년] 전세 품귀에 임대차 혼란…집값·분양가 연쇄 자극 - ebn.co.kr",
+      "description": "[10·15 대책 1년] 전세 품귀에 임대차 혼란…집값·분양가 연쇄 자극&nbsp;&nbsp;ebn.co.kr",
+      "link": "https://news.google.com/rss/articles/CBMiaEFVX3lxTE5GOThNTy1FeFlYQU5xQWtQMkVGNzJJSkZfdUU2aFRSQkdBTVQ3U2xnb1ZsMjhZTlltaGhEQnJXUDVSazEzcGNERWJ5b2sxOHR6NnlmMjlHYUN3dTVWYldXYVhuVjZQRENs?oc=5",
+      "pubDate": "Thu, 15 Oct 2026 01:16:43 GMT",
+      "source": "google",
+      "query": "전세 시장"
+    },
+    {
+      "title": "대구 오피스텔 \"매매가격 하락률\" 전국 최고…전세가율 88.57%로 1위 - 웹플러스뉴스",
+      "description": "대구 오피스텔 \"매매가격 하락률\" 전국 최고…전세가율 88.57%로 1위&nbsp;&nbsp;웹플러스뉴스",
+      "link": "https://news.google.com/rss/articles/CBMia0FVX3lxTE9KSTYzVGk1OGh3QWhhWUFYaEFJcXhTYnFGeG9vSFVqVW1kczduY05MZVBLUTZlSndDMlBGUGhFYWVoRk5DYTI3cEt2LXM0NTM5Y3BTQnNEamc5MFBYMGdDX01jSl9VQnYyc0hr?oc=5",
+      "pubDate": "Thu, 15 Oct 2026 23:33:46 GMT",
+      "source": "google",
+      "query": "전세 시장"
+    },
+    {
+      "title": "세종 집값 상승 기대 커졌다…매매심리 전국 2위·전세심리 1위 - 서울경제",
+      "description": "세종 집값 상승 기대 커졌다…매매심리 전국 2위·전세심리 1위&nbsp;&nbsp;서울경제",
+      "link": "https://news.google.com/rss/articles/CBMiU0FVX3lxTE5IaVNCRWh2Z05fTmk5YU51M2Y5YWJ6cXhEZkROOEdsdTByNWtjc19PZ3oySWpPTmRESHpxckJucTVxNVdjWnJHbVY5alZreUl5R2x30gFTQVVfeXFMTkhpU0JFaHZnTl9OaTlhTnUzZjlhYnpxeERmRE44R2x1MHI1a2NzX09nejJJak9OZERIenFyQm5xNXE1V2NackdtVjlqVmt5SXlHbHc?oc=5",
+      "pubDate": "Thu, 15 Oct 2026 22:20:00 GMT",
+      "source": "google",
+      "query": "전세 시장"
+    },
+    {
+      "title": "규제의 역설이 만든 '외곽 폭등'…강남 묶자 성북·중랑 15억 이하 쏠림 심화 - 미디어써치",
+      "description": "규제의 역설이 만든 '외곽 폭등'…강남 묶자 성북·중랑 15억 이하 쏠림 심화&nbsp;&nbsp;미디어써치",
+      "link": "https://news.google.com/rss/articles/CBMicEFVX3lxTE1sZ1RSSHZYMU43eW53LVZnLTB5VDhKTG0zT3l2TlUydEtSLTdYd3Q4UmpmSHVpWHhCeEdETEtadS1kd2xMcElKeElRQVlqV0lrSEw0cGRYd1d2cXhSZHZqM3RSdEJGVGt5R1ZwaDBpeGs?oc=5",
+      "pubDate": "Thu, 15 Oct 2026 22:14:44 GMT",
+      "source": "google",
+      "query": "전세 시장"
+    },
+    {
+      "title": "광주 아파트 임대차, 월세가 전세 앞질렀다 - 무등일보",
+      "description": "광주 아파트 임대차, 월세가 전세 앞질렀다&nbsp;&nbsp;무등일보",
+      "link": "https://news.google.com/rss/articles/CBMiU0FVX3lxTE5EWnRDdjE2MzN1TDhNUDAxTWJBMWFQa1JZZUdGMXIwVE5faTNaY0FMX1d2bk5Sck5uMXpIdjdETThnMGNYc2VTMUtzMjlrS1dKeTRr?oc=5",
+      "pubDate": "Wed, 30 Sep 2026 07:00:00 GMT",
+      "source": "google",
+      "query": "전세 시장"
+    },
+    {
+      "title": "전세는 왜 부동산 시장에서 예민한 존재인가? [유재술의 부동산 이야기] - 시티타임스 CityTimes",
+      "description": "전세는 왜 부동산 시장에서 예민한 존재인가? [유재술의 부동산 이야기]&nbsp;&nbsp;시티타임스 CityTimes",
+      "link": "https://news.google.com/rss/articles/CBMibkFVX3lxTFB6UXB5VkU5THJEaFJKWlllNzNQNVVxcmFqUG1KckhwTENoZ0Z4akZWMW01Rk4wWHoxX2xMUHFxbHhlZjAwMmRiZVowQXg5T3lFb0o0aDlZODAzVTkwOUhyVVg3Q2JhdjlrdnlZR3l30gFyQVVfeXFMT1R5NVF3VjVxbDdRd3JiSm9qTjlTdWgzcEx5YjF3a0JHQ3dSUXJ6OUs4UlhjTDJ1UThyTlJyTjh5elNRbFZ3RzNaNmVpa2xkMW5UbW5FV3JpVTlGNVhmdU5nMDNoS3VGUGJCT05fZ0d2WWVn?oc=5",
+      "pubDate": "Sun, 27 Sep 2026 07:00:00 GMT",
+      "source": "google",
+      "query": "전세 시장"
+    },
+    {
+      "title": "서울 아파트 전셋값 1년 만에 9.96% 급등…월세 비중도 절반 돌파 : रियल एस्टेट : JKN - 재경일보",
+      "description": "서울 아파트 전셋값 1년 만에 9.96% 급등…월세 비중도 절반 돌파 : रियल एस्टेट : JKN&nbsp;&nbsp;재경일보",
+      "link": "https://news.google.com/rss/articles/CBMiX0FVX3lxTE0wcXExOGxxNzhHX1B2bmFCdUU3LUNWT0I1ZnhRMm0zTlQtdmxZN2g4bU9zODhlRjVBS1BDSVBXeTdUNEJjVkdISHdNQmVPdnZWb19oTkc3a1pEQzFWNmUw?oc=5",
+      "pubDate": "Fri, 16 Oct 2026 02:35:12 GMT",
       "source": "google",
       "query": "전세 시장"
     }
